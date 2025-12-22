@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'DanaFaNum';
+    overflow-wrap: break-word;
+  }
+}
+:root {
+  --primary: #0086ff;
+  --primary-50: #e2f3ff;
+  --primary-100: #b9dfff;
+  --primary-200: #86cdff;
+  --primary-300: #43b8ff;
+  --primary-400: #00a7ff;
+  --primary-500: #0096ff;
+  --primary-600: #0086ff;
+  --primary-700: #0072ff;
+  --primary-800: #155efc;
+  --primary-900: #2d37dd;
+  --primary-950: #141DBB;
+
+  --secondary: #262d5d;
+  --secondary-50: #e3e5eb;
+  --secondary-100: #babdcf;
+  --secondary-200: #8e93ae;
+  --secondary-300: #656b8d;
+  --secondary-400: #484e78;
+  --secondary-500: #2b3365;
+  --secondary-600: #262d5d;
+  --secondary-700: #1f2453;
+  --secondary-800: #181c47;
+  --secondary-900: #0e0c31;
+  --secondary-950: #070621;
+
+  --special-1: #f37321;
+
+  --bg: url('');
+  --footer-bg: url('../images/footer-background.jpg');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'DanaFaNum';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/DanaFaNum-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'DanaFaNum';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/DanaFaNum-Medium.ttf') format('truetype');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'IRANYeDanaFaNumkan';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/DanaFaNum-Bold.ttf') format('truetype');
+}
