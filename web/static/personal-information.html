@@ -30,21 +30,25 @@
 
                     <div
                         class="panel-flex panel-flex-col panel-gap-3 panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-3 panel-mt-6">
-                        <a href="" class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                        <a href=""
+                            class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
                             <svg width="24" height="24" class="panel-text-zinc-600">
                                 <use href="../assets/images/panel-sprite-icons.svg#icon-setting"></use>
                             </svg>
                             <span class="panel-relative">تنظیمات پروفایل
-                                <span class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                                <span
+                                    class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
                             </span>
 
                         </a>
-                        <a href="" class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                        <a href=""
+                            class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
                             <svg width="24" height="24" class="panel-text-zinc-600">
                                 <use href="../assets/images/panel-sprite-icons.svg#icon-exit"></use>
                             </svg>
                             <span class="panel-relative">خروج
-                                <span class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                                <span
+                                    class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
                             </span>
                         </a>
                     </div>
@@ -145,35 +149,38 @@
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
                 <section class="panel-flex panel-justify-between">
                     <div class="panel-flex panel-items-center panel-gap-3">
-                        <h2 class="panel-font-medium">جستجوی سفر ها</h2>
-                        <div class="panel-flex panel-items-center panel-gap-2">
-                            <input type="text" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200
-                                   panel-px-4 panel-w-52 panel-h-14 panel-placeholder-zinc-400 panel-outline-none
-                                   focus:panel-border-primary-800 focus:panel-bg-white
-                                   focus:panel-shadow-md
-                                   panel-transition panel-duration-300" placeholder="بر اساس شماره قرارداد:" />
-                            <input type="text" name="" id="" placeholder="از تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
-                            <input type="text" name="" id="" placeholder="تا تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
-                        </div>
-                        <button
-                            class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
-                            aria-label="جستجو">
-                            <svg width="24" height="24" class="panel-text-white">
-                                <use href="../assets/images/panel-sprite-icons.svg#icon-search"></use>
-                            </svg>
-                        </button>
-                    </div>
-                    <button
-                        class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
-                        <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
                         <span
-                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-primary-800 group-hover:panel-scale-x-100"></span>
-                    </button>
+                            class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-2xl">
+                            <svg width="48" height="48" class="panel-text-white">
+                                <use href="../assets/images/panel-sprite-icons.svg#icon-sidebar-person"></use>
+                            </svg>
+                        </span>
+                        <div class="panel-flex panel-flex-col panel-justify-between panel-h-full">
+                            <h2 class="panel-text-sm panel-text-zinc-900 panel-font-bold">اطلاعات شخصی</h2>
+                            <p class="panel-text-xs panel-text-zinc-900">
+                                مشخصات هویتی و شناسنامه ای خود رل وارد کنید
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        class="panel-flex panel-items-center panel-gap-2 panel-bg-green-200 panel-text-green-700 panel-px-3 panel-py-4 panel-rounded-lg">
+                        <svg width="24" height="24">
+                            <use href="../assets/images/panel-sprite-icons.svg#icon-tick"></use>
+                        </svg>
+                        <span>تکمیل شد</span>
+                    </div>
                 </section>
+                <button
+                    class="panel-relative panel-group panel-overflow-hidden panel-block panel-z-10 panel-pr-2 panel-pl-6 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-mr-auto panel-mt-4 panel-border panel-border-solid panel-border-primary-800 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                    <div class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
+                        <svg width="48" height="48" class="">
+                            <use href="../assets/images/panel-sprite-icons.svg#icon-drive"></use>
+                        </svg>
+                        <span class="">ذخیره تغییرات</span>
+                    </div>
+                    <span
+                        class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                </button>
             </div>
         </div>
     </main>

@@ -8,6 +8,7 @@
     overflow-wrap: break-word;
   }
 }
+
 :root {
   --primary: #0086ff;
   --primary-50: #e2f3ff;
@@ -48,6 +49,7 @@
   font-weight: 400;
   src: url('../fonts/DanaFaNum-Regular.ttf') format('truetype');
 }
+
 @font-face {
   font-display: swap;
   font-family: 'DanaFaNum';
@@ -55,10 +57,102 @@
   font-weight: 500;
   src: url('../fonts/DanaFaNum-Medium.ttf') format('truetype');
 }
+
 @font-face {
   font-display: swap;
   font-family: 'IRANYeDanaFaNumkan';
   font-style: normal;
   font-weight: 700;
   src: url('../fonts/DanaFaNum-Bold.ttf') format('truetype');
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserProfile {
+  display: none;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo {
+  width: 100%;
+  font-size: 16px;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 44px;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr td {
+  border: 1px solid var(--Zinc-200, #E4E4E7);
+  background: white;
+  border-radius: 12px;
+  padding: 0px;
+  color: var(--Zinc-800, #27272A);
+  height: 48px;
+  width: 100%;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr>td:nth-child(1),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr>td:nth-child(2) {
+  flex-basis: 46%;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(3),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(3),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(3)>td:nth-child(2),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(4)>td:nth-child(1) {
+  flex-basis: 100% !important;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr>td>[class^="profile-info-"] {
+  color: var(--Zinc-800, #27272A) !important;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr>td::before {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--Zinc-500, #71717A);
+  white-space: nowrap;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(1)::before {
+  content: "نام :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(2)::before {
+  content: "نام خانوادگی :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(3)::before {
+  content: "تلفن :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(1)::before {
+  content: "موبایل :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(2)::before {
+  content: "جنسیت :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(3)::before {
+  content: "تاریخ تولد :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(3)>td:nth-child(1)::before {
+  content: "کد پستی :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(3)>td:nth-child(2)::before {
+  content: "ایمیل :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(4)>td:nth-child(1)::before {
+  content: "آدرس :";
 }

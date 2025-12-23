@@ -30,21 +30,25 @@
 
                     <div
                         class="panel-flex panel-flex-col panel-gap-3 panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-3 panel-mt-6">
-                        <a href="" class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                        <a href=""
+                            class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
                             <svg width="24" height="24" class="panel-text-zinc-600">
                                 <use href="../assets/images/panel-sprite-icons.svg#icon-setting"></use>
                             </svg>
                             <span class="panel-relative">تنظیمات پروفایل
-                                <span class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                                <span
+                                    class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
                             </span>
 
                         </a>
-                        <a href="" class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                        <a href=""
+                            class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
                             <svg width="24" height="24" class="panel-text-zinc-600">
                                 <use href="../assets/images/panel-sprite-icons.svg#icon-exit"></use>
                             </svg>
                             <span class="panel-relative">خروج
-                                <span class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                                <span
+                                    class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
                             </span>
                         </a>
                     </div>
@@ -142,41 +146,78 @@
                     </ul>
                 </section>
             </aside>
-            <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
-                <section class="panel-flex panel-justify-between">
-                    <div class="panel-flex panel-items-center panel-gap-3">
-                        <h2 class="panel-font-medium">جستجوی سفر ها</h2>
-                        <div class="panel-flex panel-items-center panel-gap-2">
-                            <input type="text" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200
-                                   panel-px-4 panel-w-52 panel-h-14 panel-placeholder-zinc-400 panel-outline-none
-                                   focus:panel-border-primary-800 focus:panel-bg-white
-                                   focus:panel-shadow-md
-                                   panel-transition panel-duration-300" placeholder="بر اساس شماره قرارداد:" />
-                            <input type="text" name="" id="" placeholder="از تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
-                            <input type="text" name="" id="" placeholder="تا تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
+            <div class="panel-flex-1">
+                <div
+                    class="panel-relative panel-flex panel-items-center panel-justify-between panel-bg-white panel-rounded-2xl panel-p-6">
+                    <img src="../assets/images/pattern.png" class="panel-absolute panel-right-0 panel-top-0"
+                        alt="pattern" width="597" height="180" loading="lazy">
+                    <section class="panel-relative panel-z-10">
+                        <div class="panel-flex panel-items-center panel-gap-3">
+                            <span class="panel-bg-zinc-100 panel-rounded-lg">
+                                <svg width="48" height="48" class="panel-text-zinc-900">
+                                    <use href="../assets/images/panel-sprite-icons.svg#icon-wallet"></use>
+                                </svg>
+                            </span>
+                            <div class="panel-flex panel-flex-col panel-justify-between panel-h-full">
+                                <h2 class="panel-text-xs panel-text-zinc-900">اعتبار</h2>
+                                <p class="panel-text-zinc-900 panel-font-medium">
+                                    موجودی حساب
+                                </p>
+                            </div>
+                        </div>
+                        <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
+                            <div class="panel-flex panel-items-center panel-gap-1">
+                                <span class="panel-wallet-amount panel-text-4xl panel-font-bold panel-text-zinc-900"
+                                    data-amount="422/340/000">422/340/000</span>
+                                <span class="panel-font-medium panel-text-zinc-900">تومان</span>
+                            </div>
+
+                            <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
+                                     panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
+                                aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount>
+                                <svg width="24" height="24" class="panel-text-zinc-900">
+                                    <use href="../assets/images/panel-sprite-icons.svg#icon-eye"></use>
+                                </svg>
+                            </button>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="panel-flex panel-items-center panel-gap-6">
+                            <p class="panel-text-xs panel-text-zinc-900">برای مشاهده کل تراکنش ها رو دانلود کلیک کنید
+                            </p>
+                            <button
+                                class="panel-flex panel-items-center panel-justify-center panel-gap-2 panel-w-28 panel-h-14 panel-border panel-border-solid panel-border-zinc-900 panel-rounded-xl panel-text-sm panel-font-medium">
+                                <img src="../assets/images/microsoft-exel.png"
+                                    class="panel-w-6 panel-h-6 panel-object-cover" alt="microsoft-exel" width="25"
+                                    height="25" loading="lazy">
+                                <span>دانلود</span>
+                            </button>
                         </div>
                         <button
-                            class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
-                            aria-label="جستجو">
-                            <svg width="24" height="24" class="panel-text-white">
-                                <use href="../assets/images/panel-sprite-icons.svg#icon-search"></use>
-                            </svg>
+                            class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-w-40 panel-h-12 panel-border panel-border-solid panel-rounded-xl panel-border-green-700 panel-text-xs panel-text-green-700 panel-mt-6 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-white">
+                            <div class="panel-relative panel-z-10 panel-flex panel-items-center">
+                                <svg width="48" height="48">
+                                    <use href="../assets/images/panel-sprite-icons.svg#icon-increase-balance"></use>
+                                </svg>
+                                <span>افزودن مسافر جدید</span>
+                            </div>
+                            <span
+                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-green-700 group-hover:panel-scale-x-100"></span>
                         </button>
-                    </div>
-                    <button
-                        class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
-                        <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
-                        <span
-                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-primary-800 group-hover:panel-scale-x-100"></span>
-                    </button>
-                </section>
+                    </section>
+                </div>
+                <div class="panel-relative panel-flex panel-items-center panel-justify-between panel-bg-white panel-rounded-2xl panel-p-6 panel-mt-3">
+                    <section>
+                        <h2 class="panel-text-zinc-900 panel-font-medium">لیست تراکنش ها</h2>
+                        <div>
+                            
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     </main>
+    <script src="../assets/js/panel-core.js"></script>
 </body>
 
 </html>
