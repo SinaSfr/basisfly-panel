@@ -1,0 +1,210 @@
+<basis core="api" name="api.gridPreviousPassengers"
+    url="https://www.basisfly.com/panel/main/cms/passengers-list/52F6660E-F0CA-46DD-AC5D-9D61ACBC69E0" method="post"
+    body='{
+            "member" : [
+                {
+                    "query" : 0
+                }
+            ]
+        }' content-type="application/json" run="atclient" onProcessed="onProcessedDropdownData">
+</basis>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <basis core="call" file="style.inc" />
+</head>
+<style>
+ tr.passenger-detail-row{ display: none; }
+tr.passenger-detail-row.is-open{ display: table-row; }
+
+tr.passenger-detail-row td{
+  border: 0 !important;
+  padding: 8px 0 14px 0;
+  background: transparent;
+}
+
+.passenger-detail{
+  border-top: 1px dashed var(--Zinc-200, #E4E4E7);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #3f3f46;
+}
+
+.passenger-detail__grid{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px 16px;
+}
+
+.passenger-detail__item{
+  display: flex;
+  gap: 8px;
+}
+.passenger-detail__item .k{ color:#71717a; min-width: 110px; }
+.passenger-detail__item .v{ color:#18181b; direction:rtl; }
+</style>
+<body>
+    <header>
+        <basis core="call" file="authentication/modal" lid="1"></basis>
+    </header>
+    <main class="book-previous__passengers__container">
+        <basis core="component.grid.grid" run="atclient" datamembername="api.gridPreviousPassengers"
+            options="gridPreviousPassengers">
+        </basis>
+    </main>
+    <script>
+        if (typeof gridPreviousPassengers === "undefined") {
+            var gridPreviousPassengers = {
+                columns: {
+                    firstName: {
+                        title: "first_name",
+                        filter: true,
+                        sort: false,
+                    },
+                    lastName: {
+                        title: "last_name",
+                        filter: true,
+                        sort: false,
+                    },
+                    nationalCode: {
+                        title: "national_code",
+                        filter: true,
+                        sort: false,
+                    },
+                    birthDate: {
+                        title: "birth_date",
+                        filter: true,
+                        sort: true,
+                    },
+                    passportCode: {
+                        title: "passport_code",
+                        filter: true,
+                        sort: false,
+                    },
+                    issueCountryName: {
+                        title: "nationality",
+                        filter: true,
+                        sort: false,
+                    },
+                    operation: {
+                        title: "operation",
+                        filter: false,
+                        sort: false,
+                        cellMaker: (row, data, td) => {
+                            return `<div class="book-select__item__container book-relative">
+  <div
+    class="book-cursor-pointer book-row-expander"
+    onclick="onPassengerRowClick(this, event)"
+    data-id="${row._id ?? ''}"
+    data-issue-country-name="${row.issueCountryName ?? ''}"
+    data-issue-country-id="${row.issueCountryId ?? ''}"
+    data-passport-code="${row.passportCode ?? ''}"
+    data-passport-expiration="${row.passportExpiration ?? ''}"
+    data-persian-first-name="${row.persianFirstName ?? ''}"
+    data-persian-last-name="${row.persianLastName ?? ''}"
+    data-gender="${row.gender ?? ''}"
+  >
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19.9697 31.5303C19.7034 31.2641 19.6792 30.8474 19.8971 30.5538L19.9697 30.4697L26.439 24L19.9697 17.5303C19.7034 17.2641 19.6792 16.8474 19.8971 16.5538L19.9697 16.4697C20.2359 16.2034 20.6526 16.1792 20.9462 16.3971L21.0303 16.4697L28.0303 23.4697C28.2966 23.7359 28.3208 24.1526 28.1029 24.4462L28.0303 24.5303L21.0303 31.5303C20.7374 31.8232 20.2626 31.8232 19.9697 31.5303Z" fill="#71717A"></path>
+    </svg>
+  </div>
+</div>`;
+                        },
+                    }
+                },
+                filter: 'row',
+                rowNumber: "row_number",
+                defaultSort: false,
+                direction: "rtl",
+                paging: 10,
+                information: false,
+                firstAndLastBtn: true,
+                culture: {
+                    labels: {
+                        "refresh": "",
+                        "next": "next",
+                        "previous": "previous",
+                        "first": "first",
+                        "last": "last"
+
+                    }
+                },
+                mode: "grid",
+                pageCount: false,
+                refresh: true
+            };
+        }
+    </script>
+    <script>
+        const onProcessedDropdownData = async (args) => {
+            try {
+                const response = args.response;
+                if (response.status === 200) {
+                    const responseJson = await response.json();
+                    if (responseJson) {
+                        console.log(responseJson);
+                        const previousPassengersContainer = document.querySelector(".book-previous__passengers__container");
+                        // Show previous passengers container if hidden
+                        if (previousPassengersContainer?.classList.contains("book-hidden")) {
+                            previousPassengersContainer.classList.remove("book-hidden");
+                        }
+                        // Trigger grid rendering with response data
+                        $bc.setSource("api.gridPreviousPassengers", responseJson);
+                    }
+                }
+            } catch (error) {
+                console.error("onProcessedPreviousPassengers: " + error.message);
+            }
+        };
+
+
+        function onPassengerRowClick(el, event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const tr = el.closest('tr[data-sys-tr]');
+  if (!tr) return;
+
+  // اگر ردیف جزئیات از قبل وجود داشت → فقط toggle
+  let next = tr.nextElementSibling;
+  if (next && next.classList.contains('passenger-detail-row')) {
+    next.classList.toggle('is-open');
+    return;
+  }
+
+  const d = el.dataset;
+
+  const colCount = tr.querySelectorAll('td[data-sys-td]').length || 1;
+
+  const detailTr = document.createElement('tr');
+  detailTr.className = 'passenger-detail-row is-open';
+
+  const td = document.createElement('td');
+  td.colSpan = colCount;
+
+  td.innerHTML = `
+    <div class="passenger-detail">
+      <div class="passenger-detail__grid">
+        <div class="passenger-detail__item"><span class="k">Issue Country:</span><span class="v">${d.issueCountryName || '-'}</span></div>
+        <div class="passenger-detail__item"><span class="k">Issue Country ID:</span><span class="v">${d.issueCountryId || '-'}</span></div>
+
+        <div class="passenger-detail__item"><span class="k">Passport Code:</span><span class="v">${d.passportCode || '-'}</span></div>
+        <div class="passenger-detail__item"><span class="k">Passport Exp:</span><span class="v">${d.passportExpiration || '-'}</span></div>
+
+        <div class="passenger-detail__item"><span class="k">Persian Name:</span><span class="v">${(d.persianFirstName || '-') + ' ' + (d.persianLastName || '')}</span></div>
+        <div class="passenger-detail__item"><span class="k">Gender:</span><span class="v">${d.gender ?? '-'}</span></div>
+      </div>
+    </div>
+  `;
+
+  detailTr.appendChild(td);
+  tr.after(detailTr);
+}
+    </script>
+</body>
+
+</html>

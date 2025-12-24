@@ -156,3 +156,65 @@
 .Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(4)>td:nth-child(1)::before {
   content: "آدرس :";
 }
+
+
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] {
+  border-collapse: separate;
+  border-spacing: 0 8px;     
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead]{
+  border: none;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead] tr[data-bc-column-title][data-sys-tr]{
+  background: transparent;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead] tr[data-bc-column-title] td[data-sys-th]{
+  background: #F4F4F5;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead] tr[data-bc-column-title] td[data-sys-th]:first-child{
+  border-radius: 0 12px 12px 0;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-column-title] td[data-sys-th]:last-child{
+  border-radius: 12px 0 0 12px;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter][data-sys-tr]{
+  background: none;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter] td[data-sys-th]:first-child{
+  border-radius: 0 12px 12px 0;
+}
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter] td[data-sys-th]:last-child{
+  border-radius: 12px 0 0 12px;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]{
+  border-style: solid;
+  border-color: var(--Zinc-200, #E4E4E7);
+  border-width: 1px 0;      
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-bc-order]{
+  border-width: 1px 1px 1px 0; 
+  border-radius: 0 12px 12px 0; 
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-bc-data]{
+  border-width: 1px 0 1px 0;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]:last-child{
+  border-width: 1px 0 1px 1px; 
+  border-radius: 12px 0 0 12px; 
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]{
+  background: #fff;
+}
