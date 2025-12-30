@@ -559,6 +559,10 @@ body {
   overflow-wrap: break-word;
 }
 
+.panel-fixed {
+  position: fixed;
+}
+
 .panel-absolute {
   position: absolute;
 }
@@ -583,8 +587,36 @@ body {
   top: 0px;
 }
 
+.panel-right-4 {
+  right: 1rem;
+}
+
+.panel-left-0 {
+  left: 0px;
+}
+
+.panel-left-4 {
+  left: 1rem;
+}
+
+.panel-top-1\/2 {
+  top: 50%;
+}
+
+.panel-left-2 {
+  left: 0.5rem;
+}
+
 .panel-z-10 {
   z-index: 10;
+}
+
+.panel-z-50 {
+  z-index: 50;
+}
+
+.panel-m-4 {
+  margin: 1rem;
 }
 
 .panel-mx-auto {
@@ -616,12 +648,36 @@ body {
   margin-top: 1.75rem;
 }
 
+.panel-mt-5 {
+  margin-top: 1.25rem;
+}
+
+.panel-mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.panel-mb-4 {
+  margin-bottom: 1rem;
+}
+
+.panel-mt-2 {
+  margin-top: 0.5rem;
+}
+
+.panel-mt-8 {
+  margin-top: 2rem;
+}
+
 .panel-block {
   display: block;
 }
 
 .panel-flex {
   display: flex;
+}
+
+.panel-hidden {
+  display: none;
 }
 
 .panel-h-12 {
@@ -676,20 +732,28 @@ body {
   width: 1.5rem;
 }
 
-.panel-w-\[248px\] {
-  width: 248px;
+.panel-w-60 {
+  width: 15rem;
 }
 
-.panel-w-\[448px\] {
-  width: 448px;
+.panel-w-\[248px\] {
+  width: 248px;
 }
 
 .panel-w-full {
   width: 100%;
 }
 
-.panel-w-32 {
-  width: 8rem;
+.panel-w-72 {
+  width: 18rem;
+}
+
+.panel-max-w-lg {
+  max-width: 32rem;
+}
+
+.panel-max-w-3xl {
+  max-width: 48rem;
 }
 
 .panel-flex-1 {
@@ -698,6 +762,11 @@ body {
 
 .panel-origin-right {
   transform-origin: right;
+}
+
+.-panel-translate-y-1\/2 {
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .panel-scale-x-0 {
@@ -765,6 +834,10 @@ body {
   border-radius: 0.75rem;
 }
 
+.panel-rounded-full {
+  border-radius: 9999px;
+}
+
 .panel-border {
   border-width: 1px;
 }
@@ -796,6 +869,11 @@ body {
   border-color: rgb(24 24 27 / var(--tw-border-opacity, 1));
 }
 
+.panel-border-red-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(239 68 68 / var(--tw-border-opacity, 1));
+}
+
 .panel-bg-green-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(187 247 208 / var(--tw-bg-opacity, 1));
@@ -825,6 +903,19 @@ body {
   background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
 }
 
+.panel-bg-black\/70 {
+  background-color: rgb(0 0 0 / 0.7);
+}
+
+.panel-bg-black\/50 {
+  background-color: rgb(0 0 0 / 0.5);
+}
+
+.panel-via-zinc-400 {
+  --tw-gradient-to: rgb(161 161 170 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), #a1a1aa var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
 .panel-object-cover {
   -o-object-fit: cover;
      object-fit: cover;
@@ -836,6 +927,10 @@ body {
 
 .panel-p-6 {
   padding: 1.5rem;
+}
+
+.panel-p-4 {
+  padding: 1rem;
 }
 
 .panel-px-3 {
@@ -863,6 +958,22 @@ body {
 
 .panel-pr-2 {
   padding-right: 0.5rem;
+}
+
+.panel-pr-4 {
+  padding-right: 1rem;
+}
+
+.panel-pr-0 {
+  padding-right: 0px;
+}
+
+.panel-pl-0 {
+  padding-left: 0px;
+}
+
+.panel-pl-11 {
+  padding-left: 2.75rem;
 }
 
 .panel-text-4xl {
@@ -917,6 +1028,16 @@ body {
   color: rgb(24 24 27 / var(--tw-text-opacity, 1));
 }
 
+.panel-text-zinc-400 {
+  --tw-text-opacity: 1;
+  color: rgb(161 161 170 / var(--tw-text-opacity, 1));
+}
+
+.panel-text-red-600 {
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity, 1));
+}
+
 .panel-placeholder-zinc-400::-moz-placeholder {
   --tw-placeholder-opacity: 1;
   color: rgb(161 161 170 / var(--tw-placeholder-opacity, 1));
@@ -930,6 +1051,12 @@ body {
 .panel-outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+
+.panel-backdrop-blur-sm {
+  --tw-backdrop-blur: blur(4px);
+  -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
 }
 
 .panel-transition {
@@ -1191,6 +1318,11 @@ body {
 .hover\:panel-bg-zinc-200:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:panel-bg-zinc-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:panel-text-primary-800:hover {
