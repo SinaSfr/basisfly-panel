@@ -144,3 +144,176 @@ document.addEventListener('DOMContentLoaded', () => {
     showGateways() // ✅ فقط وقتی معتبره نمایش بده
   })
 })
+
+document.addEventListener("DOMContentLoaded", function() {
+  // فیلدهای فارسی
+  const persianInputs = document.querySelectorAll('#firstNamePersian, #lastNamePersian');
+  // فیلدهای لاتین
+  const latinInputs = document.querySelectorAll('#firstNameLatin, #lastNameLatin');
+  // فیلد کد ملی
+  const numericInputs = document.querySelectorAll('#nationalCode');
+
+  // اعمال Validation برای ورودی‌های فارسی
+  persianInputs.forEach(input => {
+      input.addEventListener('input', function() {
+          validatePersian(this);
+      });
+  });
+
+  // اعمال Validation برای ورودی‌های لاتین
+  latinInputs.forEach(input => {
+      input.addEventListener('input', function() {
+          validateLatin(this);
+      });
+  });
+
+  // اعمال Validation برای ورودی‌های عددی
+  numericInputs.forEach(input => {
+      input.addEventListener('input', function() {
+          validateNumeric(this);
+      });
+  });
+
+  // باز کردن پاپ‌آپ
+  document.getElementById('openPassengerModal').addEventListener('click', function() {
+      document.getElementById('passengerModal').classList.remove('hidden');
+  });
+
+  // بستن پاپ‌آپ
+  document.getElementById('closePassengerModal').addEventListener('click', function() {
+      document.getElementById('passengerModal').classList.add('hidden');
+  });
+});
+
+// تایید ورودی‌های فارسی (فقط فارسی مجاز است)
+function validatePersian(input) {
+  input.value = input.value.replace(/[^ء-ي\s]/g, ''); // فقط کاراکترهای فارسی و فاصله مجاز است
+}
+
+// تایید ورودی‌های لاتین (فقط لاتین مجاز است)
+function validateLatin(input) {
+  input.value = input.value.replace(/[^a-zA-Z\s]/g, ''); // فقط حروف لاتین و فاصله مجاز است
+}
+
+// تایید کد ملی (فقط اعداد مجاز هستند)
+function validateNumeric(input) {
+  input.value = input.value.replace(/[^0-9]/g, ''); // فقط اعداد مجاز هستند
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  const openDobPopupButton = document.getElementById('dobInput');
+  const openPassportExpiryPopupButton = document.getElementById('passportExpiryInput');
+  const closeDatePopupButton = document.getElementById('closeDatePopup');
+  const datePopup = document.getElementById('datePopup');
+  const gregorianBtn = document.getElementById('gregorianBtn');
+  const jalaliBtn = document.getElementById('jalaliBtn');
+  const daySelect = document.getElementById('day');
+  const monthSelect = document.getElementById('month');
+  const yearSelect = document.getElementById('year');
+  const selectDateBtn = document.getElementById('selectDateBtn');
+
+  let currentDateType = 'gregorian'; // پیش‌فرض میلادی
+  let targetInputField = null; // این برای مشخص کردن اینکه تاریخ مربوط به کدام فیلد است
+
+  // تاریخ‌های میلادی
+  const gregorianDates = {
+      months: ['ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'],
+      days: Array.from({ length: 31 }, (_, i) => i + 1),
+      years: Array.from({ length: 100 }, (_, i) => 1923 + i) // از 1923 تا 2022
+  };
+
+  // تاریخ‌های شمسی (برای مثال)
+  const jalaliDates = {
+      months: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
+      days: Array.from({ length: 31 }, (_, i) => i + 1),
+      years: Array.from({ length: 100 }, (_, i) => 1400 + i) // از 1400 تا 1500
+  };
+
+  // باز کردن پاپ‌آپ تاریخ تولد
+  openDobPopupButton.addEventListener('click', () => {
+      targetInputField = 'dobInput'; // مشخص کردن تاریخ تولد
+      datePopup.classList.remove('hidden');
+      updateDateSelectors();
+  });
+
+  // باز کردن پاپ‌آپ تاریخ انقضای پاسپورت
+  openPassportExpiryPopupButton.addEventListener('click', () => {
+      targetInputField = 'passportExpiryInput'; // مشخص کردن تاریخ انقضا
+      datePopup.classList.remove('hidden');
+      updateDateSelectors();
+  });
+
+  // بستن پاپ‌آپ
+  closeDatePopupButton.addEventListener('click', () => {
+      datePopup.classList.add('hidden');
+  });
+
+  // سوئیچ بین تاریخ میلادی و شمسی
+  gregorianBtn.addEventListener('click', () => {
+      currentDateType = 'gregorian';
+      updateDateSelectors();
+  });
+
+  jalaliBtn.addEventListener('click', () => {
+      currentDateType = 'jalali';
+      updateDateSelectors();
+  });
+
+  // به‌روزرسانی انتخاب‌های تاریخ
+  function updateDateSelectors() {
+      let dates;
+      if (currentDateType === 'gregorian') {
+          dates = gregorianDates;
+      } else {
+          dates = jalaliDates;
+      }
+
+      // ماه‌ها
+      monthSelect.innerHTML = '<option>ماه</option>';
+      dates.months.forEach((month, index) => {
+          const option = document.createElement('option');
+          option.value = index + 1;
+          option.textContent = month;
+          monthSelect.appendChild(option);
+      });
+
+      // روزها
+      daySelect.innerHTML = '<option>روز</option>';
+      dates.days.forEach(day => {
+          const option = document.createElement('option');
+          option.value = day;
+          option.textContent = day;
+          daySelect.appendChild(option);
+      });
+
+      // سال‌ها
+      yearSelect.innerHTML = '<option>سال</option>';
+      dates.years.forEach(year => {
+          const option = document.createElement('option');
+          option.value = year;
+          option.textContent = year;
+          yearSelect.appendChild(option);
+      });
+  }
+
+  // انتخاب تاریخ
+  selectDateBtn.addEventListener('click', () => {
+      const selectedDay = daySelect.value;
+      const selectedMonth = monthSelect.value;
+      const selectedYear = yearSelect.value;
+
+      if (selectedDay && selectedMonth && selectedYear) {
+          const selectedDate = `${selectedDay} ${selectedMonth} ${selectedYear}`;
+          // انتقال تاریخ به فیلد مربوطه
+          const targetField = document.getElementById(targetInputField);
+          if (targetField) {
+              targetField.value = selectedDate;
+              datePopup.classList.add('hidden'); // بستن پاپ‌آپ
+          } else {
+              console.error('فیلد مورد نظر برای تاریخ یافت نشد');
+          }
+      } else {
+          alert('لطفاً تاریخ را کامل وارد کنید.');
+      }
+  });
+});
