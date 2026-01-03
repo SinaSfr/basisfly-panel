@@ -174,7 +174,7 @@
 
                     <!-- پاپ‌آپ افزودن مسافر -->
                     <div id="passengerModal"
-                        class="panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm hidden">
+                        class="panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
                         <div
                             class="panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
                             <div
@@ -212,67 +212,91 @@
                                     <!-- جنسیت و دیگر اطلاعات -->
                                     <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
                                         <select name="gender" id="gender"
-                                            class="panel-select panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-text-zinc-400 panel-rounded-xl panel-outline-none">
+                                            class="panel-select panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-text-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer">
                                             <option value="male">مرد</option>
                                             <option value="female">زن</option>
                                             <option value="other">دیگر</option>
                                         </select>
-                                        <input type="text" id="nationality"
-                                            class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
-                                            placeholder="ملیت">
+                                        <div class="panel-relative panel-w-1/4 panel-h-14">
+                                            <input type="text" id="nationality"
+                                                class="panel-input panel-w-full panel-h-full panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                                placeholder="ملیت">
+                                            <div id="nationalityDropdown"
+                                                class="panel-absolute panel-hidden panel-z-50 panel-bg-white panel-border panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-w-full panel-max-h-60 panel-overflow-y-auto">
+                                            </div>
+                                        </div>
                                         <input type="text" id="nationalCode"
                                             class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
                                             placeholder="کد ملی">
-                                            <input type="text" id="dobInput" class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none" placeholder="تاریخ تولد">
-
-                                        <div id="datePopup"
-                                            class="panel-date-popup-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm hidden">
-                                        </div>
+                                        <input type="text" id="dobInput"
+                                            class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                            placeholder="تاریخ تولد" readonly>
                                     </div>
                                     <!-- سایر اطلاعات -->
                                     <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
                                         <input type="text" id="passportNumber"
                                             class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
                                             placeholder="شماره پاسپورت">
-                                            <input type="text" id="passportExpiryInput" class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none" placeholder="تاریخ انقضای پاسپورت">
+                                        <input type="text" id="passportExpiryInput"
+                                            class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                            placeholder="تاریخ انقضای پاسپورت" readonly>
 
                                     </div>
-                                    <div id="datePopup" class="panel-date-popup-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm hidden">
-                                        <div class="panel-date-popup-content panel-bg-white panel-rounded-xl panel-p-6 panel-w-96">
+                                    <div id="datePopup"
+                                        class="panel-date-popup-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+                                        <div
+                                            class="panel-date-popup-content panel-bg-white panel-rounded-xl panel-p-6 panel-w-96">
                                             <!-- عنوان پاپ‌آپ -->
                                             <div class="panel-flex panel-items-center panel-justify-between panel-mb-4">
-                                                <h2 class="panel-font-bold panel-text-zinc-900">انتخاب تاریخ</h2>
-                                                <button id="closeDatePopup" class="panel-modal-close-button panel-w-8 panel-h-8 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300">
-                                                    <svg width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                                                        <path d="M4.293 4.293a1 1 0 0 1 1.414 0L8 5.586l2.293-2.293a1 1 0 1 1 1.414 1.414L9.414 7l2.293 2.293a1 1 0 0 1-1.414 1.414L8 8.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L6.586 7 4.293 4.707a1 1 0 0 1 0-1.414z"/>
+                                                <h2 class="panel-font-bold panel-text-zinc-900">تایید</h2>
+                                                <button id="closeDatePopup"
+                                                    class="panel-modal-close-button panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-200 panel-transition-all panel-duration-300">
+                                                    <svg width="48" height="48">
+                                                        <use href="../assets/images/panel-sprite-icons.svg#icon-close">
+                                                        </use>
                                                     </svg>
                                                 </button>
                                             </div>
-                                    
+
                                             <!-- دکمه‌های انتخاب تاریخ میلادی و شمسی -->
                                             <div class="panel-flex panel-gap-4 panel-mb-4">
-                                                <button id="gregorianBtn" class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl">تاریخ میلادی</button>
-                                                <button id="jalaliBtn" class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl">تاریخ شمسی</button>
+                                                <button id="gregorianBtn"
+                                                    class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
+                                                    میلادی</button>
+                                                <button id="jalaliBtn"
+                                                    class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
+                                                    شمسی</button>
                                             </div>
-                                    
+
                                             <!-- فرم انتخاب تاریخ (روز، ماه، سال) -->
                                             <div id="dateSelectors" class="panel-flex panel-flex-col panel-gap-4">
                                                 <div class="panel-flex panel-items-center panel-gap-4">
-                                                    <select id="day" class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl">
+                                                    <select id="day"
+                                                        class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
                                                         <option>روز</option>
                                                     </select>
-                                                    <select id="month" class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl">
+                                                    <select id="month"
+                                                        class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
                                                         <option>ماه</option>
                                                     </select>
-                                                    <select id="year" class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl">
+                                                    <select id="year"
+                                                        class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
                                                         <option>سال</option>
                                                     </select>
                                                 </div>
                                             </div>
-                                    
+
                                             <!-- دکمه برای تایید تاریخ انتخاب‌شده -->
                                             <div class="panel-flex panel-items-center panel-justify-center panel-mt-4">
-                                                <button id="selectDateBtn" class="panel-btn-submit panel-bg-primary-800 panel-text-white panel-rounded-xl panel-px-6 panel-py-2">انتخاب تاریخ</button>
+                                                <button id="selectDateBtn"
+                                                    class="panel-btn-submit panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-32 panel-h-10 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mx-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                                    <div
+                                                        class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
+                                                        <span>تایید</span>
+                                                    </div>
+                                                    <span
+                                                        class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -290,6 +314,9 @@
                             </div>
                         </div>
                     </div>
+                </section>
+                <section class="panel-mt-12">
+                    <h1 class="panel-text-zinc-900 panel-font-medium panel-mb-6">لیست مسافران</h1>
                 </section>
             </div>
         </div>

@@ -1,34 +1,34 @@
 (() => {
-    const visibilityAmountBtn = document.querySelector("[data-toggle-amount]");
-    const panelWalletAmount = document.querySelector(".panel-wallet-amount");
-    if (!visibilityAmountBtn || !panelWalletAmount) return;
-  
-    const original = panelWalletAmount.dataset.amount || panelWalletAmount.textContent.trim();
-    panelWalletAmount.dataset.amount = original;
-  
-    const masked = original.replace(/\d/g, "*");
-  
-    let hidden = false;
-  
-    const render = () => {
-      panelWalletAmount.textContent = hidden ? masked : original;
-      visibilityAmountBtn.setAttribute("aria-pressed", String(hidden));
-  
-      visibilityAmountBtn.querySelector("use").setAttribute("href", hidden
-        ? "../assets/images/panel-sprite-icons.svg#icon-eye-slash"
-        : "../assets/images/panel-sprite-icons.svg#icon-eye");
-    };
-  
-    visibilityAmountBtn.addEventListener("click", () => {
-      hidden = !hidden;
-      render();
-    });
-  
+  const visibilityAmountBtn = document.querySelector("[data-toggle-amount]");
+  const panelWalletAmount = document.querySelector(".panel-wallet-amount");
+  if (!visibilityAmountBtn || !panelWalletAmount) return;
+
+  const original = panelWalletAmount.dataset.amount || panelWalletAmount.textContent.trim();
+  panelWalletAmount.dataset.amount = original;
+
+  const masked = original.replace(/\d/g, "*");
+
+  let hidden = false;
+
+  const render = () => {
+    panelWalletAmount.textContent = hidden ? masked : original;
+    visibilityAmountBtn.setAttribute("aria-pressed", String(hidden));
+
+    visibilityAmountBtn.querySelector("use").setAttribute("href", hidden
+      ? "../assets/images/panel-sprite-icons.svg#icon-eye-slash"
+      : "../assets/images/panel-sprite-icons.svg#icon-eye");
+  };
+
+  visibilityAmountBtn.addEventListener("click", () => {
+    hidden = !hidden;
     render();
-  })();
+  });
+
+  render();
+})();
 
 
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const openBtn = document.querySelector('.panel-increase-balance__open-btn')
   if (!openBtn) return
 
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 })
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   // فیلدهای فارسی
   const persianInputs = document.querySelectorAll('#firstNamePersian, #lastNamePersian');
   // فیلدهای لاتین
@@ -155,33 +155,33 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // اعمال Validation برای ورودی‌های فارسی
   persianInputs.forEach(input => {
-      input.addEventListener('input', function() {
-          validatePersian(this);
-      });
+    input.addEventListener('input', function () {
+      validatePersian(this);
+    });
   });
 
   // اعمال Validation برای ورودی‌های لاتین
   latinInputs.forEach(input => {
-      input.addEventListener('input', function() {
-          validateLatin(this);
-      });
+    input.addEventListener('input', function () {
+      validateLatin(this);
+    });
   });
 
   // اعمال Validation برای ورودی‌های عددی
   numericInputs.forEach(input => {
-      input.addEventListener('input', function() {
-          validateNumeric(this);
-      });
+    input.addEventListener('input', function () {
+      validateNumeric(this);
+    });
   });
 
   // باز کردن پاپ‌آپ
-  document.getElementById('openPassengerModal').addEventListener('click', function() {
-      document.getElementById('passengerModal').classList.remove('hidden');
+  document.getElementById('openPassengerModal').addEventListener('click', function () {
+    document.getElementById('passengerModal').classList.remove('panel-hidden');
   });
 
   // بستن پاپ‌آپ
-  document.getElementById('closePassengerModal').addEventListener('click', function() {
-      document.getElementById('passengerModal').classList.add('hidden');
+  document.getElementById('closePassengerModal').addEventListener('click', function () {
+    document.getElementById('passengerModal').classList.add('panel-hidden');
   });
 });
 
@@ -200,7 +200,7 @@ function validateNumeric(input) {
   input.value = input.value.replace(/[^0-9]/g, ''); // فقط اعداد مجاز هستند
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const openDobPopupButton = document.getElementById('dobInput');
   const openPassportExpiryPopupButton = document.getElementById('passportExpiryInput');
   const closeDatePopupButton = document.getElementById('closeDatePopup');
@@ -217,103 +217,302 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // تاریخ‌های میلادی
   const gregorianDates = {
-      months: ['ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'],
-      days: Array.from({ length: 31 }, (_, i) => i + 1),
-      years: Array.from({ length: 100 }, (_, i) => 1923 + i) // از 1923 تا 2022
+    months: ['ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'],
+    days: Array.from({ length: 31 }, (_, i) => i + 1),
+    years: Array.from({ length: 100 }, (_, i) => 1923 + i) // از 1923 تا 2022
   };
 
   // تاریخ‌های شمسی (برای مثال)
   const jalaliDates = {
-      months: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
-      days: Array.from({ length: 31 }, (_, i) => i + 1),
-      years: Array.from({ length: 100 }, (_, i) => 1400 + i) // از 1400 تا 1500
+    months: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
+    days: Array.from({ length: 31 }, (_, i) => i + 1),
+    years: Array.from({ length: 100 }, (_, i) => 1400 + i) // از 1400 تا 1500
   };
 
   // باز کردن پاپ‌آپ تاریخ تولد
-  openDobPopupButton.addEventListener('click', () => {
-      targetInputField = 'dobInput'; // مشخص کردن تاریخ تولد
-      datePopup.classList.remove('hidden');
-      updateDateSelectors();
+  openDobPopupButton.addEventListener('focus', () => {
+    targetInputField = 'dobInput';
+    currentDateType = 'gregorian';
+    datePopup.classList.remove('panel-hidden');
+    setActiveDateType();
+    updateDateSelectors();
+  });
+  // باز کردن پاپ‌آپ تاریخ انقضای پاسپورت
+  openPassportExpiryPopupButton.addEventListener('focus', () => {
+    targetInputField = 'passportExpiryInput';
+    currentDateType = 'gregorian';
+    datePopup.classList.remove('panel-hidden');
+    setActiveDateType();
+    updateDateSelectors();
   });
 
-  // باز کردن پاپ‌آپ تاریخ انقضای پاسپورت
-  openPassportExpiryPopupButton.addEventListener('click', () => {
-      targetInputField = 'passportExpiryInput'; // مشخص کردن تاریخ انقضا
-      datePopup.classList.remove('hidden');
-      updateDateSelectors();
-  });
+  function setActiveDateType() {
+    if (currentDateType === 'gregorian') {
+      // Gregorian فعال
+      gregorianBtn.classList.add('panel-bg-primary-800', 'panel-text-white');
+      gregorianBtn.classList.remove('panel-bg-zinc-200');
+
+      jalaliBtn.classList.remove('panel-bg-primary-800', 'panel-text-white');
+      jalaliBtn.classList.add('panel-bg-zinc-200');
+    } else {
+      // Jalali فعال
+      jalaliBtn.classList.add('panel-bg-primary-800', 'panel-text-white');
+      jalaliBtn.classList.remove('panel-bg-zinc-200');
+
+      gregorianBtn.classList.remove('panel-bg-primary-800', 'panel-text-white');
+      gregorianBtn.classList.add('panel-bg-zinc-200');
+    }
+  }
 
   // بستن پاپ‌آپ
-  closeDatePopupButton.addEventListener('click', () => {
-      datePopup.classList.add('hidden');
+  function closeDatePopup() {
+    datePopup.classList.add('panel-hidden');
+    if (targetInputField) {
+      document.getElementById(targetInputField).blur();
+    }
+  }
+
+  closeDatePopupButton.addEventListener('click', closeDatePopup);
+
+  datePopup.addEventListener('click', (e) => {
+    if (e.target === datePopup) {
+      closeDatePopup();
+    }
   });
 
   // سوئیچ بین تاریخ میلادی و شمسی
   gregorianBtn.addEventListener('click', () => {
-      currentDateType = 'gregorian';
-      updateDateSelectors();
+    currentDateType = 'gregorian';
+    setActiveDateType();
+    updateDateSelectors();
   });
 
   jalaliBtn.addEventListener('click', () => {
-      currentDateType = 'jalali';
-      updateDateSelectors();
+    currentDateType = 'jalali';
+    setActiveDateType();
+    updateDateSelectors();
   });
 
+  function getGregorianMonthDays(year, month) {
+    if (month === 2) {
+      // ساده: فعلاً 29 مجاز (بدون محاسبه سال کبیسه)
+      return 29;
+    }
+
+    return [4, 6, 9, 11].includes(month) ? 30 : 31;
+  }
+
+  function getJalaliMonthDays(month) {
+    if (month <= 6) return 31;
+    if (month <= 11) return 30;
+    return 29; // اسفند (فعلاً بدون کبیسه)
+  }
+
+  function updateDaysByMonth() {
+    const month = parseInt(monthSelect.value);
+    const year = parseInt(yearSelect.value);
+  
+    // اگر ماه انتخاب نشده → روز غیرفعال و placeholder کوتاه
+    if (!month) {
+      daySelect.innerHTML = '<option value="">روز</option>';
+      daySelect.disabled = true;
+      return;
+    }
+  
+    // وقتی ماه انتخاب شد → روز فعال
+    daySelect.disabled = false;
+  
+    let maxDays = 31;
+  
+    if (currentDateType === 'gregorian') {
+      maxDays = getGregorianMonthDays(year, month);
+    } else {
+      maxDays = getJalaliMonthDays(month);
+    }
+  
+    const currentDay = daySelect.value;
+  
+    daySelect.innerHTML = '<option value="">روز</option>';
+  
+    for (let d = 1; d <= maxDays; d++) {
+      const option = document.createElement('option');
+      option.value = d;
+      option.textContent = d;
+      daySelect.appendChild(option);
+    }
+  
+    // اگر روز قبلی بزرگ‌تر از max بود ریست کن
+    if (currentDay > maxDays) {
+      daySelect.value = '';
+    } else {
+      daySelect.value = currentDay;
+    }
+  }
   // به‌روزرسانی انتخاب‌های تاریخ
   function updateDateSelectors() {
-      let dates;
-      if (currentDateType === 'gregorian') {
-          dates = gregorianDates;
-      } else {
-          dates = jalaliDates;
-      }
+    let dates;
+    if (currentDateType === 'gregorian') {
+      dates = gregorianDates;
+    } else {
+      dates = jalaliDates;
+    }
+  
+    // ماه‌ها
+    monthSelect.innerHTML = '<option value="">ماه</option>';
+    dates.months.forEach((month, index) => {
+      const option = document.createElement('option');
+      option.value = index + 1;
+      option.textContent = month;
+      monthSelect.appendChild(option);
+    });
+  
+    // سال‌ها
+    yearSelect.innerHTML = '<option value="">سال</option>';
+    dates.years.forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearSelect.appendChild(option);
+    });
+  
+    // روزها (بر اساس ماه و سال فعلی، اگر انتخاب شده باشه)
+    updateDaysByMonth();
+  
+    // پاک کردن انتخاب قبلی (بدون هیچ پیش‌فرضی)
+    daySelect.value = '';
+    monthSelect.value = '';
+    yearSelect.value = '';
+  }
+  
 
-      // ماه‌ها
-      monthSelect.innerHTML = '<option>ماه</option>';
-      dates.months.forEach((month, index) => {
-          const option = document.createElement('option');
-          option.value = index + 1;
-          option.textContent = month;
-          monthSelect.appendChild(option);
-      });
 
-      // روزها
-      daySelect.innerHTML = '<option>روز</option>';
-      dates.days.forEach(day => {
-          const option = document.createElement('option');
-          option.value = day;
-          option.textContent = day;
-          daySelect.appendChild(option);
-      });
-
-      // سال‌ها
-      yearSelect.innerHTML = '<option>سال</option>';
-      dates.years.forEach(year => {
-          const option = document.createElement('option');
-          option.value = year;
-          option.textContent = year;
-          yearSelect.appendChild(option);
-      });
+  function pad(num) {
+    return num.toString().padStart(2, '0');
   }
 
   // انتخاب تاریخ
   selectDateBtn.addEventListener('click', () => {
-      const selectedDay = daySelect.value;
-      const selectedMonth = monthSelect.value;
-      const selectedYear = yearSelect.value;
+    const day = daySelect.value;
+    const month = monthSelect.value;
+    const year = yearSelect.value;
 
-      if (selectedDay && selectedMonth && selectedYear) {
-          const selectedDate = `${selectedDay} ${selectedMonth} ${selectedYear}`;
-          // انتقال تاریخ به فیلد مربوطه
-          const targetField = document.getElementById(targetInputField);
-          if (targetField) {
-              targetField.value = selectedDate;
-              datePopup.classList.add('hidden'); // بستن پاپ‌آپ
-          } else {
-              console.error('فیلد مورد نظر برای تاریخ یافت نشد');
-          }
-      } else {
-          alert('لطفاً تاریخ را کامل وارد کنید.');
-      }
+    if (!day || !month || !year) {
+      alert('لطفاً تاریخ را کامل انتخاب کنید');
+      return;
+    }
+
+    const targetField = document.getElementById(targetInputField);
+    if (!targetField) return;
+
+    const formattedDate = `${year}/${pad(month)}/${pad(day)}`;
+
+    targetField.value = formattedDate;
+    targetField.dataset.type = currentDateType; // فقط برای اینکه بدونی شمسیه یا میلادی
+
+    closeDatePopup();
+  });
+  monthSelect.addEventListener('change', updateDaysByMonth);
+  yearSelect.addEventListener('change', updateDaysByMonth);
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const nationalityInput = document.getElementById('nationality');
+  const nationalCodeInput = document.getElementById('nationalCode');
+
+  let nationalityDropdown = document.getElementById('nationalityDropdown');
+
+  let countriesCache = null;
+  let isFetchingCountries = false;
+
+  async function fetchCountries() {
+    if (countriesCache || isFetchingCountries) return;
+
+    isFetchingCountries = true;
+
+    // نمایش loader داخل dropdown
+    nationalityDropdown.innerHTML =
+      '<div class="panel-w-full panel-h-12"><span class="loader panel-flex panel-mx-auto"></span></div>';
+    nationalityDropdown.classList.remove('panel-hidden');
+
+    try {
+      const res = await fetch('./country.json');
+      const data = await res.json();
+
+      countriesCache = data;
+    } catch (err) {
+      console.error('خطا در دریافت کشورها', err);
+      countriesCache = [];
+    } finally {
+      isFetchingCountries = false;
+    }
+  }
+
+  function renderCountries(list) {
+    nationalityDropdown.innerHTML = '';
+
+    if (!list || !list.length) {
+      nationalityDropdown.innerHTML =
+        '<div class="panel-p-3 panel-text-sm panel-text-zinc-400">نتیجه‌ای یافت نشد</div>';
+      return;
+    }
+
+    list.forEach(country => {
+      const item = document.createElement('div');
+      item.className =
+        'panel-px-4 panel-py-2 panel-cursor-pointer hover:panel-bg-zinc-100 panel-text-sm';
+      item.textContent = country.fa;
+
+      item.addEventListener('click', () => {
+        nationalityInput.value = country.fa;
+
+        // ذخیره دیتا
+        nationalityInput.dataset.id = country.id;
+        nationalityInput.dataset.code = country.code;
+        nationalityInput.dataset.en = country.en;
+
+        // فعال/غیرفعال کردن کد ملی
+        if (country.fa !== 'ایران') {
+          nationalCodeInput.disabled = true;
+          nationalCodeInput.value = '';
+          nationalCodeInput.classList.add('panel-bg-zinc-200', 'panel-text-zinc-400', 'panel-cursor-not-allowed');
+        } else {
+          nationalCodeInput.disabled = false;
+          nationalCodeInput.classList.remove('panel-bg-zinc-200', 'panel-text-zinc-400', 'panel-cursor-not-allowed');
+        }
+
+        nationalityDropdown.classList.add('panel-hidden');
+      });
+
+      nationalityDropdown.appendChild(item);
+    });
+  }
+
+  nationalityInput.addEventListener('click', async () => {
+    nationalityDropdown.classList.remove('panel-hidden');
+    await fetchCountries();
+    renderCountries(countriesCache);
+  });
+
+  nationalityInput.addEventListener('input', () => {
+    if (!countriesCache) return;
+
+    const value = nationalityInput.value.trim().toLowerCase();
+    const filtered = countriesCache.filter(country =>
+      country.fa.includes(value) || country.en.toLowerCase().includes(value)
+    );
+
+    renderCountries(filtered);
+    nationalityDropdown.classList.remove('panel-hidden');
+  });
+
+  document.addEventListener('click', e => {
+    if (
+      !nationalityInput.contains(e.target) &&
+      !nationalityDropdown.contains(e.target)
+    ) {
+      nationalityDropdown.classList.add('panel-hidden');
+    }
   });
 });
+
