@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       boxShadow: {
-        'sidebar-btn': '0px 0px 9.4px 0px #0351FD87',
+        'sidebar-btn': '0px 0px 9.4px 0px var(--primary-600)',
       },
       colors: {
         primary: {
@@ -35,11 +35,22 @@ module.exports = {
           900: "var(--secondary-900)",
           950: "var(--secondary-950)",
         },
-        specialcolor: {
-          1: "var(--special-1)",
-          2: "var(--special-2)",
-          3: "var(--special-3)",
-          4: "var(--special-4)",
+        label: {
+          red: "var(--red-label)",
+          blue: "var(--blue-label)",
+          purple: "var(--purple-label)",
+          orange: "var(--orange-label)",
+          lightGreen: "var(--lightGreen-label)",
+          darkGreen: "var(--darkGreen-label)",
+          Gray: "var(--Gray-label)",
+
+          redBg: "var(--red-bgLabel)",
+          blueBg: "var(--blue-bgLabel)",
+          purpleBg: "var(--purple-bgLabel)",
+          orangeBg: "var(--orange-bgLabel)",
+          lightGreenBg: "var(--lightGreen-bgLabel)",
+          darkGreenBg: "var(--darkGreen-bgLabel)",
+          GrayBg: "var(--Gray-bgLabel)",
         },
       },
     },

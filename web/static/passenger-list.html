@@ -213,9 +213,9 @@
                                     <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
                                         <select name="gender" id="gender"
                                             class="panel-select panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-text-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                            <option value="gender" selected disabled class="panel-hidden">جنسیت</option>
                                             <option value="male">مرد</option>
                                             <option value="female">زن</option>
-                                            <option value="other">دیگر</option>
                                         </select>
                                         <div class="panel-relative panel-w-1/4 panel-h-14">
                                             <input type="text" id="nationality"
@@ -302,8 +302,8 @@
                                     </div>
                                 </div>
                                 <!-- دکمه افزودن مسافر -->
-                                <button
-                                    class="panel-button-submit panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                <button id="add-passenger-button"
+                                    class="panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
                                     <div
                                         class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
                                         <span>افزودن مسافر</span>

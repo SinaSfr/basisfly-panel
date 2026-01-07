@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 })
 
+//------- increase ballance payment----------
 document.addEventListener('DOMContentLoaded', () => {
   const root =
     document.querySelector('.panel-increase-balance__amount-input')?.closest('section') || document
@@ -141,10 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     clearError()
-    showGateways() // ✅ فقط وقتی معتبره نمایش بده
+    showGateways() 
   })
 })
 
+// ------validateLatin and validatePersian-------
 document.addEventListener("DOMContentLoaded", function () {
   // فیلدهای فارسی
   const persianInputs = document.querySelectorAll('#firstNamePersian, #lastNamePersian');
@@ -187,19 +189,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // تایید ورودی‌های فارسی (فقط فارسی مجاز است)
 function validatePersian(input) {
-  input.value = input.value.replace(/[^ء-ي\s]/g, ''); // فقط کاراکترهای فارسی و فاصله مجاز است
+  input.value = input.value.replace(/[^ء-ي\s]/g, ''); 
 }
 
 // تایید ورودی‌های لاتین (فقط لاتین مجاز است)
 function validateLatin(input) {
-  input.value = input.value.replace(/[^a-zA-Z\s]/g, ''); // فقط حروف لاتین و فاصله مجاز است
+  input.value = input.value.replace(/[^a-zA-Z\s]/g, ''); 
 }
 
 // تایید کد ملی (فقط اعداد مجاز هستند)
 function validateNumeric(input) {
-  input.value = input.value.replace(/[^0-9]/g, ''); // فقط اعداد مجاز هستند
+  input.value = input.value.replace(/[^0-9]/g, '');
 }
 
+// -----passenger list popup date---------
 document.addEventListener("DOMContentLoaded", function () {
   const openDobPopupButton = document.getElementById('dobInput');
   const openPassportExpiryPopupButton = document.getElementById('passportExpiryInput');
@@ -407,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const formattedDate = `${year}/${pad(month)}/${pad(day)}`;
 
     targetField.value = formattedDate;
-    targetField.dataset.type = currentDateType; // فقط برای اینکه بدونی شمسیه یا میلادی
+    targetField.dataset.type = currentDateType; 
 
     closeDatePopup();
   });
@@ -415,7 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
   yearSelect.addEventListener('change', updateDaysByMonth);
 });
 
-
+// ------nationality and nationalcode ----------
 document.addEventListener('DOMContentLoaded', () => {
   const nationalityInput = document.getElementById('nationality');
   const nationalCodeInput = document.getElementById('nationalCode');
@@ -516,3 +519,128 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// ----- بررسی فیلدهای اجباری برای مسافر -----
+document.addEventListener('DOMContentLoaded', function () {
+  const addPassengerBtn = document.getElementById('add-passenger-button');
+  
+  if (addPassengerBtn) {
+    addPassengerBtn.addEventListener('click', function (e) {
+      e.preventDefault(); // جلوگیری از ارسال فرم تا زمانی که اعتبارسنجی انجام شود
+      
+      const result = validatePassengerFields();
+      if (!result.isValid) {
+        // فقط border قرمز نشان می‌دهیم
+        highlightInvalidFields(result.invalidFields);
+        return;
+      }
+      
+      // اگر همه چیز درست بود، borderها را پاک کن
+      clearAllHighlights();
+      console.log('همه فیلدهای اجباری پر شده‌اند');
+      // اینجا می‌توانید کد ارسال فرم را قرار دهید
+    });
+  }
+});
+
+function validatePassengerFields() {
+  const invalidFields = [];
+  
+  // گرفتن مقادیر فیلدها
+  const firstNameLatin = document.getElementById('firstNameLatin');
+  const lastNameLatin = document.getElementById('lastNameLatin');
+  const genderSelect = document.getElementById('gender');
+  const nationality = document.getElementById('nationality');
+  const nationalCode = document.getElementById('nationalCode');
+  const dobInput = document.getElementById('dobInput');
+  
+  // بررسی فیلدهای اجباری
+  if (!firstNameLatin.value.trim()) {
+    invalidFields.push(firstNameLatin);
+  }
+  
+  if (!lastNameLatin.value.trim()) {
+    invalidFields.push(lastNameLatin);
+  }
+  
+  // بررسی select جنسیت - مقدار نباید "gender" باشد
+  if (genderSelect && (!genderSelect.value || genderSelect.value === "" || genderSelect.value === "gender")) {
+    invalidFields.push(genderSelect);
+  }
+  
+  if (!nationality.value.trim()) {
+    invalidFields.push(nationality);
+  }
+  
+  // کد ملی فقط برای ایرانیان اجباری است
+  if (nationality.value.trim() === 'ایران') {
+    if (!nationalCode.value.trim()) {
+      invalidFields.push(nationalCode);
+    } else if (!isValidIranianNationalCode(nationalCode.value.trim())) {
+      invalidFields.push(nationalCode);
+    }
+  }
+  
+  // تاریخ تولد اجباری است
+  if (!dobInput.value.trim()) {
+    invalidFields.push(dobInput);
+  }
+  
+  return {
+    isValid: invalidFields.length === 0,
+    invalidFields: invalidFields
+  };
+}
+
+function isValidIranianNationalCode(input) {
+  const code = input.toString().replace(/\D/g, '');
+  
+  if (code.length !== 10) {
+    return false;
+  }
+  
+  const allDigitsSame = /^(\d)\1+$/.test(code);
+  if (allDigitsSame) {
+    return false;
+  }
+  
+  // الگوریتم اعتبارسنجی کد ملی ایران
+  let sum = 0;
+  
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(code.charAt(i)) * (10 - i);
+  }
+  
+  let remainder = sum % 11;
+  let controlDigit = parseInt(code.charAt(9));
+  
+
+  if (remainder < 2) {
+    return controlDigit === remainder;
+  } else {
+    return controlDigit === (11 - remainder);
+  }
+}
+
+function highlightInvalidFields(invalidFields) {
+  clearAllHighlights();
+  
+  invalidFields.forEach(field => {
+    if (field) {
+      field.classList.add('border-error');
+    }
+  });
+  
+  if (invalidFields.length > 0 && invalidFields[0]) {
+    invalidFields[0].scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+    invalidFields[0].focus();
+  }
+}
+
+function clearAllHighlights() {
+  document.querySelectorAll('.border-error').forEach(el => {
+    el.classList.remove('border-error');
+  });
+}

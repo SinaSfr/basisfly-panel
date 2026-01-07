@@ -1,5 +1,5 @@
 <basis core="api" name="api.gridPreviousPassengers"
-    url="https://www.basisfly.com/panel/main/cms/passengers-list/52F6660E-F0CA-46DD-AC5D-9D61ACBC69E0" method="post"
+    url="https://www.basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]" method="post"
     body='{
             "member" : [
                 {
@@ -18,86 +18,1766 @@
     <basis core="call" file="style.inc" />
 </head>
 <style>
- tr.passenger-detail-row{ display: none; }
-tr.passenger-detail-row.is-open{ display: table-row; }
+    tr.passenger-detail-row {
+        display: none;
+    }
 
-tr.passenger-detail-row td{
-  border: 0 !important;
-  padding: 8px 0 14px 0;
+    tr.passenger-detail-row.is-open {
+        display: table-row;
+    }
+
+    tr.passenger-detail-row td {
+        border: 0 !important;
+        padding: 8px 0 14px 0;
+        background: transparent;
+    }
+
+    .passenger-detail {
+        border-top: 1px dashed var(--Zinc-200, #E4E4E7);
+        padding: 10px 12px;
+        font-size: 12px;
+        color: #3f3f46;
+    }
+
+
+    .passenger-detail__grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        align-items: center;
+        gap: 8px 16px;
+    }
+
+    .passenger-detail__item {
+        display: flex;
+        gap: 8px;
+    }
+
+    .passenger-detail__item .k {
+        color: #71717a;
+        min-width: 110px;
+    }
+
+    .passenger-detail__item .v {
+        color: #18181b;
+        direction: rtl;
+    }
+
+    .passenger-row-wrap{
+  display:flex;
+  flex-direction:column;
+}
+
+.passenger-summary-grid{
+  display:grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+/* اینو مطابق استایل td های خودت تنظیم کن */
+.passenger-summary-cell{
+  padding: 10px 12px;
+  /* اگر جدول border داره، اینا رو هم می‌تونی شبیه td کنی */
+  /* border-left: 1px solid #eee; */
+  display:flex;
+  align-items:center;
+}
+
+.passenger-detail__item .k{
+  opacity:.75;
+  margin-right:6px;
+}
+
+</style>
+
+<style>
+*, ::before, ::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+::backdrop {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+/*
+! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com
+*/
+
+/*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  /* 1 */
+  border-width: 0;
+  /* 2 */
+  border-style: solid;
+  /* 2 */
+  border-color: #e5e7eb;
+  /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: '';
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
+*/
+
+html,
+:host {
+  line-height: 1.5;
+  /* 1 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+  -moz-tab-size: 4;
+  /* 3 */
+  -o-tab-size: 4;
+     tab-size: 4;
+  /* 3 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* 4 */
+  font-feature-settings: normal;
+  /* 5 */
+  font-variation-settings: normal;
+  /* 6 */
+  -webkit-tap-highlight-color: transparent;
+  /* 7 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+body {
+  margin: 0;
+  /* 1 */
+  line-height: inherit;
+  /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+hr {
+  height: 0;
+  /* 1 */
+  color: inherit;
+  /* 2 */
+  border-top-width: 1px;
+  /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* 1 */
+  font-feature-settings: normal;
+  /* 2 */
+  font-variation-settings: normal;
+  /* 3 */
+  font-size: 1em;
+  /* 4 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0;
+  /* 1 */
+  border-color: inherit;
+  /* 2 */
+  border-collapse: collapse;
+  /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  /* 1 */
+  font-feature-settings: inherit;
+  /* 1 */
+  font-variation-settings: inherit;
+  /* 1 */
+  font-size: 100%;
+  /* 1 */
+  font-weight: inherit;
+  /* 1 */
+  line-height: inherit;
+  /* 1 */
+  letter-spacing: inherit;
+  /* 1 */
+  color: inherit;
+  /* 1 */
+  margin: 0;
+  /* 2 */
+  padding: 0;
+  /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+button,
+input:where([type='button']),
+input:where([type='reset']),
+input:where([type='submit']) {
+  -webkit-appearance: button;
+  /* 1 */
+  background-color: transparent;
+  /* 2 */
+  background-image: none;
+  /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+[type='search'] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  outline-offset: -2px;
+  /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  /* 1 */
+  font: inherit;
+  /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Reset default styling for dialogs.
+*/
+
+dialog {
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  opacity: 1;
+  /* 1 */
+  color: #9ca3af;
+  /* 2 */
+}
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1;
+  /* 1 */
+  color: #9ca3af;
+  /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+
+:disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  /* 1 */
+  vertical-align: middle;
+  /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none;
+}
+
+body {
+  font-family: 'DanaFaNum';
+  overflow-wrap: break-word;
+}
+
+.panel-fixed {
+  position: fixed;
+}
+
+.panel-absolute {
+  position: absolute;
+}
+
+.panel-relative {
+  position: relative;
+}
+
+.panel-inset-0 {
+  inset: 0px;
+}
+
+.-panel-bottom-1 {
+  bottom: -0.25rem;
+}
+
+.panel-left-2 {
+  left: 0.5rem;
+}
+
+.panel-left-4 {
+  left: 1rem;
+}
+
+.panel-right-0 {
+  right: 0px;
+}
+
+.panel-top-0 {
+  top: 0px;
+}
+
+.panel-top-1 {
+  top: 0.25rem;
+}
+
+.panel-top-1\/2 {
+  top: 50%;
+}
+
+.panel-z-10 {
+  z-index: 10;
+}
+
+.panel-z-50 {
+  z-index: 50;
+}
+
+.panel-mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.panel-mb-4 {
+  margin-bottom: 1rem;
+}
+
+.panel-mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.panel-mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.panel-mr-auto {
+  margin-right: auto;
+}
+
+.panel-mt-12 {
+  margin-top: 3rem;
+}
+
+.panel-mt-14 {
+  margin-top: 3.5rem;
+}
+
+.panel-mt-2 {
+  margin-top: 0.5rem;
+}
+
+.panel-mt-3 {
+  margin-top: 0.75rem;
+}
+
+.panel-mt-4 {
+  margin-top: 1rem;
+}
+
+.panel-mt-5 {
+  margin-top: 1.25rem;
+}
+
+.panel-mt-6 {
+  margin-top: 1.5rem;
+}
+
+.panel-mt-7 {
+  margin-top: 1.75rem;
+}
+
+.panel-mt-8 {
+  margin-top: 2rem;
+}
+
+.panel-block {
+  display: block;
+}
+
+.panel-flex {
+  display: flex;
+}
+
+.panel-hidden {
+  display: none;
+}
+
+.panel-h-10 {
+  height: 2.5rem;
+}
+
+.panel-h-12 {
+  height: 3rem;
+}
+
+.panel-h-14 {
+  height: 3.5rem;
+}
+
+.panel-h-6 {
+  height: 1.5rem;
+}
+
+.panel-h-full {
+  height: 100%;
+}
+
+.panel-h-px {
+  height: 1px;
+}
+
+.panel-max-h-60 {
+  max-height: 15rem;
+}
+
+.panel-w-0 {
+  width: 0px;
+}
+
+.panel-w-1 {
+  width: 0.25rem;
+}
+
+.panel-w-1\/3 {
+  width: 33.333333%;
+}
+
+.panel-w-1\/4 {
+  width: 25%;
+}
+
+.panel-w-12 {
+  width: 3rem;
+}
+
+.panel-w-14 {
+  width: 3.5rem;
+}
+
+.panel-w-28 {
+  width: 7rem;
+}
+
+.panel-w-32 {
+  width: 8rem;
+}
+
+.panel-w-36 {
+  width: 9rem;
+}
+
+.panel-w-40 {
+  width: 10rem;
+}
+
+.panel-w-52 {
+  width: 13rem;
+}
+
+.panel-w-6 {
+  width: 1.5rem;
+}
+
+.panel-w-60 {
+  width: 15rem;
+}
+
+.panel-w-72 {
+  width: 18rem;
+}
+
+.panel-w-96 {
+  width: 24rem;
+}
+
+.panel-w-\[248px\] {
+  width: 248px;
+}
+
+.panel-w-full {
+  width: 100%;
+}
+
+.panel-max-w-3xl {
+  max-width: 48rem;
+}
+
+.panel-max-w-4xl {
+  max-width: 56rem;
+}
+
+.panel-max-w-7xl {
+  max-width: 80rem;
+}
+
+.panel-flex-1 {
+  flex: 1 1 0%;
+}
+
+.panel-origin-right {
+  transform-origin: right;
+}
+
+.-panel-translate-y-1 {
+  --tw-translate-y: -0.25rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.-panel-translate-y-1\/2 {
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.panel-scale-x-0 {
+  --tw-scale-x: 0;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.panel-scale-x-100 {
+  --tw-scale-x: 1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.panel-cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.panel-cursor-pointer {
+  cursor: pointer;
+}
+
+.panel-flex-col {
+  flex-direction: column;
+}
+
+.panel-items-center {
+  align-items: center;
+}
+
+.panel-justify-center {
+  justify-content: center;
+}
+
+.panel-justify-between {
+  justify-content: space-between;
+}
+
+.panel-gap-0 {
+  gap: 0px;
+}
+
+.panel-gap-0\.5 {
+  gap: 0.125rem;
+}
+
+.panel-gap-1 {
+  gap: 0.25rem;
+}
+
+.panel-gap-2 {
+  gap: 0.5rem;
+}
+
+.panel-gap-3 {
+  gap: 0.75rem;
+}
+
+.panel-gap-4 {
+  gap: 1rem;
+}
+
+.panel-gap-6 {
+  gap: 1.5rem;
+}
+
+.panel-gap-x-3 {
+  -moz-column-gap: 0.75rem;
+       column-gap: 0.75rem;
+}
+
+.panel-gap-y-0 {
+  row-gap: 0px;
+}
+
+.panel-overflow-hidden {
+  overflow: hidden;
+}
+
+.panel-overflow-y-auto {
+  overflow-y: auto;
+}
+
+.panel-rounded-2xl {
+  border-radius: 1rem;
+}
+
+.panel-rounded-full {
+  border-radius: 9999px;
+}
+
+.panel-rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.panel-rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.panel-border {
+  border-width: 1px;
+}
+
+.panel-border-b {
+  border-bottom-width: 1px;
+}
+
+.panel-border-solid {
+  border-style: solid;
+}
+
+.panel-border-green-700 {
+  --tw-border-opacity: 1;
+  border-color: rgb(21 128 61 / var(--tw-border-opacity, 1));
+}
+
+.panel-border-primary-700 {
+  border-color: var(--primary-700);
+}
+
+.panel-border-primary-800 {
+  border-color: var(--primary-800);
+}
+
+.panel-border-red-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(239 68 68 / var(--tw-border-opacity, 1));
+}
+
+.panel-border-zinc-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(228 228 231 / var(--tw-border-opacity, 1));
+}
+
+.panel-border-zinc-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(161 161 170 / var(--tw-border-opacity, 1));
+}
+
+.panel-border-zinc-900 {
+  --tw-border-opacity: 1;
+  border-color: rgb(24 24 27 / var(--tw-border-opacity, 1));
+}
+
+.panel-bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
+}
+
+.panel-bg-black\/50 {
+  background-color: rgb(0 0 0 / 0.5);
+}
+
+.panel-bg-green-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(187 247 208 / var(--tw-bg-opacity, 1));
+}
+
+.panel-bg-green-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(21 128 61 / var(--tw-bg-opacity, 1));
+}
+
+.panel-bg-label-GrayBg {
+  background-color: var(--Gray-bgLabel);
+}
+
+.panel-bg-label-blueBg {
+  background-color: var(--blue-bgLabel);
+}
+
+.panel-bg-label-darkGreenBg {
+  background-color: var(--darkGreen-bgLabel);
+}
+
+.panel-bg-label-lightGreen {
+  background-color: var(--lightGreen-label);
+}
+
+.panel-bg-label-lightGreenBg {
+  background-color: var(--lightGreen-bgLabel);
+}
+
+.panel-bg-label-orangeBg {
+  background-color: var(--orange-bgLabel);
+}
+
+.panel-bg-label-purpleBg {
+  background-color: var(--purple-bgLabel);
+}
+
+.panel-bg-label-red {
+  background-color: var(--red-label);
+}
+
+.panel-bg-label-redBg {
+  background-color: var(--red-bgLabel);
+}
+
+.panel-bg-primary-800 {
+  background-color: var(--primary-800);
+}
+
+.panel-bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+
+.panel-bg-zinc-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+
+.panel-bg-zinc-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+
+.panel-bg-zinc-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+
+.panel-object-cover {
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.panel-p-3 {
+  padding: 0.75rem;
+}
+
+.panel-p-4 {
+  padding: 1rem;
+}
+
+.panel-p-6 {
+  padding: 1.5rem;
+}
+
+.panel-px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.panel-px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.panel-px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.panel-py-0 {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.panel-py-0\.5 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+}
+
+.panel-py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.panel-py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.panel-pb-3 {
+  padding-bottom: 0.75rem;
+}
+
+.panel-pb-5 {
+  padding-bottom: 1.25rem;
+}
+
+.panel-pl-11 {
+  padding-left: 2.75rem;
+}
+
+.panel-pl-6 {
+  padding-left: 1.5rem;
+}
+
+.panel-pr-2 {
+  padding-right: 0.5rem;
+}
+
+.panel-pr-4 {
+  padding-right: 1rem;
+}
+
+.panel-text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.panel-text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.panel-text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.panel-font-bold {
+  font-weight: 700;
+}
+
+.panel-font-medium {
+  font-weight: 500;
+}
+
+.panel-text-green-700 {
+  --tw-text-opacity: 1;
+  color: rgb(21 128 61 / var(--tw-text-opacity, 1));
+}
+
+.panel-text-label-Gray {
+  color: var(--Gray-label);
+}
+
+.panel-text-label-blue {
+  color: var(--blue-label);
+}
+
+.panel-text-label-darkGreen {
+  color: var(--darkGreen-label);
+}
+
+.panel-text-label-lightGreen {
+  color: var(--lightGreen-label);
+}
+
+.panel-text-label-orange {
+  color: var(--orange-label);
+}
+
+.panel-text-label-orangeBg {
+  color: var(--orange-bgLabel);
+}
+
+.panel-text-label-purple {
+  color: var(--purple-label);
+}
+
+.panel-text-label-red {
+  color: var(--red-label);
+}
+
+.panel-text-primary-700 {
+  color: var(--primary-700);
+}
+
+.panel-text-primary-800 {
+  color: var(--primary-800);
+}
+
+.panel-text-red-600 {
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity, 1));
+}
+
+.panel-text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.panel-text-zinc-400 {
+  --tw-text-opacity: 1;
+  color: rgb(161 161 170 / var(--tw-text-opacity, 1));
+}
+
+.panel-text-zinc-500 {
+  --tw-text-opacity: 1;
+  color: rgb(113 113 122 / var(--tw-text-opacity, 1));
+}
+
+.panel-text-zinc-600 {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity, 1));
+}
+
+.panel-text-zinc-900 {
+  --tw-text-opacity: 1;
+  color: rgb(24 24 27 / var(--tw-text-opacity, 1));
+}
+
+.panel-placeholder-zinc-400::-moz-placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(161 161 170 / var(--tw-placeholder-opacity, 1));
+}
+
+.panel-placeholder-zinc-400::placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(161 161 170 / var(--tw-placeholder-opacity, 1));
+}
+
+.panel-shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.panel-outline-none {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.panel-backdrop-blur-sm {
+  --tw-backdrop-blur: blur(4px);
+  -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+}
+
+.panel-transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.panel-transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.panel-transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.panel-duration-200 {
+  transition-duration: 200ms;
+}
+
+.panel-duration-300 {
+  transition-duration: 300ms;
+}
+
+:root {
+  --primary: #0086ff;
+  --primary-50: #e2f3ff;
+  --primary-100: #b9dfff;
+  --primary-200: #86cdff;
+  --primary-300: #43b8ff;
+  --primary-400: #00a7ff;
+  --primary-500: #0096ff;
+  --primary-600: #0086ff;
+  --primary-700: #0072ff;
+  --primary-800: #155efc;
+  --primary-900: #2d37dd;
+  --primary-950: #141DBB;
+  --secondary: #262d5d;
+  --secondary-50: #e3e5eb;
+  --secondary-100: #babdcf;
+  --secondary-200: #8e93ae;
+  --secondary-300: #656b8d;
+  --secondary-400: #484e78;
+  --secondary-500: #2b3365;
+  --secondary-600: #262d5d;
+  --secondary-700: #1f2453;
+  --secondary-800: #181c47;
+  --secondary-900: #0e0c31;
+  --secondary-950: #070621;
+  --red-label: #CE0E0E;
+  --blue-label: #085BA9;
+  --purple-label: #780894;
+  --orange-label: #F98E20;
+  --lightGreen-label: #00fb0b;
+  --darkGreen-label: #136F01;
+  --Gray-label: #8a8a8a;
+  --red-bgLabel: #F9D5D5;
+  --blue-bgLabel: #C8E6FF;
+  --purple-bgLabel: #EED5F9;
+  --orange-bgLabel: #F9EED5;
+  --lightGreen-bgLabel: #d0ffd2;
+  --darkGreen-bgLabel: #D5F9DF;
+  --Gray-bgLabel: #f5f5f5;
+  --bg: url('');
+  --footer-bg: url('../images/footer-background.jpg');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'DanaFaNum';
+
+  font-style: normal;
+
+  font-weight: 400;
+
+  src: url('../fonts/DanaFaNum-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'DanaFaNum';
+
+  font-style: normal;
+
+  font-weight: 500;
+
+  src: url('../fonts/DanaFaNum-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'IRANYeDanaFaNumkan';
+
+  font-style: normal;
+
+  font-weight: 700;
+
+  src: url('../fonts/DanaFaNum-Bold.ttf') format('truetype');
+}
+
+.border-error {
+  border: 2px solid #ef4444 !important;
+  /* قرمز */
+  border-radius: 0.375rem;
+}
+
+.loader, .loader:before, .loader:after {
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  animation-fill-mode: both;
+  animation: bblFadInOut 1.8s infinite ease-in-out;
+}
+
+.loader {
+  color: #71717a  ;
+  font-size: 7px;
+  position: relative;
+  text-indent: -9999em;
+  transform: translateZ(0);
+  animation-delay: -0.16s;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  position: absolute;
+  top: 0;
+}
+
+.loader:before {
+  left: -3.5em;
+  animation-delay: -0.32s;
+}
+
+.loader:after {
+  left: 3.5em;
+}
+
+@keyframes bblFadInOut {
+  0%, 80%, 100% {
+    box-shadow: 0 2.5em 0 -1.3em
+  }
+
+  40% {
+    box-shadow: 0 2.5em 0 0
+  }
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserProfile {
+  display: none;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo {
+  width: 100%;
+  font-size: 16px;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 44px;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr td {
+  border: 1px solid var(--Zinc-200, #E4E4E7);
+  background: white;
+  border-radius: 12px;
+  padding: 0px;
+  color: var(--Zinc-800, #27272A);
+  height: 48px;
+  width: 100%;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr>td:nth-child(1),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody tr>td:nth-child(2) {
+  flex-basis: 46%;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(3),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(3),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(3)>td:nth-child(2),
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(4)>td:nth-child(1) {
+  flex-basis: 100% !important;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr>td>[class^="profile-info-"] {
+  color: var(--Zinc-800, #27272A) !important;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr>td::before {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--Zinc-500, #71717A);
+  white-space: nowrap;
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(1)::before {
+  content: "نام :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(2)::before {
+  content: "نام خانوادگی :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(1)>td:nth-child(3)::before {
+  content: "تلفن :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(1)::before {
+  content: "موبایل :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(2)::before {
+  content: "جنسیت :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(2)>td:nth-child(3)::before {
+  content: "تاریخ تولد :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(3)>td:nth-child(1)::before {
+  content: "کد پستی :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(3)>td:nth-child(2)::before {
+  content: "ایمیل :";
+}
+
+.Panel_Box .Panel_Box_Content .Panel_UserInfo table tbody>tr:nth-child(4)>td:nth-child(1)::before {
+  content: "آدرس :";
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead]{
+  border: none;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead] tr[data-bc-column-title][data-sys-tr]{
   background: transparent;
 }
 
-.passenger-detail{
-  border-top: 1px dashed var(--Zinc-200, #E4E4E7);
-  padding: 10px 12px;
-  font-size: 12px;
-  color: #3f3f46;
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead] tr[data-bc-column-title] td[data-sys-th]{
+  background: #F4F4F5;
 }
 
-.passenger-detail__grid{
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px 16px;
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table]thead[data-sys-thead] tr[data-bc-column-title] td[data-sys-th]:first-child{
+  border-radius: 0 12px 12px 0;
 }
 
-.passenger-detail__item{
-  display: flex;
-  gap: 8px;
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-column-title] td[data-sys-th]:last-child{
+  border-radius: 12px 0 0 12px;
 }
-.passenger-detail__item .k{ color:#71717a; min-width: 110px; }
-.passenger-detail__item .v{ color:#18181b; direction:rtl; }
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter][data-sys-tr]{
+  background: none;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter] td[data-sys-th]:first-child{
+  border-radius: 0 12px 12px 0;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter] td[data-sys-th]:last-child{
+  border-radius: 12px 0 0 12px;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]{
+  border-style: solid;
+  border-color: var(--Zinc-200, #E4E4E7);
+  border-width: 1px 0;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-bc-order]{
+  border-width: 1px 1px 1px 0;
+  border-radius: 0 12px 12px 0;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-bc-data]{
+  border-width: 1px 0 1px 0;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]:last-child{
+  border-width: 1px 0 1px 1px;
+  border-radius: 12px 0 0 12px;
+}
+
+.Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]{
+  background: #fff;
+}
+
+.hover\:panel-scale-105:hover {
+  --tw-scale-x: 1.05;
+  --tw-scale-y: 1.05;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.hover\:panel-bg-primary-800:hover {
+  background-color: var(--primary-800);
+}
+
+.hover\:panel-bg-zinc-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:panel-bg-zinc-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(228 228 231 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:panel-text-primary-800:hover {
+  color: var(--primary-800);
+}
+
+.hover\:panel-text-white:hover {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.hover\:panel-shadow-lg:hover {
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.hover\:panel-shadow-sidebar-btn:hover {
+  --tw-shadow: 0px 0px 9.4px 0px var(--primary-600);
+  --tw-shadow-colored: 0px 0px 9.4px 0px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.focus\:panel-border-primary-800:focus {
+  border-color: var(--primary-800);
+}
+
+.focus\:panel-bg-white:focus {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+
+.focus\:panel-shadow-md:focus {
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.panel-group:hover .group-hover\:panel-w-full {
+  width: 100%;
+}
+
+.panel-group:hover .group-hover\:panel-scale-x-100 {
+  --tw-scale-x: 1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.panel-group:hover .group-hover\:panel-text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+@media not all and (min-width: 1280px) {
+  .max-xl\:panel-w-\[97\%\] {
+    width: 97%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:panel-max-w-7xl {
+    max-width: 80rem;
+  }
+}
+
+
+
 </style>
+
 <body>
     <header>
         <basis core="call" file="authentication/modal" lid="1"></basis>
     </header>
-    <main class="book-previous__passengers__container">
-        <basis core="component.grid.grid" run="atclient" datamembername="api.gridPreviousPassengers"
-            options="gridPreviousPassengers">
-        </basis>
+    <main class="">
+        <div class="Panel_invoice_List">
+            <basis core="component.grid.grid" run="atclient" datamembername="api.gridPreviousPassengers"
+                options="gridPreviousPassengers">
+            </basis>
+        </div>
     </main>
     <script>
         if (typeof gridPreviousPassengers === "undefined") {
             var gridPreviousPassengers = {
                 columns: {
                     firstName: {
-                        title: "first_name",
+                        title: "مشخصات",
                         filter: true,
                         sort: false,
+                        cellMaker: (row, data, td) => {
+                            return '<span class="clear servicesStatus-invoice-list hover-service" data-widget-header-btn-tooltip=" باقیمانده : 232323 " data-sys-tooltip="">test</span>'
+                        },
                     },
                     lastName: {
-                        title: "last_name",
+                        title: "مبدا - مقصد",
                         filter: true,
                         sort: false,
-                    },
-                    nationalCode: {
-                        title: "national_code",
-                        filter: true,
-                        sort: false,
-                    },
-                    birthDate: {
-                        title: "birth_date",
-                        filter: true,
-                        sort: true,
                     },
                     passportCode: {
-                        title: "passport_code",
+                        title: "رفت برگشت",
                         filter: true,
                         sort: false,
                     },
                     issueCountryName: {
-                        title: "nationality",
+                        title: "بلیط/ Refnumber",
                         filter: true,
                         sort: false,
+                    },
+                    issueCountryName: {
+                        title: "مبلغ (ریال)",
+                        filter: true,
+                        sort: false,
+                    },
+                    label: {
+                        title: "لیبل",
+                        filter: true,
+                        sort: false,
+                        cellMaker: (row, data, td) => {
+                            return '<td data-sys-td="" data-bc-data=""><span class="cursor"><div class="InvoiceStatus"><span class="confirm panel-bg-label-orangeBg panel-text-label-orange panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="تسویه نشده با تایید مالی">تسویه نشده با تایید مالی</span></div><div class="InvoiceStatus"><span class="nclear panel-bg-label-redBg panel-text-label-red panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="تسویه نشده">تسویه نشده</span></div><div class="InvoiceStatus"><span class="clearconfirm panel-bg-label-lightGreen panel-text-white panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="پرداخت اعتباری-تسویه شده توسط مالی">پرداخت اعتباری-تسویه شده توسط مالی</span></div><div class="InvoiceStatus"><span class="credit panel-bg-label-purpleBg panel-text-label-purple panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="پرداخت اعتباری">پرداخت اعتباری</span></div><div class="InvoiceStatus"><span class="clear panel-bg-label-darkGreenBg panel-text-label-darkGreen panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="تسویه شده">تسویه شده</span></div><div class="InvoiceStatus"><span class="edited panel-bg-label-blueBg panel-text-label-blue panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="ویرایش شده">ویرایش شده</span></div><div class="InvoiceStatus"><span class="canceled panel-bg-label-GrayBg panel-text-label-Gray panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="ابطال شده">ابطال شده</span></div></span></td>'
+                        },
+                    },
+                    issueCountryName: {
+                        title: "",
+                        filter: true,
+                        sort: false,
+                        cellMaker: (row, data, td) => {
+                            return '<td data-sys-td="" data-bc-data=""><span class="cursor"><div class="InvoiceStatus"><span class="confirm panel-bg-label-orangeBg panel-text-label-orange panel-px-2 panel-py-0.5 panel-rounded-2xl" data-descr="تسویه نشده با تایید مالی">تسویه نشده با تایید مالی</span></div>'
+                        },
                     },
                     operation: {
                         title: "operation",
                         filter: false,
                         sort: false,
                         cellMaker: (row, data, td) => {
-                            return `<div class="book-select__item__container book-relative">
+                            return `<div class="panel-select__item__container panel-relative panel-cursor-pointer ">
   <div
-    class="book-cursor-pointer book-row-expander"
+    class="panel-row-expander"
     onclick="onPassengerRowClick(this, event)"
     data-id="${row._id ?? ''}"
     data-issue-country-name="${row.issueCountryName ?? ''}"
@@ -117,7 +1797,7 @@ tr.passenger-detail-row td{
                     }
                 },
                 filter: 'row',
-                rowNumber: "row_number",
+
                 defaultSort: false,
                 direction: "rtl",
                 paging: 10,
@@ -147,12 +1827,6 @@ tr.passenger-detail-row td{
                     const responseJson = await response.json();
                     if (responseJson) {
                         console.log(responseJson);
-                        const previousPassengersContainer = document.querySelector(".book-previous__passengers__container");
-                        // Show previous passengers container if hidden
-                        if (previousPassengersContainer?.classList.contains("book-hidden")) {
-                            previousPassengersContainer.classList.remove("book-hidden");
-                        }
-                        // Trigger grid rendering with response data
                         $bc.setSource("api.gridPreviousPassengers", responseJson);
                     }
                 }
@@ -166,44 +1840,74 @@ tr.passenger-detail-row td{
   event.preventDefault();
   event.stopPropagation();
 
-  const tr = el.closest('tr[data-sys-tr]');
+  const tr = el.closest("tr[data-sys-tr]");
   if (!tr) return;
 
-  // اگر ردیف جزئیات از قبل وجود داشت → فقط toggle
-  let next = tr.nextElementSibling;
-  if (next && next.classList.contains('passenger-detail-row')) {
-    next.classList.toggle('is-open');
+  // اگر قبلاً باز شده بود => ببند و حالت اولیه را برگردان
+  if (tr.classList.contains("passenger-row-expanded")) {
+    if (tr._originalInnerHTML) {
+      tr.innerHTML = tr._originalInnerHTML;
+    }
+    tr.classList.remove("passenger-row-expanded");
     return;
+  }
+
+  // تعداد ستون‌ها
+  const tds = Array.from(tr.querySelectorAll("td[data-sys-td], td"));
+  const colCount = tds.length || 1;
+
+  // یکبار HTML اولیه را ذخیره کن تا بتوانیم restore کنیم
+  if (!tr._originalInnerHTML) {
+    tr._originalInnerHTML = tr.innerHTML;
   }
 
   const d = el.dataset;
 
-  const colCount = tr.querySelectorAll('td[data-sys-td]').length || 1;
+  // محتوای ردیف اصلی را مثل یک Grid (به جای td) بازسازی می‌کنیم
+  const summaryHtml = tds
+    .map((td) => `<div class="passenger-summary-cell">${td.innerHTML}</div>`)
+    .join("");
 
-  const detailTr = document.createElement('tr');
-  detailTr.className = 'passenger-detail-row is-open';
+  // کل tr را به یک td با colspan تبدیل می‌کنیم
+  tr.innerHTML = "";
+  tr.classList.add("passenger-row-expanded");
 
-  const td = document.createElement('td');
+  const td = document.createElement("td");
   td.colSpan = colCount;
+  td.setAttribute("data-sys-td", "");
+  td.setAttribute("data-bc-data", "");
+  td.setAttribute("data-bc-order", "");
 
   td.innerHTML = `
-    <div class="passenger-detail">
-      <div class="passenger-detail__grid">
-        <div class="passenger-detail__item"><span class="k">Issue Country:</span><span class="v">${d.issueCountryName || '-'}</span></div>
-        <div class="passenger-detail__item"><span class="k">Issue Country ID:</span><span class="v">${d.issueCountryId || '-'}</span></div>
+    <div class="passenger-row-wrap">
+      <div class="passenger-summary-grid">
+        ${summaryHtml}
+      </div>
 
-        <div class="passenger-detail__item"><span class="k">Passport Code:</span><span class="v">${d.passportCode || '-'}</span></div>
-        <div class="passenger-detail__item"><span class="k">Passport Exp:</span><span class="v">${d.passportExpiration || '-'}</span></div>
+      <div class="passenger-detail is-open">
+        <div class="passenger-detail__grid">
+          <div class="passenger-detail__item"><span class="k">Issue Country:</span><span class="v">${d.issueCountryName || "-"}</span></div>
+          <div class="passenger-detail__item"><span class="k">Issue Country ID:</span><span class="v">${d.issueCountryId || "-"}</span></div>
 
-        <div class="passenger-detail__item"><span class="k">Persian Name:</span><span class="v">${(d.persianFirstName || '-') + ' ' + (d.persianLastName || '')}</span></div>
-        <div class="passenger-detail__item"><span class="k">Gender:</span><span class="v">${d.gender ?? '-'}</span></div>
+          <div class="passenger-detail__item"><span class="k">Passport Code:</span><span class="v">${d.passportCode || "-"}</span></div>
+          <div class="passenger-detail__item"><span class="k">Passport Exp:</span><span class="v">${d.passportExpiration || "-"}</span></div>
+
+          <div class="passenger-detail__item"><span class="k">Persian Name:</span><span class="v">${(d.persianFirstName || "-") + " " + (d.persianLastName || "")}</span></div>
+
+          <div class="passenger-detail__actions">
+            <button type="button"
+              class="panel-flex panel-items-center panel-justify-center panel-w-28 panel-h-12 panel-border panel-border-solid panel-border-primary-700 panel-rounded-lg panel-text-primary-700">
+              مشاهده قرارداد
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   `;
 
-  detailTr.appendChild(td);
-  tr.after(detailTr);
+  tr.appendChild(td);
 }
+
     </script>
 </body>
 
