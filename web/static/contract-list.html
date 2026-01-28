@@ -30,21 +30,25 @@
 
                     <div
                         class="panel-flex panel-flex-col panel-gap-3 panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-3 panel-mt-6">
-                        <a href="" class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                        <a href=""
+                            class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
                             <svg width="24" height="24" class="panel-text-zinc-600">
                                 <use href="../assets/images/panel-sprite-icons.svg#icon-setting"></use>
                             </svg>
                             <span class="panel-relative">تنظیمات پروفایل
-                                <span class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                                <span
+                                    class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
                             </span>
 
                         </a>
-                        <a href="" class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                        <a href=""
+                            class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
                             <svg width="24" height="24" class="panel-text-zinc-600">
                                 <use href="../assets/images/panel-sprite-icons.svg#icon-exit"></use>
                             </svg>
                             <span class="panel-relative">خروج
-                                <span class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                                <span
+                                    class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
                             </span>
                         </a>
                     </div>
@@ -143,40 +147,309 @@
                 </section>
             </aside>
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
-                <section class="panel-flex panel-justify-between">
+                <section>
                     <div class="panel-flex panel-items-center panel-gap-3">
-                        <h2 class="panel-font-medium">جستجوی سفر ها</h2>
+                        <h2 class="panel-text-zinc-900 panel-font-medium">جستجو براساس تاریخ قرارداد</h2>
                         <div class="panel-flex panel-items-center panel-gap-2">
-                            <input type="text" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200
-                                   panel-px-4 panel-w-52 panel-h-14 panel-placeholder-zinc-400 panel-outline-none
-                                   focus:panel-border-primary-800 focus:panel-bg-white
-                                   focus:panel-shadow-md
-                                   panel-transition panel-duration-300" placeholder="بر اساس شماره قرارداد:" />
-                            <input type="text" name="" id="" placeholder="از تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
-                            <input type="text" name="" id="" placeholder="تا تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
+                            <div class="panel-relative">
+                                <input type="text"
+                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-44 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                    placeholder="ازتاریخ:" />
+                                <svg width="48" height="48"
+                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                    <use href="../assets/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                </svg>
+                            </div>
+                            <div class="panel-relative">
+                                <input type="text" name="" id="" placeholder="تا تاریخ:"
+                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-44 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300">
+                                <svg width="48" height="48"
+                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                    <use href="../assets/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                </svg>
+                            </div>
                         </div>
-                        <button
-                            class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
-                            aria-label="جستجو">
-                            <svg width="24" height="24" class="panel-text-white">
-                                <use href="../assets/images/panel-sprite-icons.svg#icon-search"></use>
-                            </svg>
-                        </button>
                     </div>
-                    <button
-                        class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
-                        <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
-                        <span
-                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-primary-800 group-hover:panel-scale-x-100"></span>
-                    </button>
+                    <div class="panel-flex panel-justify-between panel-mt-2">
+                        <div class="panel-flex panel-items-center panel-gap-2">
+                            <input type="text" name="" id="" placeholder="جستجو براساس شماره قرارداد"
+                                class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300">
+                            <input type="text" name="" id="" placeholder="جستجو بر اساس شماره رفرنس" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                            focus:panel-shadow-md panel-transition panel-duration-300">
+                            <button
+                                class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                                aria-label="جستجو">
+                                <svg width="24" height="24" class="panel-text-white">
+                                    <use href="../assets/images/panel-sprite-icons.svg#icon-search"></use>
+                                </svg>
+                            </button>
+                        </div>
+                        <button id="btnOpenAdvancedSearch" type="button" data-modal-open="advancedContractSearch"
+                            class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
+                            <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
+                            <span
+                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-primary-800 group-hover:panel-scale-x-100"></span>
+                        </button>
+                        <div id="advancedContractSearch" data-modal="advanced-search" role="dialog" aria-modal="true"
+                            aria-hidden="true" aria-labelledby="advancedSearchTitle"
+                            class="panel-modal__overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+
+                            <div id="advancedContractSearchContent" data-modal-content="advanced-search"
+                                class="panel-modal__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+
+                                <section
+                                    class="panel-modal__header panel-flex panel-items-center panel-justify-between panel-mb-5">
+                                    <div class="panel-flex panel-items-center">
+                                        <button id="btnCloseAdvancedSearch" type="button"
+                                            data-modal-close="advancedContractSearch"
+                                            class="panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                                            aria-label="Close">
+                                            <svg width="48" height="48">
+                                                <use href="../assets/images/panel-sprite-icons.svg#icon-close"></use>
+                                            </svg>
+                                        </button>
+
+                                        <h2 id="advancedSearchTitle"
+                                            class="panel-modal-title panel-font-medium panel-text-zinc-900">جستجوی
+                                            پیشرفته</h2>
+                                    </div>
+
+                                    <button id="btnClearAdvancedSearchFilters" type="button"
+                                        class="panel-flex panel-items-center panel-text-red-500 panel-text-sm"
+                                        aria-label="حذف فیلترها">
+                                        <svg width="48" height="48">
+                                            <use href="../assets/images/panel-sprite-icons.svg#icon-eraser"></use>
+                                        </svg>
+                                        <span>حذف فیلتر ها</span>
+                                    </button>
+                                </section>
+
+                                <section aria-describedby="advancedSearchHint">
+                                    <h3 id="advancedSearchHint"
+                                        class="panel-text-zinc-900 panel-text-sm panel-font-medium panel-mb-6">جستجو برا
+                                        اساس تاریخ
+                                        سفر می‌باشد</h3>
+
+                                    <div class="panel-flex panel-items-center panel-gap-5">
+                                        <div class="panel-flex-1 panel-flex panel-items-center panel-gap-3">
+                                            <input id="advSearchDateFrom" name="date_from" data-field="date_from"
+                                                type="text"
+                                                class="panel-w-52 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300"
+                                                placeholder="از تاریخ:">
+
+                                            <input id="advSearchDateTo" name="date_to" data-field="date_to" type="text"
+                                                class="panel-w-52 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300"
+                                                placeholder="تا تاریخ:">
+                                        </div>
+
+                                        <div class="panel-flex-1 panel-flex panel-items-center panel-justify-between"
+                                            role="radiogroup" aria-label="نوع سفر">
+
+                                            <label for="advSearchTripTypeOutbound"
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                <input id="advSearchTripTypeOutbound" name="trip_type"
+                                                    data-field="trip_type" type="radio" value="outbound"
+                                                    class="panel-w-5 panel-h-5">
+                                                رفت
+                                            </label>
+
+                                            <label for="advSearchTripTypeReturn"
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                <input id="advSearchTripTypeReturn" name="trip_type"
+                                                    data-field="trip_type" type="radio" value="return"
+                                                    class="panel-w-5 panel-h-5">
+                                                برگشت
+                                            </label>
+
+                                            <label for="advSearchTripTypeRoundTrip"
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                <input id="advSearchTripTypeRoundTrip" name="trip_type"
+                                                    data-field="trip_type" type="radio" value="roundtrip"
+                                                    class="panel-w-5 panel-h-5">
+                                                رفت وبرگشت
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-flex panel-mt-7">
+                                        <div
+                                            class="panel-grid panel-grid-cols-2 panel-gap-3 panel-border-l panel-border-zinc-300 panel-ml-5 panel-pl-5">
+
+                                            <div class="panel-relative" data-dd-key="origin_city">
+                                                <input data-dd-input id="advSearchOriginCity" name="origin_city"
+                                                    type="text" readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="شهر مبدا" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="destination_city">
+                                                <input data-dd-input id="advSearchDestinationCity"
+                                                    name="destination_city" data-field="destination_city" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="شهر مقصد" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="hotel">
+                                                <input data-dd-input id="advSearchHotel" name="hotel" data-field="hotel"
+                                                    type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="هتل" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="airline">
+                                                <input data-dd-input id="advSearchRailCompany" name="rail_company"
+                                                    data-field="rail_company" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="شرکت ریلی" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="rail_company">
+                                                <input data-dd-input id="advSearchAirline" name="airline"
+                                                    data-field="airline" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="ایرلاین" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="route_code">
+                                                <input data-dd-input id="advSearchRouteCode" name="route_code"
+                                                    data-field="route_code" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="کد مسیر" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-grid panel-grid-cols-2 panel-gap-3">
+                                            <div class="panel-relative" data-dd-key="status">
+                                                <input data-dd-input id="advSearchStatus" name="status"
+                                                    data-field="status" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="وضعیت" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="tag">
+                                                <input data-dd-input id="advSearchTag" name="tag" data-field="tag"
+                                                    type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="برچسب" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative panel-col-span-2" data-dd-key="services">
+                                                <input data-dd-input id="advSearchServices" name="services"
+                                                    data-field="services" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="خدمات" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="../assets/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-flex-1 panel-flex panel-items-center panel-gap-3 panel-mt-7">
+                                        <input id="advSearchBuyerInfo" name="buyer_info" data-field="buyer_info"
+                                            type="text"
+                                            class="panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300"
+                                            placeholder="اطلاعات خریدار">
+
+                                        <input id="advSearchPassengerInfo" name="passenger_info"
+                                            data-field="passenger_info" type="text"
+                                            class="panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300" placeholder="اطلاعات مسافر">
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <section class="panel-mt-12">
+                    <div class="panel-flex panel-items-center panel-justify-between">
+                        <h2 class="panel-text-zinc-900 panel-font-medium">سفرهای من</h2>
+                        <div class="panel-flex panel-items-center panel-gap-7">
+                            <p class="panel-text-zinc-900 panel-text-xs">جمع کل قرارداد ها <span>(1240)</span></p>
+                            <button
+                                class="panel-flex panel-items-center panel-justify-center panel-gap-2 panel-w-12 panel-h-12 panel-border panel-border-solid panel-border-zinc-300 panel-rounded-xl panel-text-sm panel-font-medium panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-border-primary-800">
+                                <img src="../assets/images/microsoft-exel.png"
+                                    class="panel-w-6 panel-h-6 panel-object-cover" alt="microsoft-exel" width="25"
+                                    height="25" loading="lazy">
+                            </button>
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>
     </main>
+    <div id="sharedDropdown"
+        class="panel-hidden panel-fixed panel-z-50 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-overflow-hidden"
+        role="listbox" aria-label="dropdown">
+
+
+        <div class="panel-p-3 panel-border-b panel-border-solid panel-border-zinc-200">
+            <input id="sharedDropdownSearch" type="text"
+                class="panel-w-full panel-h-12 panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white panel-transition panel-duration-300"
+                placeholder="جستجو..." />
+        </div>
+
+
+        <div id="sharedDropdownList" class="panel-max-h-60 panel-overflow-y-auto panel-p-2"></div>
+    </div>
+
+    <script src="../assets/js/panel-core.js"></script>
 </body>
 
 </html>
