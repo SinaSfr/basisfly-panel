@@ -494,6 +494,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let nationalityDropdown = document.getElementById('nationalityDropdown')
 
+  if (!nationalityInput || !nationalityDropdown || !nationalCodeInput) return
+
   let countriesCache = null
   let isFetchingCountries = false
 
@@ -773,6 +775,7 @@ function clearAllHighlights() {
       closeModal()
   })
 })()
+
 //----------------clear advanced search---------------------
 ;(() => {
   const modal = document.getElementById('advancedContractSearch')
@@ -815,6 +818,7 @@ function clearAllHighlights() {
   clearBtn.addEventListener('click', clearAdvancedSearchFilters)
 })()
 
+// ----------dropdown menu (advanced search)--------------
 document.addEventListener("DOMContentLoaded", () => {
   const dropdown = document.getElementById("sharedDropdown");
   const search = document.getElementById("sharedDropdownSearch");
