@@ -237,6 +237,22 @@ document.addEventListener('DOMContentLoaded', function () {
   const yearSelect = document.getElementById('year')
   const selectDateBtn = document.getElementById('selectDateBtn')
 
+  // اگر هر کدوم از المنت‌های مورد نیاز وجود نداشت، کل اسکریپت اجرا نشه
+  if (
+    !openDobPopupButton ||
+    !openPassportExpiryPopupButton ||
+    !closeDatePopupButton ||
+    !datePopup ||
+    !gregorianBtn ||
+    !jalaliBtn ||
+    !daySelect ||
+    !monthSelect ||
+    !yearSelect ||
+    !selectDateBtn
+  ) {
+    return
+  }
+
   let currentDateType = 'gregorian' // پیش‌فرض میلادی
   let targetInputField = null // این برای مشخص کردن اینکه تاریخ مربوط به کدام فیلد است
 
@@ -281,35 +297,125 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // باز کردن پاپ‌آپ تاریخ تولد
-  openDobPopupButton.addEventListener('click', () => {
-    targetInputField = 'dobInput' // مشخص کردن تاریخ تولد
-    datePopup.classList.remove('hidden')
+  openDobPopupButton.addEventListener('focus', () => {
+    targetInputField = 'dobInput'
+    currentDateType = 'gregorian'
+    datePopup.classList.remove('panel-hidden')
+    setActiveDateType()
     updateDateSelectors()
   })
 
   // باز کردن پاپ‌آپ تاریخ انقضای پاسپورت
-  openPassportExpiryPopupButton.addEventListener('click', () => {
-    targetInputField = 'passportExpiryInput' // مشخص کردن تاریخ انقضا
-    datePopup.classList.remove('hidden')
+  openPassportExpiryPopupButton.addEventListener('focus', () => {
+    targetInputField = 'passportExpiryInput'
+    currentDateType = 'gregorian'
+    datePopup.classList.remove('panel-hidden')
+    setActiveDateType()
     updateDateSelectors()
   })
 
+  function setActiveDateType() {
+    if (currentDateType === 'gregorian') {
+      // Gregorian فعال
+      gregorianBtn.classList.add('panel-bg-primary-800', 'panel-text-white')
+      gregorianBtn.classList.remove('panel-bg-zinc-200')
+
+      jalaliBtn.classList.remove('panel-bg-primary-800', 'panel-text-white')
+      jalaliBtn.classList.add('panel-bg-zinc-200')
+    } else {
+      // Jalali فعال
+      jalaliBtn.classList.add('panel-bg-primary-800', 'panel-text-white')
+      jalaliBtn.classList.remove('panel-bg-zinc-200')
+
+      gregorianBtn.classList.remove('panel-bg-primary-800', 'panel-text-white')
+      gregorianBtn.classList.add('panel-bg-zinc-200')
+    }
+  }
+
   // بستن پاپ‌آپ
-  closeDatePopupButton.addEventListener('click', () => {
-    datePopup.classList.add('hidden')
+  function closeDatePopup() {
+    datePopup.classList.add('panel-hidden')
+    if (targetInputField) {
+      document.getElementById(targetInputField).blur()
+    }
+  }
+
+  closeDatePopupButton.addEventListener('click', closeDatePopup)
+
+  datePopup.addEventListener('click', (e) => {
+    if (e.target === datePopup) {
+      closeDatePopup()
+    }
   })
 
   // سوئیچ بین تاریخ میلادی و شمسی
   gregorianBtn.addEventListener('click', () => {
     currentDateType = 'gregorian'
+    setActiveDateType()
     updateDateSelectors()
   })
 
   jalaliBtn.addEventListener('click', () => {
     currentDateType = 'jalali'
+    setActiveDateType()
     updateDateSelectors()
   })
 
+  function getGregorianMonthDays(year, month) {
+    if (month === 2) {
+      // ساده: فعلاً 29 مجاز (بدون محاسبه سال کبیسه)
+      return 29
+    }
+
+    return [4, 6, 9, 11].includes(month) ? 30 : 31
+  }
+
+  function getJalaliMonthDays(month) {
+    if (month <= 6) return 31
+    if (month <= 11) return 30
+    return 29 // اسفند (فعلاً بدون کبیسه)
+  }
+
+  function updateDaysByMonth() {
+    const month = parseInt(monthSelect.value)
+    const year = parseInt(yearSelect.value)
+
+    // اگر ماه انتخاب نشده → روز غیرفعال و placeholder کوتاه
+    if (!month) {
+      daySelect.innerHTML = '<option value="">روز</option>'
+      daySelect.disabled = true
+      return
+    }
+
+    // وقتی ماه انتخاب شد → روز فعال
+    daySelect.disabled = false
+
+    let maxDays = 31
+
+    if (currentDateType === 'gregorian') {
+      maxDays = getGregorianMonthDays(year, month)
+    } else {
+      maxDays = getJalaliMonthDays(month)
+    }
+
+    const currentDay = daySelect.value
+
+    daySelect.innerHTML = '<option value="">روز</option>'
+
+    for (let d = 1; d <= maxDays; d++) {
+      const option = document.createElement('option')
+      option.value = d
+      option.textContent = d
+      daySelect.appendChild(option)
+    }
+
+    // اگر روز قبلی بزرگ‌تر از max بود ریست کن
+    if (currentDay > maxDays) {
+      daySelect.value = ''
+    } else {
+      daySelect.value = currentDay
+    }
+  }
   // به‌روزرسانی انتخاب‌های تاریخ
   function updateDateSelectors() {
     let dates
@@ -320,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ماه‌ها
-    monthSelect.innerHTML = '<option>ماه</option>'
+    monthSelect.innerHTML = '<option value="">ماه</option>'
     dates.months.forEach((month, index) => {
       const option = document.createElement('option')
       option.value = index + 1
@@ -328,45 +434,51 @@ document.addEventListener('DOMContentLoaded', function () {
       monthSelect.appendChild(option)
     })
 
-    // روزها
-    daySelect.innerHTML = '<option>روز</option>'
-    dates.days.forEach((day) => {
-      const option = document.createElement('option')
-      option.value = day
-      option.textContent = day
-      daySelect.appendChild(option)
-    })
-
     // سال‌ها
-    yearSelect.innerHTML = '<option>سال</option>'
+    yearSelect.innerHTML = '<option value="">سال</option>'
     dates.years.forEach((year) => {
       const option = document.createElement('option')
       option.value = year
       option.textContent = year
       yearSelect.appendChild(option)
     })
+
+    // روزها (بر اساس ماه و سال فعلی، اگر انتخاب شده باشه)
+    updateDaysByMonth()
+
+    // پاک کردن انتخاب قبلی (بدون هیچ پیش‌فرضی)
+    daySelect.value = ''
+    monthSelect.value = ''
+    yearSelect.value = ''
+  }
+
+  function pad(num) {
+    return num.toString().padStart(2, '0')
   }
 
   // انتخاب تاریخ
   selectDateBtn.addEventListener('click', () => {
-    const selectedDay = daySelect.value
-    const selectedMonth = monthSelect.value
-    const selectedYear = yearSelect.value
+    const day = daySelect.value
+    const month = monthSelect.value
+    const year = yearSelect.value
 
-    if (selectedDay && selectedMonth && selectedYear) {
-      const selectedDate = `${selectedDay} ${selectedMonth} ${selectedYear}`
-      // انتقال تاریخ به فیلد مربوطه
-      const targetField = document.getElementById(targetInputField)
-      if (targetField) {
-        targetField.value = selectedDate
-        datePopup.classList.add('hidden') // بستن پاپ‌آپ
-      } else {
-        console.error('فیلد مورد نظر برای تاریخ یافت نشد')
-      }
-    } else {
-      alert('لطفاً تاریخ را کامل وارد کنید.')
+    if (!day || !month || !year) {
+      alert('لطفاً تاریخ را کامل انتخاب کنید')
+      return
     }
+
+    const targetField = document.getElementById(targetInputField)
+    if (!targetField) return
+
+    const formattedDate = `${year}/${pad(month)}/${pad(day)}`
+
+    targetField.value = formattedDate
+    targetField.dataset.type = currentDateType
+
+    closeDatePopup()
   })
+  monthSelect.addEventListener('change', updateDaysByMonth)
+  yearSelect.addEventListener('change', updateDaysByMonth)
 })
 /**
  * Sends edited user data to backend and shows loading state.

@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <basis core="call" file="book/taglist" lid="1"></basis>
+    <title>لیست رزروها</title>
+    <meta name="description" content="لیست رزروها">
+    <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/css" rel="stylesheet" />
+</head>
+<style>
+    [data-bc-grid] * {
+        font-size: 12px !important;
+    }
+
+    tr.passenger-detail-row {
+        display: none;
+    }
+
+    tr.passenger-detail-row.is-open {
+        display: table-row;
+    }
+
+    tr.passenger-detail-row td {
+        border: 0 !important;
+        padding: 8px 0 14px 0 !important;
+        background: transparent;
+    }
+
+    .passenger-detail {
+        border-top: 1px dashed var(--Zinc-200, #E4E4E7);
+        padding: 10px 12px !important;
+        font-size: 12px;
+        color: #3f3f46;
+    }
+
+
+    .passenger-detail__grid {
+        display: flex;
+        justify-content: space-between;
+        /* display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          align-items: center; */
+        gap: 8px 16px;
+    }
+
+    .passenger-detail__item {
+        display: flex;
+        gap: 8px;
+    }
+
+    .passenger-detail__item .k {
+        color: #71717a;
+        min-width: 110px;
+    }
+
+    .passenger-detail__item .v {
+        color: #18181b;
+        direction: rtl;
+    }
+
+    .passenger-row-wrap {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .passenger-summary-grid {
+        display: flex;
+        justify-content: space-between;
+        /* display:grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr)); */
+    }
+
+    /* اینو مطابق استایل td های خودت تنظیم کن */
+    .passenger-summary-cell {
+        padding: 10px 12px !important;
+        /* اگر جدول border داره، اینا رو هم می‌تونی شبیه td کنی */
+        /* border-left: 1px solid #eee; */
+        display: flex;
+        align-items: center;
+    }
+
+    .passenger-detail__item .k {
+        opacity: .75;
+        margin-right: 6px !important;
+    }
+
+    [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td {
+        text-align: center !important;
+    }
+</style>
+
+<body class="panel-bg-zinc-50">
+    <!-- Header -->
+    <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <!-- Main-->
+    <main>
+        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+            <basis core="api" name="api.booking" run="atclient"
+                url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post"
+                body='{
+                    "name": "db",
+                    "mid": "20",
+                    "member": [
+                        {
+                            "name": "q",
+                            "type": "list",
+                            "request": "factor_list",
+                            "open": "0",
+                            "productid": "",
+                            "couponCode": "",
+                            "hotelid": "",
+                            "search":{##cms.search.search|("")##},
+                            "deleted": "0",
+                            "pageindex": "{##cms.paging.index|(1)##}",
+                            "perpage": "20"
+                        }
+                    ]
+                }' content-type="application/json" triggers="cms.search cms.paging" onProcessed="onProcessed_list">
+            </basis>
+
+            <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
+                <section class="panel-flex panel-justify-between">
+                    <div class="panel-flex panel-items-center panel-gap-3">
+                        <h2 class="panel-font-medium">جستجوی سفر ها</h2>
+                        <div class="panel-flex panel-items-center panel-gap-2">
+                            <input type="text" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200
+                                   panel-px-4 panel-w-52 panel-h-14 panel-placeholder-zinc-400 panel-outline-none
+                                   focus:panel-border-primary-800 focus:panel-bg-white
+                                   focus:panel-shadow-md
+                                   panel-transition panel-duration-300" placeholder="بر اساس شماره قرارداد:" />
+                            <input type="text" name="" id="" placeholder="از تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                focus:panel-shadow-md
+                                panel-transition panel-duration-300">
+                            <input type="text" name="" id="" placeholder="تا تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                focus:panel-shadow-md
+                                panel-transition panel-duration-300">
+                        </div>
+                        <button
+                            class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                            aria-label="جستجو">
+                            <svg width="24" height="24" class="panel-text-white">
+                                <use href="/images/panel-sprite-icons.svg#icon-search"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <button
+                        class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
+                        <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
+                        <span
+                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-primary-800 group-hover:panel-scale-x-100"></span>
+                    </button>
+                </section>
+                <section class="Panel_invoice_List">
+                    <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
+                        options="InvoiceListItems">
+                    </basis>
+                </section>
+            </div>
+        </div>
+    </main>
+    <!-- Footer-->
+    <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/javascript"></script>
+    <script>
+        //    cellMaker: (row, data, td) => {
+        //     var icons = `<div class="invoice-error d-flex${set_bold_row(row)}">`;
+        //     icons += `<p class="row-number">${row.index}</p>`;
+        //     if (row.error.eid == "1") {
+        //         if (row.error.type == "2" || row.error.type.some(obj => obj.tid == "2")) {
+        //             icons += set_warning("عدم صدور بلیط");
+        //         } else if (row.error.type == "3" || row.error.type.some(obj => obj.tid == "3")) {
+        //             icons += set_warning("عدم صدور هتل");
+        //         } else if (row.error.type == "5" || row.error.type.some(obj => obj.tid == "5")) {
+        //             icons += set_warning("عدم صدور بیمه");
+        //         } else {
+        //             icons += set_warning("لطفا حتما صدور یا عدم صدور را از تامین کننده پیگیری کنید");
+        //         }
+        //     }
+        //     icons += `</div>`;
+        //     return icons;
+        // }
+        function set_bold_row(row) {
+            // if opened form panel karbari >> 2 else in basispanel >> 1
+            if (row.read == 0 || row.read == "2") {
+                return " unread-invoice";
+            }
+
+            return "";
+        }
+        function set_warning(msg) {
+            return `<span class="space" data-widget-header-btn-tooltip-right="${msg}" data-sys-tooltip-warning="">
+                    <svg class="ionicon" viewBox="0 0 512 512" width="35">
+                        <path d="M85.57 446.25h340.86a32 32 0 0028.17-47.17L284.18 82.58c-12.09-22.44-44.27-22.44-56.36 0L57.4 399.08a32 32 0 0028.17 47.17z" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" stroke="#fff" fill="#ce0e0e"></path>
+                        <path d="M250.26 195.39l5.74 122 5.73-121.95a5.74 5.74 0 00-5.79-6h0a5.74 5.74 0 00-5.68 5.95z" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" stroke="#fff" fill="#ce0e0e"></path>
+                        <path d="M256 397.25a20 20 0 1120-20 20 20 0 01-20 20z" fill="#fff"></path>
+                    </svg>
+                </span>`;
+        }
+        function seprator_default_value(value) {
+            const floatValue = Number(value);
+            if (!Number.isNaN(floatValue) && Number.isFinite(floatValue)) {
+                return new Intl.NumberFormat().format(floatValue);
+            }
+            return value;
+        }
+        function return_services(data) {
+            var valid_sids = ['6', '4', '3', '13', '11']
+            var services = data.services;
+
+            var status_p = [];
+
+            if (services.sid && valid_sids.includes(services.sid)) {
+                for (var this_poduct of ['hotel', 'visa', 'cip', 'service', 'transfer']) {
+                    if (services.hasOwnProperty(`${this_poduct}status`)) {
+                        for (var this_service of services[`${this_poduct}status`]) {
+                            var details = this_service[`${this_poduct}status`].Details;
+                            var p_class = 'clear';
+                            if (details) {
+                                if (this_poduct == 'hotel') {
+                                    var status = status_code[details.H_status];
+                                    var desc = `نام کشور : ${details.H_countryname} |
+                                            نام شهر : ${details.H_cityname} |
+                                            نام هتل : ${details.HotelName} |
+                                            وضعیت : ${status}`
+
+                                    // check cancelation
+                                    if (this_service.cancellation_policies) {
+                                        if (this_service.cancellation_policies.length > 0) {
+                                            refund_status = this_service.hotelstatus.cancellation_policies[0];
+                                            var refund = cancel_info[refund_status.refundable];
+                                            var cancel_date = refund_status.cancellation_policies[0].fromDate;
+                                            var penalty = refund_status.cancellation_policies[0].amount;
+                                            cancel_desc = ` | ${refund} | ${cancel_date}:  ${penalty}`;
+                                            desc += cancel_date;
+                                        }
+                                    }
+                                    var status_text = 'A';
+                                    if (status != 'Available') {
+                                        status_text = 'H'
+                                    }
+                                    if (details.H_status == '1') {
+                                        p_class = 'confirm'
+                                    } else if (details.H_status == '3') {
+                                        p_class = 'nclear'
+                                    }
+                                }
+                                if (this_poduct == 'visa') {
+                                    var status = status_code[parseInt(details.v_status).toString()];
+
+                                    if (details.v_status == '3') {
+                                        status = status_code['2'];
+                                    }
+
+                                    if (details.v_countryname && details.visaName) {
+                                        var desc = `نام کشور : ${details.v_countryname} |
+                                                نام ویزا: ${details.visaName} |
+                                                وضعیت : ${status}`
+                                    } else {
+                                        var desc = `وضعیت : ${status}`
+                                    }
+                                    var status_text = 'V';
+
+                                    if (parseInt(details.v_status).toString() == '1') {
+                                        p_class = 'confirm'
+                                    }
+                                }
+                                if (this_poduct == 'cip') {
+                                    var status = status_code[parseInt(details.c_status).toString()];
+                                    var desc = `وضعیت : ${status}`
+                                    var status_text = 'C';
+                                }
+                                if (this_poduct == 'cip') {
+                                    var status = status_code[parseInt(details.c_status).toString()];
+                                    var desc = `وضعیت : ${status}`
+                                    var status_text = 'C';
+                                }
+                                if (this_poduct == 'service' || this_poduct == 'transfer') {
+                                    var desc = '';
+                                    if (details.s_status) {
+                                        var status = status_code[parseInt(details.s_status).toString()];
+                                        desc += `وضعیت : ${status} |`
+                                        var status_text = 'S';
+                                    }
+                                    if (details.service_name) {
+                                        desc += `خدمات : ${details.service_name} |`
+                                        var status_text = 'S';
+                                    }
+                                }
+                                status_p.push(`<div class="InvoiceStatus">
+                                            <p class="${p_class} servicesStatus-invoice-list hover-service" data-widget-header-btn-tooltip="${desc}" data-sys-tooltip="">${status_text}</p>
+                                        </div>`)
+                            }
+                        }
+                    }
+
+                }
+            }
+            if (status_p.length) {
+                status_p = splitArrayIntoPairs(status_p, 2);
+            }
+            return `<div class="icons${data.read == 0 ? " unread-invoice" : ""}">
+                    <div class="">${services.service}</div>
+                </div>`
+
+        }
+
+        var InvoiceListItems = {
+            process: "mix",
+            ProcessActionType: {
+                search: "client",
+                paging: "server",
+                sort: "client"
+            },
+            filter: "row",
+            columns: {
+                // invoiceid: {
+                //     title: "شماره قرارداد",
+                //     filter: false,
+                //     sort: false,
+                //     source: row => {
+                //         return `${row.id.id}`;
+                //     },
+                //     cellMaker: (row, data, td) => {
+                //         var icons = `<div class="icons${set_bold_row(row)}">`;
+                //         if ("desc" in row.id && row.id.desc !== null && row.id.desc !== "") {
+                //             icons += `<span class="desc-invoice-content cursor-invoice-info" title="${row.id.desc}" data-sys-tooltip="">
+                //                     </span>
+                //                     <p class="en-numbers d-inline invoice-id" onclick="editObject(this,event,'${row.id.id}')">${row.id.id}</p>`
+                //         } else {
+                //             icons += `<p class="en-numbers d-inline invoice-id" onclick="editObject(this,event,'${row.id.id}')">${row.id.id}</p>`
+                //         }
+                //         icons += `</div>`;
+                //         return icons;
+                //     }
+                // },
+                // accountName: {
+                //     title: "خریدار",
+                //     filter: false,
+                //     sort: false,
+                //     cssClass: ["width_10"],
+                //     source: row => `${row.account.accountName}`,
+                //     cellMaker: (row, data, td) => {
+                //         result = `<div class="${set_bold_row(row)}" >${row.account.accountName} </div>`;
+                //         if (row.account.hasOwnProperty('engine')) {
+                //             result +=
+                //                 `<div class="accountName-invoice-list${set_bold_row(row)}" style="font-size: 12px !important;">(خرید از ${row.account.engine})</div>`
+                //         } else if (row.account.hasOwnProperty('supplier')) {
+                //             if (row.account.supplier == '1') {
+                //                 row.account.supplier = 'تامین کننده';
+                //                 result +=
+                //                     `<div class="accountName-invoice-list${set_bold_row(row)}" style="font-size: 12px !important;">(خرید ${row.account.supplier})</div>`
+                //             }
+                //         }
+                //         return result;
+                //     }
+                // },
+                accountName: {
+                    title: "مشخصات",
+                    filter: false,
+                    sort: false,
+                    cssClass: ["width_10"],
+                    source: row => `${row.account?.accountName ?? ''}`,
+                    cellMaker: (row, data, td) => {
+                        const bold = set_bold_row(row) || '';
+                        const name = row.account?.accountName ?? '-';
+                        const contractId = row.id?.id ?? '';
+
+                        let html = `
+      <div class="${bold}">
+        <div class="accountName-title">${name}</div>
+        <div class="accountName-sub">
+          قرارداد:
+          <span class="en-numbers invoice-id cursor-pointer"
+                onclick="editObject(this,event,'${contractId}')">
+            ${contractId}
+          </span>
+        </div>
+      </div>
+    `;
+
+                        if (row.account?.hasOwnProperty('engine')) {
+                            html += `<div class="accountName-invoice-list${bold}">(خرید از ${row.account.engine})</div>`;
+                        } else if (row.account?.hasOwnProperty('supplier')) {
+                            if (row.account.supplier == '1') {
+                                html += `<div class="accountName-invoice-list${bold}">(خرید تامین کننده)</div>`;
+                            }
+                        }
+
+                        return html;
+                    }
+                },
+                cityName: {
+                    title: "مبدا-مقصد",
+                    filter: false,
+                    sort: false,
+                    source: row => `${row.city.cityName}`,
+                    cellMaker: (row, data, td) => {
+                        var result = `<span class="${set_bold_row(row)}">${row.city.cityName} </span>`;
+                        if (row.city.tourName) {
+                            result += `<br><span>${row.city.tourName}</span>`;
+                        }
+                        return result
+                    }
+                },
+                // begindate: {
+                //     title: "تاریخ رفت و برگشت",
+                //     filter: false,
+                //     sort: false,
+                //     source: row => {
+                //         var begindate = row.travelDate.begindate;
+                //         if (typeof begindate == Array) {
+                //             return `${begindate[0].mstring} - ${begindate[0].sstring}`;
+                //         }
+                //         return `${begindate.mstring} - ${begindate.sstring}`;
+                //     },
+                //     cellMaker: (row, data, td) => {
+                //         var result = "";
+                //         var begindate = row.travelDate.begindate;
+                //         if (Array.isArray(begindate)) {
+                //             result = begindate.map(this_date => `
+                //             <span class="en-numbers${row.read === 0 ? " unread-invoice" : ""}">${this_date.mstring}</span>
+                //             ${this_date.sstring !== '' && this_date.sstring !== '-' ? `<br><span class="font_12${row.read === 0 ? " unread-invoice" : ""}">(${this_date.sstring})</span>` : ''}
+                //         `).join('');
+                //         } else {
+                //             result += `<span class="en-numbers${set_bold_row(row)}">${begindate.mstring}</span>`;
+                //             if (begindate.sstring !== '' && begindate.sstring !== '-') {
+                //                 result += `</br><span class="font_12${set_bold_row(row)}">(${begindate.sstring})</span>`;
+                //             }
+                //         }
+                //         return result;
+                //     }
+                // },
+                // enddate: {
+                //     title: "تاریخ برگشت",
+                //     filter: false,
+                //     sort: false,
+
+                //     source: row => {
+                //         var enddate = row.travelDate.enddate;
+                //         if (enddate) {
+                //             return `${enddate.mstring} - ${enddate.sstring}`;
+                //         }
+                //     },
+                //     cellMaker: (row, data, td) => {
+                //         var enddate = row.travelDate.enddate;
+                //         if (!enddate) {
+                //             return "";
+                //         }
+                //         var result = `<span class="en-numbers${set_bold_row(row)}">${enddate.mstring}</span>`;
+                //         if (enddate.sstring !== '' && enddate.sstring !== '-') {
+                //             result += `</br><span class="font_12${set_bold_row(row)}">(${enddate.sstring})</span>`;
+                //         }
+                //         return result;
+                //     }
+                // },
+                date: {
+                    title: "تاریخ رفت و برگشت",
+                    filter: false,
+                    sort: false,
+                    source: row => {
+                        const begin = row.travelDate?.begindate;
+                        const end = row.travelDate?.enddate;
+
+                        const beginText = Array.isArray(begin)
+                            ? begin.map(d => `${d.sstring} (${d.mstring})`).join(" | ")
+                            : begin ? `${begin.sstring} (${begin.mstring})` : "";
+
+                        const endText = end ? `${end.sstring} (${end.mstring})` : "";
+
+                        return `رفت: ${beginText} برگشت: ${endText}`.trim();
+                    },
+                    cellMaker: (row, data, td) => {
+                        const bold = set_bold_row(row) || '';
+                        const unread = row.read === 0 ? " unread-invoice" : "";
+
+                        const begin = row.travelDate?.begindate;
+                        const end = row.travelDate?.enddate;
+
+                        const fmt = (d) => {
+                            if (!d) return "";
+                            const shamsi = d.sstring && d.sstring !== "-" ? d.sstring : "";
+                            const miladi = d.mstring && d.mstring !== "-" ? d.mstring : "";
+                            if (!shamsi && !miladi) return "";
+                            if (shamsi && miladi) return `${shamsi} - (${miladi})`;
+                            return shamsi || miladi;
+                        };
+
+                        let beginHtml = "";
+                        if (Array.isArray(begin)) {
+                            beginHtml = begin.map(d => `<span class="en-numbers${bold}${unread}">${fmt(d)}</span>`).join("<br>");
+                        } else {
+                            beginHtml = `<span class="en-numbers${bold}${unread}">${fmt(begin)}</span>`;
+                        }
+
+                        const endHtml = end
+                            ? `<span class="en-numbers${bold}${unread}">${fmt(end)}</span>`
+                            : `<span class="en-numbers${bold}${unread}">-</span>`;
+
+                        return `
+                              <div class="${bold}">
+                                <div class="panel-flex panel-items-center panel-gap-1 ${bold}${unread}">تاریخ رفت: <span>${beginHtml}</span></div>
+                                <div class="panel-flex panel-items-center panel-gap-1 ${bold}${unread}">تاریخ برگشت: <span>${endHtml}</span></div>
+                              </div>
+                            `;
+                    }
+                },
+                // invoicedate: {
+                //     title: "تاریخ قرارداد",
+                //     filter: false,
+                //     sort: false,
+                //     cssClass: ['width_10'],
+                //     source: row => {
+                //         var enddate = row.createdate;
+                //         return `${enddate.mstring} - ${enddate.sstring}`;
+                //     },
+                //     cellMaker: (row, data, td) =>
+                //         `<span class="en-numbers${set_bold_row(row)}">${row.createdate.mstring}</span><br/><span class="font_12${set_bold_row(row)}">(${row.createdate.sstring})</span><br/><span class="en-numbers${set_bold_row(row)}">${row.createhour}</span>`
+                // },
+                // service: {
+                //     title: "خدمات / Refnumber",
+                //     filter: false,
+                //     sort: false,
+                //     source: row => `${row.services.service}`,
+                //     cellMaker: (row, data, td) => {
+                //         // && row.webservices[0].webservices.wid !== "0"
+                //         return return_services(row);
+                //     }
+                // },
+                service: {
+                    title: "خدمات / Refnumber",
+                    filter: false,
+                    sort: false,
+                    source: row => `${row.services?.service ?? ''}`,
+                    cellMaker: (row, data, td) => {
+                        const baseHtml = return_services(row);
+
+                        const refRaw = row.webservices?.[0]?.webservices?.ws_refnumber ?? '';
+                        const refText = String(refRaw).replace(/<[^>]*>/g, '').trim();
+                        const refClean = refText.replace(/^\s*refnumber\s*:\s*/i, '').trim();
+
+                        if (!refClean) return baseHtml;
+
+                        try {
+                            const wrap = document.createElement('div');
+                            wrap.innerHTML = baseHtml;
+
+                            // ریشه‌ی خروجی return_services: <div class="icons...">
+                            const root = wrap.firstElementChild;
+                            if (!root) return baseHtml;
+
+                            // اولین div داخل icons، همون عنوان خدماته
+                            const serviceTitleDiv = root.querySelector(':scope > div');
+                            if (!serviceTitleDiv) return baseHtml;
+
+                            // Refnumber رو دقیقاً زیر عنوان خدمات می‌ذاریم
+                            serviceTitleDiv.insertAdjacentHTML(
+                                'afterend',
+                                `<div class="service-ref font_12">
+          Refnumber: <span class="en-numbers">${refClean}</span>
+        </div>`
+                            );
+
+                            return wrap.innerHTML;
+                        } catch (e) {
+                            return baseHtml;
+                        }
+                    }
+                },
+                invoiceprice: {
+                    title: "مبلغ (ریال)",
+                    filter: false,
+                    sort: false,
+                    cssClass: ["no-content-row"],
+                    source: row => `${row.costinfo.totalwithcommision}`,
+                    cellMaker: (row, data, td) => {
+                        var cost_cloumn = document.querySelector("#cost_cloumn");
+                        if (cost_cloumn) {
+                            cost_cloumn.textContent = `قیمت (${row.costinfo.priceunit})`
+                            cost_cloumn.removeAttribute('id');
+                        }
+                        return `<div><span class="en-numbers${set_bold_row(row)}" data-widget-header-btn-tooltip=" باقیمانده : ${seprator_default_value(row.balance)} " data-sys-tooltip=""><span class="en-numbers">${seprator_default_value(row.costinfo.totalwithcommision)}</span></span></div>`
+
+                    }
+                },
+                // passengers: {
+                //     title: "تعداد مسافر",
+                //     filter: false,
+                //     sort: false,
+                //     cssClass: ["width_5"],
+                //     cellMaker: (row, data, td) =>
+                //         `<span class="en-numbers${set_bold_row(row)}" >ADL: ${row.passengers.adult}<br/>CHD: ${row.passengers.child}<br/>INF: ${row.passengers.infant}<br/></span>`
+                // },
+                // invoicelabels: {
+                //     title: "لیبل",
+                //     filter: false,
+                //     sort: false,
+                //     cellMaker: (row, data, td) => {
+                //         var labels = "";
+                //         labels = `<span class="cursor">`;
+                //         for (let c in row.labels) {
+                //             if (row.labels[c].labels.label == "0") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="nclear"  data-descr="تسویه نشده" ></span></div>`;
+                //             } else if (row.labels[c].labels.label == "1") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="clear" data-descr="تسویه شده" ></span></div>`;
+                //             } else if (row.labels[c].labels.label == "2") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="confirm" data-descr=" تسویه نشده با تایید مالی"></span></div>`;
+                //             } else if (row.labels[c].labels.label == "3") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="edited" data-descr="ویرایش شده"></span></div>`;
+                //             } else if (row.labels[c].labels.label == "4") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="canceled" data-descr="ابطال شده"></span></div>`;
+                //             } else if (row.labels[c].labels.label == "5") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="clearconfirm" data-descr="تسویه شده توسط مالی"></span></div>`;
+                //             } else if (row.labels[c].labels.label == "6") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="credit" data-descr="پرداخت اعتباری"></span></div>`;
+                //             }
+                //             else if (row.labels[c].labels.label == "8") {
+                //                 labels +=
+                //                     `<div class="InvoiceStatus"><span class="clearconfirm" data-descr="پرداخت اعتباری-تسویه شده توسط مالی"></span></div>`;
+                //             }
+
+
+
+                //         }
+
+                //         labels += `</span>`;
+                //         return labels;
+                //     }
+                // },
+                invoicelabels: {
+                    title: "لیبل",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+                        const map = {
+                            "0": { cls: "nclear panel-bg-label-redBg panel-text-label-red", text: "تسویه نشده" },
+                            "1": { cls: "clear panel-bg-label-darkGreenBg panel-text-label-darkGreen", text: "تسویه شده" },
+                            "2": { cls: "confirm panel-bg-label-orangeBg panel-text-label-orange", text: "تسویه نشده با تایید مالی" },
+                            "3": { cls: "edited panel-bg-label-blueBg panel-text-label-blue", text: "ویرایش شده" },
+                            "4": { cls: "canceled panel-bg-label-GrayBg panel-text-label-Gray", text: "ابطال شده" },
+                            "5": { cls: "clearconfirm panel-bg-label-lightGreen panel-text-white", text: "تسویه شده توسط مالی" },
+                            "6": { cls: "credit panel-bg-label-purpleBg panel-text-label-purple", text: "پرداخت اعتباری" },
+                            "8": { cls: "clearconfirm panel-bg-label-lightGreen panel-text-white", text: "پرداخت اعتباری-تسویه شده توسط مالی" },
+                        };
+
+                        const basePill = "panel-px-2 panel-py-0.5 panel-rounded-2xl";
+
+                        const labelsArr = Array.isArray(row.labels) ? row.labels : [];
+                        let html = `<div class="cursor">`;
+
+                        for (const item of labelsArr) {
+                            const code = String(item?.labels?.label ?? "");
+                            const meta = map[code];
+                            if (!meta) continue;
+
+                            html += `
+        <div class="InvoiceStatus">
+          <span class="${meta.cls} ${basePill}" data-descr="${meta.text}">
+            ${meta.text}
+          </span>
+        </div>
+      `;
+                        }
+
+                        html += `</div>`;
+                        return html;
+                    }
+                },
+
+                operation: {
+                    title: "",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+                        return `<div class="panel-select__item__container panel-relative panel-cursor-pointer ">
+  <div
+    class="panel-row-expander"
+    onclick="onPassengerRowClick(this, event)">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19.9697 31.5303C19.7034 31.2641 19.6792 30.8474 19.8971 30.5538L19.9697 30.4697L26.439 24L19.9697 17.5303C19.7034 17.2641 19.6792 16.8474 19.8971 16.5538L19.9697 16.4697C20.2359 16.2034 20.6526 16.1792 20.9462 16.3971L21.0303 16.4697L28.0303 23.4697C28.2966 23.7359 28.3208 24.1526 28.1029 24.4462L28.0303 24.5303L21.0303 31.5303C20.7374 31.8232 20.2626 31.8232 19.9697 31.5303Z" fill="#71717A"></path>
+    </svg>
+  </div>
+</div>`;
+                    },
+                }
+
+            },
+            rowNumber: false,
+            defaultSort: {
+                name: "groupname"
+            },
+            paging: [50, 30, 20, 10],
+            defaultPagingIndex: 1,
+            pagingFilterType: "server",
+            culture: {
+                labels: {
+                    // "search": "نام درخواست کننده :",
+                    "refresh": "",
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}",
+                    "pageSize": "تعداد قابل نمایش در هر صفحه :"
+                }
+            },
+            pageSize: 10,
+            pageNumber: 1,
+            refreshSourceId: "list.refresh",
+            refresh: true,
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+                                    <div class="icon">
+                                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z" fill="#D0D0D0"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text">
+                                        هیچ موردی یافت نشد.
+                                    </div>
+                                </div>
+                                `
+            },
+            export: [
+                {
+                    type: "excel",
+                    tooltip: "دانلود اکسل"
+                }
+            ]
+        };
+        async function onProcessed_list(args) {
+            try {
+                const response = args.response;
+                const responseJson = await response.json();
+                const data = responseJson.sources[0].data;
+                var options = responseJson.sources[0].options;
+
+                $bc.setSource("db.list", data, options);
+            } catch (e) {
+                $bc.setSource("db.list", [], get_option("db.list"));
+            }
+        }
+    </script>
+    <script>
+        // const onProcessedApiBooking = async (args) => {
+        //     try {
+        //         const response = args.response;
+        //         if (response.status === 200) {
+        //             const responseJson = await response.json();
+
+        //             if (responseJson) {
+        //                 $bc.setSource("db.list", responseJson);
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.error("onProcessedApiBooking: " + error.message);
+        //     }
+        // };
+
+
+        function onPassengerRowClick(el, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const tr = el.closest("tr[data-sys-tr]");
+            if (!tr) return;
+
+            // اگر قبلاً باز شده بود => ببند و حالت اولیه را برگردان
+            if (tr.classList.contains("passenger-row-expanded")) {
+                if (tr._originalInnerHTML) {
+                    tr.innerHTML = tr._originalInnerHTML;
+                }
+                tr.classList.remove("passenger-row-expanded");
+                return;
+            }
+
+            // تعداد ستون‌ها
+            const tds = Array.from(tr.querySelectorAll("td[data-sys-td], td"));
+            const colCount = tds.length || 1;
+
+            // یکبار HTML اولیه را ذخیره کن تا بتوانیم restore کنیم
+            if (!tr._originalInnerHTML) {
+                tr._originalInnerHTML = tr.innerHTML;
+            }
+
+            const d = el.dataset;
+
+            // محتوای ردیف اصلی را مثل یک Grid (به جای td) بازسازی می‌کنیم
+            const summaryHtml = tds
+                .map((td) => `<div class="passenger-summary-cell">${td.innerHTML}</div>`)
+                .join("");
+
+            // کل tr را به یک td با colspan تبدیل می‌کنیم
+            tr.innerHTML = "";
+            tr.classList.add("passenger-row-expanded");
+
+            const td = document.createElement("td");
+            td.colSpan = colCount;
+            td.setAttribute("data-sys-td", "");
+            td.setAttribute("data-bc-data", "");
+            td.setAttribute("data-bc-order", "");
+
+            td.innerHTML = `
+    <div class="passenger-row-wrap">
+      <div class="passenger-summary-grid">
+        ${summaryHtml}
+      </div>
+
+      <div class="passenger-detail is-open">
+        <div class="passenger-detail__grid">
+          <div class="passenger-detail__item"><span class="k">Issue Country:</span><span class="v">${d.issueCountryName || "-"}</span></div>
+          <div class="passenger-detail__item"><span class="k">Issue Country ID:</span><span class="v">${d.issueCountryId || "-"}</span></div>
+
+          <div class="passenger-detail__item"><span class="k">Passport Code:</span><span class="v">${d.passportCode || "-"}</span></div>
+          <div class="passenger-detail__item"><span class="k">Passport Exp:</span><span class="v">${d.passportExpiration || "-"}</span></div>
+
+          <div class="passenger-detail__item"><span class="k">Persian Name:</span><span class="v">${(d.persianFirstName || "-") + " " + (d.persianLastName || "")}</span></div>
+
+          <div class="passenger-detail__actions">
+            <button type="button"
+              class="panel-flex panel-items-center panel-justify-center panel-w-28 panel-h-12 panel-border panel-border-solid panel-border-primary-700 panel-rounded-lg panel-text-primary-700 panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">
+              مشاهده قرارداد
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+            tr.appendChild(td);
+        }
+
+    </script>
+</body>
+
+</html>
