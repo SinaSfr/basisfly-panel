@@ -1,3 +1,5 @@
+<basis core="callback" run="atclient" method="setPage" triggers="list.refresh"></basis>
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -9,8 +11,34 @@
         type="text/css" rel="stylesheet" />
 </head>
 <style>
+    [data-bc-grid] {
+        --red-label: #CE0E0E;
+        --blue-label: #085BA9;
+        --purple-label: #780894;
+        --orange-label: #F98E20;
+        --lightGreen-label: #00fb0b;
+        --darkGreen-label: #136F01;
+        --Gray-label: #8a8a8a;
+
+        --red-bgLabel: #F9D5D5;
+        --blue-bgLabel: #C8E6FF;
+        --purple-bgLabel: #EED5F9;
+        --orange-bgLabel: #F9EED5;
+        --lightGreen-bgLabel: #d0ffd2;
+        --darkGreen-bgLabel: #D5F9DF;
+        --Gray-bgLabel: #f5f5f5;
+    }
+
     [data-bc-grid] * {
         font-size: 12px !important;
+    }
+
+    [data-bc-grid="d1"] [data-bc-grid-header-container] {
+        border: none !important;
+        border-radius: unset !important;
+        padding: 0 !important;
+        min-height: 40px !important;
+        margin-top: 2rem;
     }
 
     tr.passenger-detail-row {
@@ -27,66 +55,206 @@
         background: transparent;
     }
 
-    .passenger-detail {
-        border-top: 1px dashed var(--Zinc-200, #E4E4E7);
-        padding: 10px 12px !important;
-        font-size: 12px;
-        color: #3f3f46;
+    .panel-font-sans {
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     }
 
-
-    .passenger-detail__grid {
-        display: flex;
-        justify-content: space-between;
-        /* display: grid;
-          grid-template-columns: repeat(6, minmax(0, 1fr));
-          align-items: center; */
-        gap: 8px 16px;
+    .panel-border-t {
+        border-top-width: 1px;
     }
 
-    .passenger-detail__item {
-        display: flex;
-        gap: 8px;
+    .panel-border-dashed {
+        border-style: dashed;
     }
 
-    .passenger-detail__item .k {
-        color: #71717a;
-        min-width: 110px;
-    }
-
-    .passenger-detail__item .v {
-        color: #18181b;
-        direction: rtl;
-    }
-
-    .passenger-row-wrap {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .passenger-summary-grid {
-        display: flex;
-        justify-content: space-between;
-        /* display:grid;
-    grid-template-columns: repeat(9, minmax(0, 1fr)); */
-    }
-
-    /* اینو مطابق استایل td های خودت تنظیم کن */
-    .passenger-summary-cell {
-        padding: 10px 12px !important;
-        /* اگر جدول border داره، اینا رو هم می‌تونی شبیه td کنی */
-        /* border-left: 1px solid #eee; */
-        display: flex;
-        align-items: center;
-    }
-
-    .passenger-detail__item .k {
-        opacity: .75;
-        margin-right: 6px !important;
+    .panel-border-zinc-200 {
+        --tw-border-opacity: 1;
+        border-color: rgb(228 228 231 / var(--tw-border-opacity, 1))
+            /* #e4e4e7 */
+        ;
     }
 
     [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td {
         text-align: center !important;
+    }
+
+    .\!panel-text-zinc-500 {
+        --tw-text-opacity: 1 !important;
+        color: rgb(113 113 122 / var(--tw-text-opacity, 1))
+            /* #71717a */
+            !important;
+    }
+
+    .\!panel-px-3 {
+        padding-left: 0.75rem
+            /* 12px */
+            !important;
+        padding-right: 0.75rem
+            /* 12px */
+            !important;
+    }
+
+    .\!panel-pt-3 {
+        padding-top: 0.75rem
+            /* 12px */
+            !important;
+    }
+
+    .\!panel-text-sm {
+        font-size: 0.875rem
+            /* 14px */
+            !important;
+        line-height: 1.25rem
+            /* 20px */
+            !important;
+    }
+
+    .\!panel-py-3 {
+        padding-top: 0.75rem
+            /* 12px */
+            !important;
+        padding-bottom: 0.75rem
+            /* 12px */
+            !important;
+    }
+
+    .\!panel-px-2 {
+        padding-left: 0.5rem
+            /* 8px */
+            !important;
+        padding-right: 0.5rem
+            /* 8px */
+            !important;
+    }
+
+    .\!panel-py-1 {
+        padding-top: 0.25rem
+            /* 4px */
+            !important;
+        padding-bottom: 0.25rem
+            /* 4px */
+            !important;
+    }
+
+    .\!panel-text-white {
+        --tw-text-opacity: 1 !important;
+        color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+            /* #ffffff */
+            !important;
+    }
+
+    .panel-text-right {
+        text-align: right;
+    }
+
+    .\!panel-p-3 {
+        padding: 0.75rem
+            /* 12px */
+            !important;
+    }
+
+    .\!panel-py-0\.5 {
+        padding-top: 0.125rem
+            /* 2px */
+            !important;
+        padding-bottom: 0.125rem
+            /* 2px */
+            !important;
+    }
+
+    .panel-gap-1\.5 {
+        gap: 0.375rem
+            /* 6px */
+        ;
+    }
+
+    .panel-cursor-help {
+        cursor: help;
+    }
+
+    [data-sys-tooltip] {
+        position: relative;
+    }
+
+    [data-sys-tooltip]::before {
+        content: attr(data-widget-header-btn-tooltip);
+        position: absolute;
+        bottom: -35px;
+        right: 0;
+        padding: 10px 7px;
+        width: max-content;
+        border-radius: 10px;
+        background-color: #767676;
+        color: #fff;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    /* مخفی/نمایش */
+    [data-sys-tooltip]::before {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: all .2s;
+    }
+
+    [data-sys-tooltip]:hover::before {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    [data-sys-tooltip][data-tooltip-variant="warning"]::before {
+        border: 1px solid #EF4444;
+        color: #EF4444;
+        background: #FFD1D1;
+        border-radius: 100px;
+    }
+
+    [data-sys-tooltip][data-tooltip-variant="info"]::before {
+        border: 1px solid #3B82F6;
+        color: #3B82F6;
+        background: #DBEAFE;
+        border-radius: 100px;
+    }
+
+    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]:first-child {
+        border-width: 1px 1px 1px 0;
+        border-radius: 0 12px 12px 0;
+    }
+
+    .Panel_invoice_List .passenger-row-expanded td[data-sys-td]:first-child {
+        border-width: 1px !important;
+        border-radius: 12px !important;
+    }
+
+    tr.passenger-row-expanded .panel-row-expander svg {
+        transform: rotate(90deg);
+        transition: transform .2s ease;
+    }
+
+    [data-bc-grid="d1"] table[data-bc-table] thead td {
+        padding: 16px 12px !important;
+        background: #F4F4F5;
+        font-weight: 400 !important;
+        color: #18181B !important;
+    }
+
+    [data-bc-grid="d1"] table[data-bc-table] thead tr {
+        border-radius: 12px;
+    }
+
+    [data-bc-grid="d1"] table[data-bc-table] thead td:first-child {
+        border-radius: 0 12px 12px 0;
+    }
+
+    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody td {
+        padding: 12px 0 !important;
+    }
+
+    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody td:first-child {
+        padding-right: 12px !important;
     }
 </style>
 
@@ -114,49 +282,293 @@
                             "hotelid": "",
                             "search":{##cms.search.search|("")##},
                             "deleted": "0",
-                            "pageindex": "{##cms.paging.index|(1)##}",
-                            "perpage": "20"
+                            "pageindex": "{##cms.paging.pageno|(1)##}",
+                            "perpage": "2"
                         }
                     ]
                 }' content-type="application/json" triggers="cms.search cms.paging" onProcessed="onProcessed_list">
             </basis>
 
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
-                <section class="panel-flex panel-justify-between">
+                <section>
                     <div class="panel-flex panel-items-center panel-gap-3">
-                        <h2 class="panel-font-medium">جستجوی سفر ها</h2>
+                        <h2 class="panel-text-zinc-900 panel-font-medium">جستجو براساس تاریخ قرارداد</h2>
                         <div class="panel-flex panel-items-center panel-gap-2">
-                            <input type="text" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200
-                                   panel-px-4 panel-w-52 panel-h-14 panel-placeholder-zinc-400 panel-outline-none
-                                   focus:panel-border-primary-800 focus:panel-bg-white
-                                   focus:panel-shadow-md
-                                   panel-transition panel-duration-300" placeholder="بر اساس شماره قرارداد:" />
-                            <input type="text" name="" id="" placeholder="از تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
-                            <input type="text" name="" id="" placeholder="تا تاریخ:" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-36 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300">
+                            <div class="panel-relative">
+                                <input type="text"
+                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-44 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                    placeholder="ازتاریخ:" />
+                                <svg width="48" height="48"
+                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                </svg>
+                            </div>
+                            <div class="panel-relative">
+                                <input type="text" name="" id="" placeholder="تا تاریخ:"
+                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-44 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300">
+                                <svg width="48" height="48"
+                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                </svg>
+                            </div>
                         </div>
-                        <button
-                            class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
-                            aria-label="جستجو">
-                            <svg width="24" height="24" class="panel-text-white">
-                                <use href="/images/panel-sprite-icons.svg#icon-search"></use>
-                            </svg>
-                        </button>
                     </div>
-                    <button
-                        class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
-                        <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
-                        <span
-                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-primary-800 group-hover:panel-scale-x-100"></span>
-                    </button>
+                    <div class="panel-flex panel-justify-between panel-mt-2">
+                        <div class="panel-flex panel-items-center panel-gap-2">
+                            <input type="text" name="" id="" placeholder="جستجو براساس شماره قرارداد"
+                                class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300">
+                            <input type="text" name="" id="" placeholder="جستجو بر اساس شماره رفرنس" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                            focus:panel-shadow-md panel-transition panel-duration-300">
+                            <button
+                                class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                                aria-label="جستجو">
+                                <svg width="24" height="24" class="panel-text-white">
+                                    <use href="/images/panel-sprite-icons.svg#icon-search"></use>
+                                </svg>
+                            </button>
+                        </div>
+                        <button id="btnOpenAdvancedSearch" type="button" data-modal-open="advancedContractSearch"
+                            class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
+                            <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
+                            <span
+                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-primary-800 group-hover:panel-scale-x-100"></span>
+                        </button>
+                        <div id="advancedContractSearch" data-modal="advanced-search" role="dialog" aria-modal="true"
+                            aria-hidden="true" aria-labelledby="advancedSearchTitle"
+                            class="panel-modal__overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+
+                            <div id="advancedContractSearchContent" data-modal-content="advanced-search"
+                                class="panel-modal__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+
+                                <section
+                                    class="panel-modal__header panel-flex panel-items-center panel-justify-between panel-mb-5">
+                                    <div class="panel-flex panel-items-center">
+                                        <button id="btnCloseAdvancedSearch" type="button"
+                                            data-modal-close="advancedContractSearch"
+                                            class="panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                                            aria-label="Close">
+                                            <svg width="48" height="48">
+                                                <use href="/images/panel-sprite-icons.svg#icon-close"></use>
+                                            </svg>
+                                        </button>
+
+                                        <h2 id="advancedSearchTitle"
+                                            class="panel-modal-title panel-font-medium panel-text-zinc-900">جستجوی
+                                            پیشرفته</h2>
+                                    </div>
+
+                                    <button id="btnClearAdvancedSearchFilters" type="button"
+                                        class="panel-flex panel-items-center panel-text-red-500 panel-text-sm"
+                                        aria-label="حذف فیلترها">
+                                        <svg width="48" height="48">
+                                            <use href="/images/panel-sprite-icons.svg#icon-eraser"></use>
+                                        </svg>
+                                        <span>حذف فیلتر ها</span>
+                                    </button>
+                                </section>
+
+                                <section aria-describedby="advancedSearchHint">
+                                    <h3 id="advancedSearchHint"
+                                        class="panel-text-zinc-900 panel-text-sm panel-font-medium panel-mb-6">جستجو برا
+                                        اساس تاریخ
+                                        سفر می‌باشد</h3>
+
+                                    <div class="panel-flex panel-items-center panel-gap-5">
+                                        <div class="panel-flex-1 panel-flex panel-items-center panel-gap-3">
+                                            <input id="advSearchDateFrom" name="date_from" data-field="date_from"
+                                                type="text"
+                                                class="panel-w-52 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300"
+                                                placeholder="از تاریخ:">
+
+                                            <input id="advSearchDateTo" name="date_to" data-field="date_to" type="text"
+                                                class="panel-w-52 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300"
+                                                placeholder="تا تاریخ:">
+                                        </div>
+
+                                        <div class="panel-flex-1 panel-flex panel-items-center panel-justify-between"
+                                            role="radiogroup" aria-label="نوع سفر">
+
+                                            <label for="advSearchTripTypeOutbound"
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                <input id="advSearchTripTypeOutbound" name="trip_type"
+                                                    data-field="trip_type" type="radio" value="outbound"
+                                                    class="panel-w-5 panel-h-5">
+                                                رفت
+                                            </label>
+
+                                            <label for="advSearchTripTypeReturn"
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                <input id="advSearchTripTypeReturn" name="trip_type"
+                                                    data-field="trip_type" type="radio" value="return"
+                                                    class="panel-w-5 panel-h-5">
+                                                برگشت
+                                            </label>
+
+                                            <label for="advSearchTripTypeRoundTrip"
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                <input id="advSearchTripTypeRoundTrip" name="trip_type"
+                                                    data-field="trip_type" type="radio" value="roundtrip"
+                                                    class="panel-w-5 panel-h-5">
+                                                رفت وبرگشت
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-flex panel-mt-7">
+                                        <div
+                                            class="panel-grid panel-grid-cols-2 panel-gap-3 panel-border-l panel-border-zinc-300 panel-ml-5 panel-pl-5">
+
+                                            <div class="panel-relative" data-dd-key="origin_city">
+                                                <input data-dd-input id="advSearchOriginCity" name="origin_city"
+                                                    type="text" readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="شهر مبدا" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="destination_city">
+                                                <input data-dd-input id="advSearchDestinationCity"
+                                                    name="destination_city" data-field="destination_city" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="شهر مقصد" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="hotel">
+                                                <input data-dd-input id="advSearchHotel" name="hotel" data-field="hotel"
+                                                    type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="هتل" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="airline">
+                                                <input data-dd-input id="advSearchRailCompany" name="rail_company"
+                                                    data-field="rail_company" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="شرکت ریلی" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="rail_company">
+                                                <input data-dd-input id="advSearchAirline" name="airline"
+                                                    data-field="airline" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="ایرلاین" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+
+                                            <div class="panel-relative" data-dd-key="route_code">
+                                                <input data-dd-input id="advSearchRouteCode" name="route_code"
+                                                    data-field="route_code" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="کد مسیر" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-flex panel-flex-col panel-gap-3">
+                                            <div class="panel-grid panel-grid-cols-2 panel-gap-3">
+                                                <div class="panel-relative" data-dd-key="status">
+                                                    <input data-dd-input id="advSearchStatus" name="status"
+                                                        data-field="status" type="text"
+                                                        class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                        placeholder="وضعیت" />
+                                                    <svg width="48" height="48"
+                                                        class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                        <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                        </use>
+                                                    </svg>
+                                                </div>
+
+                                                <div class="panel-relative" data-dd-key="tag">
+                                                    <input data-dd-input id="advSearchTag" name="tag" data-field="tag"
+                                                        type="text"
+                                                        class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                        placeholder="برچسب" />
+                                                    <svg width="48" height="48"
+                                                        class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                        <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                        </use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="panel-relative panel-col-span-2" data-dd-key="services">
+                                                <input data-dd-input id="advSearchServices" name="services"
+                                                    data-field="services" type="text"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    placeholder="خدمات" />
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use href="/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-flex-1 panel-flex panel-items-center panel-gap-3 panel-mt-7">
+                                        <input id="advSearchBuyerInfo" name="buyer_info" data-field="buyer_info"
+                                            type="text"
+                                            class="panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300"
+                                            placeholder="اطلاعات خریدار">
+
+                                        <input id="advSearchPassengerInfo" name="passenger_info"
+                                            data-field="passenger_info" type="text"
+                                            class="panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300" placeholder="اطلاعات مسافر">
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+
                 </section>
-                <section class="Panel_invoice_List">
-                    <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
-                        options="InvoiceListItems">
-                    </basis>
+                <section class="panel-mt-12">
+                    <div class="panel-flex panel-items-center panel-justify-between">
+                        <h2 class="panel-text-zinc-900 panel-font-medium">سفرهای من</h2>
+                        <div class="panel-flex panel-items-center panel-gap-7">
+                            <p class="panel-text-zinc-900 panel-text-xs">جمع کل قرارداد ها <span>(1240)</span></p>
+                            <button
+                                class="panel-flex panel-items-center panel-justify-center panel-gap-2 panel-w-12 panel-h-12 panel-border panel-border-solid panel-border-zinc-300 panel-rounded-xl panel-text-sm panel-font-medium panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-border-primary-800">
+                                <img src="../assets/images/microsoft-exel.png"
+                                    class="panel-w-6 panel-h-6 panel-object-cover" alt="microsoft-exel" width="25"
+                                    height="25" loading="lazy">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="Panel_invoice_List">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
+                            options="InvoiceListItems">
+                        </basis>
+                    </div>
                 </section>
             </div>
         </div>
@@ -166,23 +578,18 @@
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
     <script>
-        //    cellMaker: (row, data, td) => {
-        //     var icons = `<div class="invoice-error d-flex${set_bold_row(row)}">`;
-        //     icons += `<p class="row-number">${row.index}</p>`;
-        //     if (row.error.eid == "1") {
-        //         if (row.error.type == "2" || row.error.type.some(obj => obj.tid == "2")) {
-        //             icons += set_warning("عدم صدور بلیط");
-        //         } else if (row.error.type == "3" || row.error.type.some(obj => obj.tid == "3")) {
-        //             icons += set_warning("عدم صدور هتل");
-        //         } else if (row.error.type == "5" || row.error.type.some(obj => obj.tid == "5")) {
-        //             icons += set_warning("عدم صدور بیمه");
-        //         } else {
-        //             icons += set_warning("لطفا حتما صدور یا عدم صدور را از تامین کننده پیگیری کنید");
-        //         }
-        //     }
-        //     icons += `</div>`;
-        //     return icons;
-        // }
+        async function setPage(args) {
+            console.log("click paging");
+            main_perpage = args.source.rows[0].pageSize;
+            var page_no = args.source.rows[0].pageNumber;
+            if (page_no == 0) {
+                page_no = 1;
+            }
+            var json = {
+                "pageno": page_no
+            };
+            $bc.setSource("cms.paging", [json]);
+        }
         function set_bold_row(row) {
             // if opened form panel karbari >> 2 else in basispanel >> 1
             if (row.read == 0 || row.read == "2") {
@@ -317,67 +724,71 @@
             },
             filter: "row",
             columns: {
-                // invoiceid: {
-                //     title: "شماره قرارداد",
-                //     filter: false,
-                //     sort: false,
-                //     source: row => {
-                //         return `${row.id.id}`;
-                //     },
-                //     cellMaker: (row, data, td) => {
-                //         var icons = `<div class="icons${set_bold_row(row)}">`;
-                //         if ("desc" in row.id && row.id.desc !== null && row.id.desc !== "") {
-                //             icons += `<span class="desc-invoice-content cursor-invoice-info" title="${row.id.desc}" data-sys-tooltip="">
-                //                     </span>
-                //                     <p class="en-numbers d-inline invoice-id" onclick="editObject(this,event,'${row.id.id}')">${row.id.id}</p>`
-                //         } else {
-                //             icons += `<p class="en-numbers d-inline invoice-id" onclick="editObject(this,event,'${row.id.id}')">${row.id.id}</p>`
-                //         }
-                //         icons += `</div>`;
-                //         return icons;
-                //     }
-                // },
-                // accountName: {
-                //     title: "خریدار",
-                //     filter: false,
-                //     sort: false,
-                //     cssClass: ["width_10"],
-                //     source: row => `${row.account.accountName}`,
-                //     cellMaker: (row, data, td) => {
-                //         result = `<div class="${set_bold_row(row)}" >${row.account.accountName} </div>`;
-                //         if (row.account.hasOwnProperty('engine')) {
-                //             result +=
-                //                 `<div class="accountName-invoice-list${set_bold_row(row)}" style="font-size: 12px !important;">(خرید از ${row.account.engine})</div>`
-                //         } else if (row.account.hasOwnProperty('supplier')) {
-                //             if (row.account.supplier == '1') {
-                //                 row.account.supplier = 'تامین کننده';
-                //                 result +=
-                //                     `<div class="accountName-invoice-list${set_bold_row(row)}" style="font-size: 12px !important;">(خرید ${row.account.supplier})</div>`
-                //             }
-                //         }
-                //         return result;
-                //     }
-                // },
                 accountName: {
                     title: "مشخصات",
                     filter: false,
                     sort: false,
-                    cssClass: ["width_10"],
                     source: row => `${row.account?.accountName ?? ''}`,
                     cellMaker: (row, data, td) => {
+                        
                         const bold = set_bold_row(row) || '';
-                        const name = row.account?.accountName ?? '-';
+                        const name = row.account?.accountName ?? '—';
                         const contractId = row.id?.id ?? '';
 
+                        const warningSvg = `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10.6279 3.35309C11.9877 2.59902 13.7174 3.09447 14.4773 4.44209L21.746 17.0572C21.906 17.4338 21.976 17.7399 21.996 18.058C22.036 18.8012 21.776 19.5236 21.2661 20.0795C20.7562 20.6334 20.0663 20.9604 19.3164 21H4.6789C4.36896 20.9812 4.05901 20.9108 3.76906 20.8018C2.3193 20.2172 1.61942 18.5723 2.20932 17.1464L9.52809 4.43317C9.77804 3.98628 10.158 3.60082 10.6279 3.35309ZM11.9977 15.2726C11.5178 15.2726 11.1178 15.669 11.1178 16.1456C11.1178 16.6202 11.5178 17.0176 11.9977 17.0176C12.4776 17.0176 12.8675 16.6202 12.8675 16.1347C12.8675 15.66 12.4776 15.2726 11.9977 15.2726ZM11.9977 9.09039C11.5178 9.09039 11.1178 9.47585 11.1178 9.95248V12.7557C11.1178 13.2314 11.5178 13.6287 11.9977 13.6287C12.4776 13.6287 12.8675 13.2314 12.8675 12.7557V9.95248C12.8675 9.47585 12.4776 9.09039 11.9977 9.09039Z" fill="#EF4444"/>
+      </svg>
+    `;
+
+                        const escAttr = (v) =>
+                            String(v ?? '')
+                                .replace(/&/g, '&amp;')
+                                .replace(/"/g, '&quot;')
+                                .replace(/</g, '&lt;')
+                                .replace(/>/g, '&gt;');
+
+                        const getErrorText = (r) => {
+                            if (String(r?.error?.eid ?? '') !== '0') return '';
+
+                            const t = r?.error?.type;
+
+                            const hasTid = (tid) => {
+                                if (!t) return false;
+                                if (typeof t === 'string' || typeof t === 'number') return String(t) === String(tid);
+                                if (Array.isArray(t)) return t.some(obj => String(obj?.tid) === String(tid));
+                                return false;
+                            };
+
+                            if (hasTid('2')) return 'عدم صدور بلیط';
+                            if (hasTid('3')) return 'عدم صدور هتل';
+                            if (hasTid('5')) return 'عدم صدور بیمه';
+                            return 'لطفا حتما صدور یا عدم صدور را از تامین کننده پیگیری کنید';
+                        };
+
+                        const warnText = getErrorText(row);
+                        const warningIconHtml = warnText
+                            ? `
+        <span
+          class="invoice-error-icon panel-inline-flex panel-items-center panel-justify-center panel-cursor-help"
+          data-widget-header-btn-tooltip="${escAttr(warnText)}"
+          data-sys-tooltip=""  data-tooltip-variant="warning"
+        >
+          ${warningSvg}
+        </span>
+      `
+                            : '';
+
                         let html = `
-      <div class="${bold}">
-        <div class="accountName-title">${name}</div>
-        <div class="accountName-sub">
-          قرارداد:
-          <span class="en-numbers invoice-id cursor-pointer"
-                onclick="editObject(this,event,'${contractId}')">
-            ${contractId}
-          </span>
+      <div class="${bold} panel-flex panel-flex-col panel-gap-1">
+        <div class="panel-flex panel-items-center panel-gap-4">
+          ${warningIconHtml}
+          <div class="accountName-title">${name}</div>
+        </div>
+
+        <div class="accountName-sub panel-mt-1 panel-text-right">
+          <span class="!panel-text-zinc-500">شماره قرارداد:</span>
+          <span class="en-numbers invoice-id cursor-pointer">${contractId}</span>
         </div>
       </div>
     `;
@@ -406,57 +817,6 @@
                         return result
                     }
                 },
-                // begindate: {
-                //     title: "تاریخ رفت و برگشت",
-                //     filter: false,
-                //     sort: false,
-                //     source: row => {
-                //         var begindate = row.travelDate.begindate;
-                //         if (typeof begindate == Array) {
-                //             return `${begindate[0].mstring} - ${begindate[0].sstring}`;
-                //         }
-                //         return `${begindate.mstring} - ${begindate.sstring}`;
-                //     },
-                //     cellMaker: (row, data, td) => {
-                //         var result = "";
-                //         var begindate = row.travelDate.begindate;
-                //         if (Array.isArray(begindate)) {
-                //             result = begindate.map(this_date => `
-                //             <span class="en-numbers${row.read === 0 ? " unread-invoice" : ""}">${this_date.mstring}</span>
-                //             ${this_date.sstring !== '' && this_date.sstring !== '-' ? `<br><span class="font_12${row.read === 0 ? " unread-invoice" : ""}">(${this_date.sstring})</span>` : ''}
-                //         `).join('');
-                //         } else {
-                //             result += `<span class="en-numbers${set_bold_row(row)}">${begindate.mstring}</span>`;
-                //             if (begindate.sstring !== '' && begindate.sstring !== '-') {
-                //                 result += `</br><span class="font_12${set_bold_row(row)}">(${begindate.sstring})</span>`;
-                //             }
-                //         }
-                //         return result;
-                //     }
-                // },
-                // enddate: {
-                //     title: "تاریخ برگشت",
-                //     filter: false,
-                //     sort: false,
-
-                //     source: row => {
-                //         var enddate = row.travelDate.enddate;
-                //         if (enddate) {
-                //             return `${enddate.mstring} - ${enddate.sstring}`;
-                //         }
-                //     },
-                //     cellMaker: (row, data, td) => {
-                //         var enddate = row.travelDate.enddate;
-                //         if (!enddate) {
-                //             return "";
-                //         }
-                //         var result = `<span class="en-numbers${set_bold_row(row)}">${enddate.mstring}</span>`;
-                //         if (enddate.sstring !== '' && enddate.sstring !== '-') {
-                //             result += `</br><span class="font_12${set_bold_row(row)}">(${enddate.sstring})</span>`;
-                //         }
-                //         return result;
-                //     }
-                // },
                 date: {
                     title: "تاریخ رفت و برگشت",
                     filter: false,
@@ -465,13 +825,36 @@
                         const begin = row.travelDate?.begindate;
                         const end = row.travelDate?.enddate;
 
-                        const beginText = Array.isArray(begin)
-                            ? begin.map(d => `${d.sstring} (${d.mstring})`).join(" | ")
-                            : begin ? `${begin.sstring} (${begin.mstring})` : "";
+                        const hasValid = (d) => {
+                            if (!d) return false;
+                            if (Array.isArray(d)) return d.some(x => (x?.sstring && x.sstring !== "-") || (x?.mstring && x.mstring !== "-"));
+                            return (d.sstring && d.sstring !== "-") || (d.mstring && d.mstring !== "-");
+                        };
 
-                        const endText = end ? `${end.sstring} (${end.mstring})` : "";
+                        const safe = (v) => (v && v !== "-" ? v : "");
+                        const fmtPlain = (d) => {
+                            if (!d) return "";
+                            const sh = safe(d.sstring);
+                            const mi = safe(d.mstring);
+                            if (sh && mi) return `${sh} (${mi})`;
+                            return sh || mi || "";
+                        };
 
-                        return `رفت: ${beginText} برگشت: ${endText}`.trim();
+                        const parts = [];
+
+                        if (hasValid(begin)) {
+                            const beginText = Array.isArray(begin)
+                                ? begin.map(fmtPlain).filter(Boolean).join(" | ")
+                                : fmtPlain(begin);
+                            if (beginText) parts.push(`رفت: ${beginText}`);
+                        }
+
+                        if (hasValid(end)) {
+                            const endText = fmtPlain(end);
+                            if (endText) parts.push(`برگشت: ${endText}`);
+                        }
+
+                        return parts.join(" ").trim();
                     },
                     cellMaker: (row, data, td) => {
                         const bold = set_bold_row(row) || '';
@@ -480,56 +863,69 @@
                         const begin = row.travelDate?.begindate;
                         const end = row.travelDate?.enddate;
 
-                        const fmt = (d) => {
-                            if (!d) return "";
-                            const shamsi = d.sstring && d.sstring !== "-" ? d.sstring : "";
-                            const miladi = d.mstring && d.mstring !== "-" ? d.mstring : "";
-                            if (!shamsi && !miladi) return "";
-                            if (shamsi && miladi) return `${shamsi} - (${miladi})`;
-                            return shamsi || miladi;
+                        const hasValid = (d) => {
+                            if (!d) return false;
+                            if (Array.isArray(d)) return d.some(x => (x?.sstring && x.sstring !== "-") || (x?.mstring && x.mstring !== "-"));
+                            return (d.sstring && d.sstring !== "-") || (d.mstring && d.mstring !== "-");
                         };
 
-                        let beginHtml = "";
-                        if (Array.isArray(begin)) {
-                            beginHtml = begin.map(d => `<span class="en-numbers${bold}${unread}">${fmt(d)}</span>`).join("<br>");
-                        } else {
-                            beginHtml = `<span class="en-numbers${bold}${unread}">${fmt(begin)}</span>`;
+                        const safe = (v) => (v && v !== "-" ? v : "");
+                        const fmt = (d) => {
+                            if (!d) return "";
+                            const sh = safe(d.sstring);
+                            const mi = safe(d.mstring);
+                            if (sh && mi) return `${sh} - (${mi})`;
+                            return sh || mi || "";
+                        };
+
+                        const blocks = [];
+
+                        // تاریخ رفت (فقط اگر موجود باشد)
+                        if (hasValid(begin)) {
+                            let beginHtml = "";
+                            if (Array.isArray(begin)) {
+                                const items = begin.map(d => fmt(d)).filter(Boolean);
+                                beginHtml = items.length
+                                    ? items.map(v => `<span class="en-numbers${bold}${unread}">${v}</span>`).join(' <span class="panel-text-zinc-400">|</span> ')
+                                    : "";
+                            } else {
+                                const v = fmt(begin);
+                                beginHtml = v ? `<span class="en-numbers${bold}${unread}">${v}</span>` : "";
+                            }
+
+                            if (beginHtml) {
+                                blocks.push(`
+          <div class="panel-flex panel-items-center panel-gap-1 ${bold}${unread}">
+            تاریخ رفت:
+            <span class="panel-flex panel-flex-wrap panel-gap-2">${beginHtml}</span>
+          </div>
+        `);
+                            }
                         }
 
-                        const endHtml = end
-                            ? `<span class="en-numbers${bold}${unread}">${fmt(end)}</span>`
-                            : `<span class="en-numbers${bold}${unread}">-</span>`;
+                        // تاریخ برگشت (فقط اگر موجود باشد)
+                        if (hasValid(end)) {
+                            const endVal = fmt(end);
+                            if (endVal) {
+                                blocks.push(`
+          <div class="panel-flex panel-items-center panel-gap-1 ${bold}${unread}">
+            تاریخ برگشت:
+            <span class="en-numbers${bold}${unread}">${endVal}</span>
+          </div>
+        `);
+                            }
+                        }
+
+                        // اگر هیچ چیز نبود، کلاً خالی برگردان
+                        if (!blocks.length) return "";
 
                         return `
-                              <div class="${bold}">
-                                <div class="panel-flex panel-items-center panel-gap-1 ${bold}${unread}">تاریخ رفت: <span>${beginHtml}</span></div>
-                                <div class="panel-flex panel-items-center panel-gap-1 ${bold}${unread}">تاریخ برگشت: <span>${endHtml}</span></div>
-                              </div>
-                            `;
+      <div class="${bold} panel-flex panel-flex-col panel-gap-1">
+        ${blocks.join("")}
+      </div>
+    `;
                     }
                 },
-                // invoicedate: {
-                //     title: "تاریخ قرارداد",
-                //     filter: false,
-                //     sort: false,
-                //     cssClass: ['width_10'],
-                //     source: row => {
-                //         var enddate = row.createdate;
-                //         return `${enddate.mstring} - ${enddate.sstring}`;
-                //     },
-                //     cellMaker: (row, data, td) =>
-                //         `<span class="en-numbers${set_bold_row(row)}">${row.createdate.mstring}</span><br/><span class="font_12${set_bold_row(row)}">(${row.createdate.sstring})</span><br/><span class="en-numbers${set_bold_row(row)}">${row.createhour}</span>`
-                // },
-                // service: {
-                //     title: "خدمات / Refnumber",
-                //     filter: false,
-                //     sort: false,
-                //     source: row => `${row.services.service}`,
-                //     cellMaker: (row, data, td) => {
-                //         // && row.webservices[0].webservices.wid !== "0"
-                //         return return_services(row);
-                //     }
-                // },
                 service: {
                     title: "خدمات / Refnumber",
                     filter: false,
@@ -548,19 +944,16 @@
                             const wrap = document.createElement('div');
                             wrap.innerHTML = baseHtml;
 
-                            // ریشه‌ی خروجی return_services: <div class="icons...">
                             const root = wrap.firstElementChild;
                             if (!root) return baseHtml;
 
-                            // اولین div داخل icons، همون عنوان خدماته
                             const serviceTitleDiv = root.querySelector(':scope > div');
                             if (!serviceTitleDiv) return baseHtml;
 
-                            // Refnumber رو دقیقاً زیر عنوان خدمات می‌ذاریم
                             serviceTitleDiv.insertAdjacentHTML(
                                 'afterend',
                                 `<div class="service-ref font_12">
-          Refnumber: <span class="en-numbers">${refClean}</span>
+          Refnumber: <span class="en-numbers panel-font-sans !panel-text-sm panel-font-medium">${refClean}</span>
         </div>`
                             );
 
@@ -582,81 +975,30 @@
                             cost_cloumn.textContent = `قیمت (${row.costinfo.priceunit})`
                             cost_cloumn.removeAttribute('id');
                         }
-                        return `<div><span class="en-numbers${set_bold_row(row)}" data-widget-header-btn-tooltip=" باقیمانده : ${seprator_default_value(row.balance)} " data-sys-tooltip=""><span class="en-numbers">${seprator_default_value(row.costinfo.totalwithcommision)}</span></span></div>`
+                        return `<div><span class="panel-cursor-pointer en-numbers${set_bold_row(row)}" data-widget-header-btn-tooltip=" باقیمانده : ${seprator_default_value(row.balance)} " data-sys-tooltip="" data-tooltip-variant="info"><span class="en-numbers">${seprator_default_value(row.costinfo.totalwithcommision)}</span></span></div>`
 
                     }
                 },
-                // passengers: {
-                //     title: "تعداد مسافر",
-                //     filter: false,
-                //     sort: false,
-                //     cssClass: ["width_5"],
-                //     cellMaker: (row, data, td) =>
-                //         `<span class="en-numbers${set_bold_row(row)}" >ADL: ${row.passengers.adult}<br/>CHD: ${row.passengers.child}<br/>INF: ${row.passengers.infant}<br/></span>`
-                // },
-                // invoicelabels: {
-                //     title: "لیبل",
-                //     filter: false,
-                //     sort: false,
-                //     cellMaker: (row, data, td) => {
-                //         var labels = "";
-                //         labels = `<span class="cursor">`;
-                //         for (let c in row.labels) {
-                //             if (row.labels[c].labels.label == "0") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="nclear"  data-descr="تسویه نشده" ></span></div>`;
-                //             } else if (row.labels[c].labels.label == "1") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="clear" data-descr="تسویه شده" ></span></div>`;
-                //             } else if (row.labels[c].labels.label == "2") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="confirm" data-descr=" تسویه نشده با تایید مالی"></span></div>`;
-                //             } else if (row.labels[c].labels.label == "3") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="edited" data-descr="ویرایش شده"></span></div>`;
-                //             } else if (row.labels[c].labels.label == "4") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="canceled" data-descr="ابطال شده"></span></div>`;
-                //             } else if (row.labels[c].labels.label == "5") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="clearconfirm" data-descr="تسویه شده توسط مالی"></span></div>`;
-                //             } else if (row.labels[c].labels.label == "6") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="credit" data-descr="پرداخت اعتباری"></span></div>`;
-                //             }
-                //             else if (row.labels[c].labels.label == "8") {
-                //                 labels +=
-                //                     `<div class="InvoiceStatus"><span class="clearconfirm" data-descr="پرداخت اعتباری-تسویه شده توسط مالی"></span></div>`;
-                //             }
-
-
-
-                //         }
-
-                //         labels += `</span>`;
-                //         return labels;
-                //     }
-                // },
                 invoicelabels: {
                     title: "لیبل",
                     filter: false,
                     sort: false,
                     cellMaker: (row, data, td) => {
                         const map = {
-                            "0": { cls: "nclear panel-bg-label-redBg panel-text-label-red", text: "تسویه نشده" },
-                            "1": { cls: "clear panel-bg-label-darkGreenBg panel-text-label-darkGreen", text: "تسویه شده" },
-                            "2": { cls: "confirm panel-bg-label-orangeBg panel-text-label-orange", text: "تسویه نشده با تایید مالی" },
-                            "3": { cls: "edited panel-bg-label-blueBg panel-text-label-blue", text: "ویرایش شده" },
-                            "4": { cls: "canceled panel-bg-label-GrayBg panel-text-label-Gray", text: "ابطال شده" },
-                            "5": { cls: "clearconfirm panel-bg-label-lightGreen panel-text-white", text: "تسویه شده توسط مالی" },
-                            "6": { cls: "credit panel-bg-label-purpleBg panel-text-label-purple", text: "پرداخت اعتباری" },
-                            "8": { cls: "clearconfirm panel-bg-label-lightGreen panel-text-white", text: "پرداخت اعتباری-تسویه شده توسط مالی" },
+                            "0": { cls: "nclear panel-bg-label-redBg !panel-text-label-red", text: "تسویه نشده" },
+                            "1": { cls: "clear panel-bg-label-darkGreenBg !panel-text-label-darkGreen", text: "تسویه شده" },
+                            "2": { cls: "confirm panel-bg-label-orangeBg !panel-text-label-orange", text: "تسویه نشده با تایید مالی" },
+                            "3": { cls: "edited panel-bg-label-blueBg !panel-text-label-blue", text: "ویرایش شده" },
+                            "4": { cls: "canceled panel-bg-label-GrayBg !panel-text-label-Gray", text: "ابطال شده" },
+                            "5": { cls: "clearconfirm panel-bg-label-lightGreen !panel-text-white", text: "تسویه شده توسط مالی" },
+                            "6": { cls: "credit panel-bg-label-purpleBg !panel-text-label-purple", text: "پرداخت اعتباری" },
+                            "8": { cls: "clearconfirm panel-bg-label-lightGreen !panel-text-white", text: "پرداخت اعتباری-تسویه شده توسط مالی" },
                         };
 
-                        const basePill = "panel-px-2 panel-py-0.5 panel-rounded-2xl";
+                        const basePill = "!panel-px-2 !panel-py-0.5 panel-rounded-2xl";
 
                         const labelsArr = Array.isArray(row.labels) ? row.labels : [];
-                        let html = `<div class="cursor">`;
+                        let html = `<div class="panel-flex panel-flex-col panel-gap-1.5">`;
 
                         for (const item of labelsArr) {
                             const code = String(item?.labels?.label ?? "");
@@ -676,15 +1018,59 @@
                         return html;
                     }
                 },
+                status: {
+                    title: "وضعیت",
+                    filter: false,
+                    sort: false,
+                    source: row => String(row.status ?? ''),
+                    cellMaker: (row, data, td) => {
+                        const bold = set_bold_row(row) || '';
+                        const s = Number(row.status);
+
+                        const map = {
+                            2: { text: "pending", cls: "!panel-text-red-700 panel-border-red-700" },
+                            1: { text: "صادر شده", cls: "!panel-text-green-700 panel-border-green-700" },
+                            0: { text: "صادر نشده", cls: "!panel-text-red-700 panel-border-red-700" },
+                        };
+
+                        const item = Object.prototype.hasOwnProperty.call(map, s)
+                            ? map[s]
+                            : { text: "—", cls: "panel-text-zinc-600 panel-border-zinc-300" };
+
+                        return `
+      <span class="cursor ${bold}">
+        <div class="InvoiceStatus">
+          <span class="confirm panel-flex panel-items-center panel-justify-center panel-bg-white panel-text-xs panel-border panel-border-solid panel-rounded-2xl !panel-px-2 !panel-py-1 ${item.cls}">
+            ${item.text}
+          </span>
+        </div>
+      </span>
+    `;
+                    }
+                },
 
                 operation: {
                     title: "",
                     filter: false,
                     sort: false,
                     cellMaker: (row, data, td) => {
+                        const adl = row.passengers?.adult ?? 0;
+                        const chd = row.passengers?.child ?? 0;
+                        const inf = row.passengers?.infant ?? 0;
+
+                        const shamsi = row.createdate?.sstring ?? '-';
+                        const miladi = row.createdate?.mstring ?? '-';
+                        const hour = row.createhour ?? '';
                         return `<div class="panel-select__item__container panel-relative panel-cursor-pointer ">
   <div
-    class="panel-row-expander"
+    class="panel-row-expander"  
+    data-adl="${adl}"
+          data-chd="${chd}"
+          data-inf="${inf}"
+
+          data-contract-shamsi="${shamsi}"
+          data-contract-miladi="${miladi}"
+          data-contract-hour="${hour}"
     onclick="onPassengerRowClick(this, event)">
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M19.9697 31.5303C19.7034 31.2641 19.6792 30.8474 19.8971 30.5538L19.9697 30.4697L26.439 24L19.9697 17.5303C19.7034 17.2641 19.6792 16.8474 19.8971 16.5538L19.9697 16.4697C20.2359 16.2034 20.6526 16.1792 20.9462 16.3971L21.0303 16.4697L28.0303 23.4697C28.2966 23.7359 28.3208 24.1526 28.1029 24.4462L28.0303 24.5303L21.0303 31.5303C20.7374 31.8232 20.2626 31.8232 19.9697 31.5303Z" fill="#71717A"></path>
@@ -699,7 +1085,7 @@
             defaultSort: {
                 name: "groupname"
             },
-            paging: [50, 30, 20, 10],
+            paging: [50, 2, 20, 10],
             defaultPagingIndex: 1,
             pagingFilterType: "server",
             culture: {
@@ -711,10 +1097,10 @@
                     "first": "اولین صفحه",
                     "last": "آخرین صفحه",
                     "information": "نمایش ${from} تا ${to} از مجموع ${total}",
-                    "pageSize": "تعداد قابل نمایش در هر صفحه :"
+                    "pageSize": ""
                 }
             },
-            pageSize: 10,
+            pageSize: 3,
             pageNumber: 1,
             refreshSourceId: "list.refresh",
             refresh: true,
@@ -752,22 +1138,6 @@
         }
     </script>
     <script>
-        // const onProcessedApiBooking = async (args) => {
-        //     try {
-        //         const response = args.response;
-        //         if (response.status === 200) {
-        //             const responseJson = await response.json();
-
-        //             if (responseJson) {
-        //                 $bc.setSource("db.list", responseJson);
-        //             }
-        //         }
-        //     } catch (error) {
-        //         console.error("onProcessedApiBooking: " + error.message);
-        //     }
-        // };
-
-
         function onPassengerRowClick(el, event) {
             event.preventDefault();
             event.stopPropagation();
@@ -775,11 +1145,9 @@
             const tr = el.closest("tr[data-sys-tr]");
             if (!tr) return;
 
-            // اگر قبلاً باز شده بود => ببند و حالت اولیه را برگردان
+            // اگر قبلاً باز شده بود => ببند
             if (tr.classList.contains("passenger-row-expanded")) {
-                if (tr._originalInnerHTML) {
-                    tr.innerHTML = tr._originalInnerHTML;
-                }
+                if (tr._originalInnerHTML) tr.innerHTML = tr._originalInnerHTML;
                 tr.classList.remove("passenger-row-expanded");
                 return;
             }
@@ -788,19 +1156,34 @@
             const tds = Array.from(tr.querySelectorAll("td[data-sys-td], td"));
             const colCount = tds.length || 1;
 
-            // یکبار HTML اولیه را ذخیره کن تا بتوانیم restore کنیم
-            if (!tr._originalInnerHTML) {
-                tr._originalInnerHTML = tr.innerHTML;
-            }
+            // ذخیره HTML اولیه برای restore
+            if (!tr._originalInnerHTML) tr._originalInnerHTML = tr.innerHTML;
 
             const d = el.dataset;
 
-            // محتوای ردیف اصلی را مثل یک Grid (به جای td) بازسازی می‌کنیم
+            // خلاصه ردیف (grid)
             const summaryHtml = tds
-                .map((td) => `<div class="passenger-summary-cell">${td.innerHTML}</div>`)
+                .map((td) => `<div class="passenger-summary-cell panel-flex panel-items-center !panel-py-3">${td.innerHTML}</div>`)
                 .join("");
 
-            // کل tr را به یک td با colspan تبدیل می‌کنیم
+            // آماده‌سازی مقادیر مسافر
+            const passengersHtml = `
+    <span class="pass-pill pass-inf">INF: <span class="en-numbers panel-font-sans panel-font-medium">${d.inf || 0}</span></span>
+    <span class="pass-pill pass-adl">ADL: <span class="en-numbers panel-font-sans panel-font-medium">${d.adl || 0}</span></span>
+    <span class="pass-pill pass-chd">CHD: <span class="en-numbers panel-font-sans panel-font-medium">${d.chd || 0}</span></span>
+  `;
+
+            const sh = (d.contractShamsi && d.contractShamsi !== "-") ? d.contractShamsi : "";
+            const mi = (d.contractMiladi && d.contractMiladi !== "-") ? d.contractMiladi : "";
+
+            let contractDateText = "—";
+            if (sh && mi) contractDateText = `${sh} - (${mi})`;
+            else if (sh) contractDateText = sh;
+            else if (mi) contractDateText = mi;
+
+            if (d.contractHour) contractDateText = `${contractDateText}  ${d.contractHour}`;
+
+            // تبدیل tr به یک td با colspan
             tr.innerHTML = "";
             tr.classList.add("passenger-row-expanded");
 
@@ -811,20 +1194,22 @@
             td.setAttribute("data-bc-order", "");
 
             td.innerHTML = `
-    <div class="passenger-row-wrap">
-      <div class="passenger-summary-grid">
+    <div class="passenger-row-wrap panel-flex panel-flex-col">
+      <div class="passenger-summary-container panel-flex panel-justify-between">
         ${summaryHtml}
       </div>
 
-      <div class="passenger-detail is-open">
-        <div class="passenger-detail__grid">
-          <div class="passenger-detail__item"><span class="k">Issue Country:</span><span class="v">${d.issueCountryName || "-"}</span></div>
-          <div class="passenger-detail__item"><span class="k">Issue Country ID:</span><span class="v">${d.issueCountryId || "-"}</span></div>
+      <div class="passenger-detail panel-border-t panel-border-dashed panel-border-zinc-200 !panel-px-3 !panel-pt-3 is-open">
+        <div class="passenger-detail__content panel-flex panel-items-center panel-justify-between">
+          <div class="passenger-detail__item panel-flex panel-gap-2">
+            <span class="k !panel-text-zinc-500">مسافران:</span>
+            <span class="v panel-flex panel-items-center panel-gap-3">${passengersHtml}</span>
+          </div>
 
-          <div class="passenger-detail__item"><span class="k">Passport Code:</span><span class="v">${d.passportCode || "-"}</span></div>
-          <div class="passenger-detail__item"><span class="k">Passport Exp:</span><span class="v">${d.passportExpiration || "-"}</span></div>
-
-          <div class="passenger-detail__item"><span class="k">Persian Name:</span><span class="v">${(d.persianFirstName || "-") + " " + (d.persianLastName || "")}</span></div>
+          <div class="passenger-detail__item panel-flex panel-gap-2">
+            <span class="k !panel-text-zinc-500">تاریخ قرارداد:</span>
+            <span class="v en-numbers">${contractDateText}</span>
+          </div>
 
           <div class="passenger-detail__actions">
             <button type="button"

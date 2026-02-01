@@ -722,36 +722,73 @@
     color: rgb(21 128 61 / var(--tw-text-opacity, 1));
   }
   
+  .\!panel-text-green-700 {
+    --tw-text-opacity: 1;
+    color: rgb(21 128 61 / var(--tw-text-opacity, 1)) !important;
+  }
+
   .panel-text-label-Gray {
     color: var(--Gray-label);
+  }
+
+  .\!panel-text-label-Gray {
+    color: var(--Gray-label) !important;
   }
   
   .panel-text-label-blue {
     color: var(--blue-label);
   }
+
+  .\!panel-text-label-blue {
+    color: var(--blue-label) !important;
+  }
   
   .panel-text-label-darkGreen {
     color: var(--darkGreen-label);
+  }
+
+  .\!panel-text-label-darkGreen {
+    color: var(--darkGreen-label) !important;
   }
   
   .panel-text-label-lightGreen {
     color: var(--lightGreen-label);
   }
   
+  .\!panel-text-label-lightGreen {
+    color: var(--lightGreen-label) !important;
+  }
+  
   .panel-text-label-orange {
     color: var(--orange-label);
+  }
+  
+  .\!panel-text-label-orange {
+    color: var(--orange-label) !important;
   }
   
   .panel-text-label-orangeBg {
     color: var(--orange-bgLabel);
   }
   
+  .\!panel-text-label-orangeBg {
+    color: var(--orange-bgLabel) !important;
+  }
+  
   .panel-text-label-purple {
     color: var(--purple-label);
   }
   
+  .\!panel-text-label-purple {
+    color: var(--purple-label) !important;
+  }
+  
   .panel-text-label-red {
     color: var(--red-label);
+  }
+  
+  .\!panel-text-label-red {
+    color: var(--red-label) !important;
   }
   
   .panel-text-primary-700 {
@@ -774,6 +811,11 @@
   
   .panel-text-red-700 {
     --tw-text-opacity: 1;
+    color: rgb(185 28 28 / var(--tw-text-opacity, 1));
+  }
+
+  .\!panel-text-red-700 {
+    --tw-text-opacity: 1 !important;
     color: rgb(185 28 28 / var(--tw-text-opacity, 1));
   }
   
@@ -925,7 +967,7 @@
   }
   
   .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter][data-sys-tr] {
-    background: none;
+    display: none;
   }
   
   .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] thead[data-sys-thead] tr[data-bc-filter] td[data-sys-th]:first-child {

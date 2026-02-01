@@ -480,6 +480,281 @@ document.addEventListener('DOMContentLoaded', function () {
   monthSelect.addEventListener('change', updateDaysByMonth)
   yearSelect.addEventListener('change', updateDaysByMonth)
 })
+
+//------------------------Advanced Search --------------------------
+;(() => {
+  const openBtn = document.getElementById('btnOpenAdvancedSearch')
+  const modalId =
+    openBtn?.getAttribute('data-modal-open') || 'advancedContractSearch'
+  const modal = document.getElementById(modalId)
+  const closeBtn = document.getElementById('btnCloseAdvancedSearch')
+
+  if (!openBtn || !modal || !closeBtn) return
+
+  const lockScroll = (locked) => {
+    document.documentElement.classList.toggle('panel-overflow-hidden', locked)
+  }
+
+  const openModal = () => {
+    modal.classList.remove('panel-hidden')
+    modal.setAttribute('aria-hidden', 'false')
+    lockScroll(true)
+  }
+
+  const closeModal = () => {
+    modal.classList.add('panel-hidden')
+    modal.setAttribute('aria-hidden', 'true')
+    lockScroll(false)
+  }
+
+  openBtn.addEventListener('click', openModal)
+  closeBtn.addEventListener('click', closeModal)
+
+  // کلیک روی بک‌دراپ (خارج از content)
+  modal.addEventListener('click', (e) => {
+    const inside = e.target.closest('[data-modal-content]')
+    if (!inside) closeModal()
+  })
+
+  // ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('panel-hidden'))
+      closeModal()
+  })
+})()
+
+//----------------clear advanced search---------------------
+;(() => {
+  const modal = document.getElementById('advancedContractSearch')
+  const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
+
+  if (!modal || !clearBtn) return
+
+  const clearAdvancedSearchFilters = () => {
+    const scope = modal
+
+    scope
+      .querySelectorAll(
+        'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
+      )
+      .forEach((el) => {
+        el.value = ''
+        el.dispatchEvent(new Event('input', { bubbles: true }))
+        el.dispatchEvent(new Event('change', { bubbles: true }))
+      })
+
+    scope
+      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+      .forEach((el) => {
+        el.checked = false
+        el.dispatchEvent(new Event('change', { bubbles: true }))
+      })
+
+    scope.querySelectorAll('textarea').forEach((el) => {
+      el.value = ''
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+
+    scope.querySelectorAll('select').forEach((el) => {
+      el.selectedIndex = 0
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+  }
+
+  clearBtn.addEventListener('click', clearAdvancedSearchFilters)
+})()
+
+// ----------dropdown menu (advanced search)--------------
+document.addEventListener("DOMContentLoaded", () => {
+  const dropdown = document.getElementById("sharedDropdown");
+  const search = document.getElementById("sharedDropdownSearch");
+  const list = document.getElementById("sharedDropdownList");
+
+  if (!dropdown || !search || !list) return;
+
+  // ========= 1) تنظیمات هر فیلد =========
+  // items باید آرایه‌ای از { value, label } باشه
+  const ddConfigs = {
+    origin_city: {
+      searchPlaceholder: "جستجوی شهر مبدا...",
+      items: [
+        { value: "THR", label: "تهران" },
+        { value: "MHD", label: "مشهد" },
+        { value: "IFN", label: "اصفهان" },
+        { value: "SYZ", label: "شیراز" },
+      ],
+    },
+    destination_city: {
+      searchPlaceholder: "جستجوی شهر مقصد...",
+      items: [
+        { value: "KIH", label: "کیش" },
+        { value: "TBZ", label: "تبریز" },
+        { value: "BDH", label: "بندرعباس" },
+      ],
+    },
+    hotel: {
+      searchPlaceholder: "جستجوی هتل...",
+      items: [],
+      // اگر میخوای از API بیاری:
+      // async getItems() { ... return [{value,label}, ...] }
+    },
+    airline: { searchPlaceholder: "جستجوی ایرلاین...", items: [] },
+    rail_company: { searchPlaceholder: "جستجوی شرکت ریلی...", items: [] },
+    route_code: { searchPlaceholder: "جستجوی کد مسیر...", items: [] },
+    status: { searchPlaceholder: "وضعیت...", items: [] },
+    tag: { searchPlaceholder: "برچسب...", items: [] },
+    services: { searchPlaceholder: "خدمات...", items: [] },
+  };
+
+  // ========= 2) State + Cache =========
+  let activeWrap = null;
+  let activeInput = null;
+  let activeKey = null;
+
+  const itemsCache = new Map(); // key => items[]
+
+  const getItemsForKey = async (key) => {
+    const cfg = ddConfigs[key];
+    if (!cfg) return [];
+
+    if (itemsCache.has(key)) return itemsCache.get(key);
+
+    let items = cfg.items || [];
+    if (typeof cfg.getItems === "function") {
+      items = await cfg.getItems();
+    }
+
+    itemsCache.set(key, items);
+    return items;
+  };
+
+  // ========= 3) Render =========
+  const renderList = (items) => {
+    list.innerHTML = "";
+
+    if (!items.length) {
+      const empty = document.createElement("div");
+      empty.className = "panel-p-3 panel-text-sm panel-text-zinc-500";
+      empty.textContent = "موردی یافت نشد";
+      list.appendChild(empty);
+      return;
+    }
+
+    items.forEach((item) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className =
+        "panel-w-full panel-text-right panel-px-3 panel-py-3 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200";
+      btn.setAttribute("role", "option");
+      btn.dataset.value = item.value;
+      btn.dataset.label = item.label;
+      btn.textContent = item.label;
+
+      btn.addEventListener("click", () => {
+        if (!activeInput) return;
+        activeInput.value = item.label;
+        activeInput.dataset.value = item.value;
+
+        activeInput.dispatchEvent(new Event("input", { bubbles: true }));
+        activeInput.dispatchEvent(new Event("change", { bubbles: true }));
+
+        closeDropdown();
+      });
+
+      list.appendChild(btn);
+    });
+  };
+
+  const filterItems = (items, q) => {
+    const query = q.trim().toLowerCase();
+    if (!query) return items;
+    return items.filter((x) => String(x.label).toLowerCase().includes(query));
+  };
+
+  // ========= 4) Open/Close + Position =========
+  const positionDropdownUnder = (wrapEl) => {
+    const rect = wrapEl.getBoundingClientRect();
+
+    // fixed → نسبت به viewport
+    dropdown.style.left = `${rect.left}px`;
+    dropdown.style.top = `${rect.bottom + 8}px`;
+    dropdown.style.width = `${rect.width}px`;
+  };
+
+  const openDropdown = async (wrapEl) => {
+    const key = wrapEl.getAttribute("data-dd-key");
+    const input = wrapEl.querySelector("[data-dd-input]");
+
+    if (!key || !input) return;
+
+    const cfg = ddConfigs[key];
+    if (!cfg) return;
+
+    activeWrap = wrapEl;
+    activeInput = input;
+    activeKey = key;
+
+    positionDropdownUnder(wrapEl);
+
+    dropdown.classList.remove("panel-hidden");
+
+    // سرچ
+    search.value = "";
+    search.placeholder = cfg.searchPlaceholder || "جستجو...";
+    search.focus();
+
+    // دیتا
+    const items = await getItemsForKey(key);
+    renderList(items);
+  };
+
+  const closeDropdown = () => {
+    dropdown.classList.add("panel-hidden");
+    activeWrap = null;
+    activeInput = null;
+    activeKey = null;
+  };
+
+  // با اسکرول/ریسایز اگر باز بود، جای dropdown آپدیت بشه
+  const smartReposition = () => {
+    if (!activeWrap || dropdown.classList.contains("panel-hidden")) return;
+    positionDropdownUnder(activeWrap);
+  };
+  window.addEventListener("scroll", smartReposition, true);
+  window.addEventListener("resize", smartReposition);
+
+  // ========= 5) Event Delegation =========
+  document.addEventListener("click", async (e) => {
+    // اگر کلیک داخل خود dropdown بود، کاری نکن
+    if (e.target.closest("#sharedDropdown")) return;
+
+    const wrap = e.target.closest("[data-dd-key]");
+    if (!wrap) {
+      // کلیک بیرون → ببند
+      if (!dropdown.classList.contains("panel-hidden")) closeDropdown();
+      return;
+    }
+
+    // اگر روی همون active کلیک شد → toggle
+    if (wrap === activeWrap && !dropdown.classList.contains("panel-hidden")) {
+      closeDropdown();
+      return;
+    }
+
+    await openDropdown(wrap);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeDropdown();
+  });
+
+  search.addEventListener("input", async () => {
+    if (!activeKey) return;
+    const items = await getItemsForKey(activeKey);
+    renderList(filterItems(items, search.value));
+  });
+});
 /**
  * Sends edited user data to backend and shows loading state.
  */
