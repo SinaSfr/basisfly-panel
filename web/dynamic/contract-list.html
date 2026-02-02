@@ -74,6 +74,14 @@
         ;
     }
 
+    .panel-w-\[92\%\] {
+        width: 92%;
+    }
+
+    .panel-float-right {
+        float: right;
+    }
+
     [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td {
         text-align: center !important;
     }
@@ -176,7 +184,7 @@
         position: relative;
     }
 
-    [data-sys-tooltip]::before {
+    [data-widget-header-btn-tooltip]::before {
         content: attr(data-widget-header-btn-tooltip);
         position: absolute;
         bottom: -35px;
@@ -255,6 +263,33 @@
 
     .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody td:first-child {
         padding-right: 12px !important;
+    }
+
+    .Panel_invoice_List [data-bc-pagesize-container] {
+        display: none;
+    }
+
+    .Panel_invoice_List [data-bc-grid-footer-container] {
+        background-color: #FAFAFA !important;
+        border-radius: 12px !important;
+    }
+
+    .Panel_invoice_List [data-bc-information-container] {
+        color: black !important;
+    }
+
+    .Panel_invoice_List [data-sys-paging-active] {
+        background: var(--primary-800) !important;
+    }
+
+    .Panel_invoice_List [data-bc-export-item-excel] {
+        width: auto !important;
+        height: auto !important;
+    }
+
+    .Panel_invoice_List [data-bc-export-item-excel] svg {
+        width: 48px !important;
+        height: 48px !important;
     }
 </style>
 
@@ -552,17 +587,11 @@
 
                 </section>
                 <section class="panel-mt-12">
-                    <div class="panel-flex panel-items-center panel-justify-between">
+                    <div
+                        class="panel-flex panel-items-center panel-justify-between panel-h-12 panel-float-right panel-w-[92%]">
                         <h2 class="panel-text-zinc-900 panel-font-medium">سفرهای من</h2>
-                        <div class="panel-flex panel-items-center panel-gap-7">
-                            <p class="panel-text-zinc-900 panel-text-xs">جمع کل قرارداد ها <span>(1240)</span></p>
-                            <button
-                                class="panel-flex panel-items-center panel-justify-center panel-gap-2 panel-w-12 panel-h-12 panel-border panel-border-solid panel-border-zinc-300 panel-rounded-xl panel-text-sm panel-font-medium panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-border-primary-800">
-                                <img src="../assets/images/microsoft-exel.png"
-                                    class="panel-w-6 panel-h-6 panel-object-cover" alt="microsoft-exel" width="25"
-                                    height="25" loading="lazy">
-                            </button>
-                        </div>
+                        <p class="panel-text-zinc-900 panel-text-xs">جمع کل قرارداد ها <span
+                                class="panel-all__invoice">(1240)</span></p>
                     </div>
                     <div class="Panel_invoice_List">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
@@ -578,6 +607,30 @@
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
     <script>
+        async function onProcessed_list(args) {
+            try {
+                const response = args.response;
+                const responseJson = await response.json();
+
+                const src = responseJson?.sources?.[0] || {};
+                const data = src?.data || [];
+                const options = src?.options || {};
+
+                // total از options.extra.total (مربوط به db.list)
+                const total = Number(options?.extra?.total);
+                const totalSafe = Number.isFinite(total) ? total : (Array.isArray(data) ? data.length : 0);
+
+                const totalEl = document.querySelector(".panel-all__invoice");
+                if (totalEl) totalEl.textContent = `(${totalSafe})`;
+
+                $bc.setSource("db.list", data, options);
+            } catch (e) {
+                const totalEl = document.querySelector(".panel-all__invoice");
+                if (totalEl) totalEl.textContent = `(0)`;
+
+                $bc.setSource("db.list", [], get_option("db.list"));
+            }
+        }
         async function setPage(args) {
             console.log("click paging");
             main_perpage = args.source.rows[0].pageSize;
@@ -730,7 +783,7 @@
                     sort: false,
                     source: row => `${row.account?.accountName ?? ''}`,
                     cellMaker: (row, data, td) => {
-                        
+
                         const bold = set_bold_row(row) || '';
                         const name = row.account?.accountName ?? '—';
                         const contractId = row.id?.id ?? '';
@@ -1124,18 +1177,6 @@
                 }
             ]
         };
-        async function onProcessed_list(args) {
-            try {
-                const response = args.response;
-                const responseJson = await response.json();
-                const data = responseJson.sources[0].data;
-                var options = responseJson.sources[0].options;
-
-                $bc.setSource("db.list", data, options);
-            } catch (e) {
-                $bc.setSource("db.list", [], get_option("db.list"));
-            }
-        }
     </script>
     <script>
         function onPassengerRowClick(el, event) {
