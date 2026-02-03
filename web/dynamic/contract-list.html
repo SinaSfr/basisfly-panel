@@ -1,8 +1,8 @@
 <basis core="callback" run="atclient" method="setPage" triggers="list.refresh"></basis>
-
-<basis core="api" name="search_item" run="atclient"
-url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post"
-body='{
+<basis core="callback" run="atclient" triggers="cms.form" method="callback_sourceInvoiceList">
+</basis>
+<basis core="api" name="search_item" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+    method="post" body='{
     "name": "db",
     "mid": "20",
     "member":
@@ -10,11 +10,11 @@ body='{
             { 
                 "name": "q", 
                 "type":"list",
-                "request": "Factor_Search_item",
-                "lid":"[##cms.query.lid##]"
+                "request": "factor_search_item",
+                "lid":"[##cms.query.lid|(1)##]"
             }
         ] 
-}' content-type="application/json">
+}' content-type="application/json" onProcessed="onProcessedSearch_item">
 </basis>
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -100,6 +100,28 @@ body='{
 
     [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td {
         text-align: center !important;
+    }
+
+    .date-picker-input {
+        width: 100%;
+        height: 3.5rem;
+        background-color: #f4f4f5;
+        border: 1px solid #e4e4e7;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        border-radius: 0.75rem;
+        outline: none;
+        transition: all 300ms;
+    }
+
+    .date-picker-input::placeholder {
+        color: #a1a1aa;
+    }
+
+    .date-picker-input:focus {
+        border-color: var(--primary-800);
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .\!panel-text-zinc-500 {
@@ -337,7 +359,8 @@ body='{
                             "perpage": "20"
                         }
                     ]
-                }' content-type="application/json" triggers="cms.search cms.paging" onProcessed="onProcessed_list">
+                }' content-type="application/json" triggers="cms.search cms.paging"
+                onProcessed="onProcessedInvoice_list">
             </basis>
 
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
@@ -426,22 +449,26 @@ body='{
                                         سفر می‌باشد</h3>
 
                                     <div class="panel-flex panel-items-center panel-gap-5">
-                                        <div class="panel-flex-1 panel-flex panel-items-center panel-gap-3">
-                                            <input id="advSearchDateFrom" name="date_from" data-field="date_from"
-                                                type="text"
-                                                class="panel-w-52 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                                               focus:panel-shadow-md panel-transition panel-duration-300"
-                                                placeholder="از تاریخ:">
+                                        <div class="panel-flex-1">
+                                            <div class="panel-relative">
+                                                <input type="hidden" name="_root.date.basedate" value="1">
+                                                <svg width="48" height="48"
+                                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                                    <use
+                                                        href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down">
+                                                    </use>
+                                                </svg>
+                                                <input type="hidden" class="fdate-string" name="_root.date.begindate">
+                                                <input type="hidden" class="tdate-string" name="_root.date.enddate">
+                                                <basis core="component.calendar.datepicker" name="datepicker"
+                                                    run="atclient" options="datepickerHasRangesSetting"
+                                                    OnRendered="OnRenderedStorage"></basis>
+                                            </div>
 
-                                            <input id="advSearchDateTo" name="date_to" data-field="date_to" type="text"
-                                                class="panel-w-52 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                                               focus:panel-shadow-md panel-transition panel-duration-300"
-                                                placeholder="تا تاریخ:">
                                         </div>
 
                                         <div class="panel-flex-1 panel-flex panel-items-center panel-justify-between"
                                             role="radiogroup" aria-label="نوع سفر">
-                                            <input type="hidden" name="_root.date.basedate" value="1">
                                             <label for="advSearchTripTypeOutbound"
                                                 class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
                                                 <input id="advSearchTripTypeOutbound" name="_root.date.typedate"
@@ -474,6 +501,8 @@ body='{
                                                     name="_root.route.start.city_name" type="text" readonly
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                     placeholder="شهر مبدا" />
+                                                <input type="hidden" name="_root.route.start.city" class="data-id"
+                                                    value="">
                                                 <svg width="48" height="48"
                                                     class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
                                                     <use
@@ -488,6 +517,8 @@ body='{
                                                     type="text"
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                     placeholder="شهر مقصد" />
+                                                <input type="hidden" name="_root.route.end.city" class="data-id"
+                                                    value="">
                                                 <svg width="48" height="48"
                                                     class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
                                                     <use
@@ -501,6 +532,7 @@ body='{
                                                     data-field="hotel" type="text"
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                     placeholder="هتل" />
+                                                <input type="hidden" name="_root.route.hotelid_search" class="data-id">
                                                 <svg width="48" height="48"
                                                     class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
                                                     <use
@@ -527,6 +559,7 @@ body='{
                                                     data-field="airline" type="text"
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                     placeholder="ایرلاین" />
+                                                <input type="hidden" name="_root.route.airline" class="data-id">
                                                 <svg width="48" height="48"
                                                     class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
                                                     <use
@@ -552,7 +585,7 @@ body='{
                                         <div class="panel-flex panel-flex-col panel-gap-3">
                                             <div class="panel-grid panel-grid-cols-2 panel-gap-3">
                                                 <div class="panel-relative" data-dd-key="status">
-                                                    <input data-dd-input id="advSearchStatus" name="status"
+                                                    <input data-dd-input id="advSearchStatus" name="_root.open"
                                                         data-field="status" type="text"
                                                         class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                         placeholder="وضعیت" />
@@ -565,8 +598,8 @@ body='{
                                                 </div>
 
                                                 <div class="panel-relative" data-dd-key="tag">
-                                                    <input data-dd-input id="advSearchTag" name="tag" data-field="tag"
-                                                        type="text"
+                                                    <input data-dd-input id="advSearchTag"
+                                                        name="_root.status.invoicestatus" data-field="tag" type="text"
                                                         class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                         placeholder="برچسب" />
                                                     <svg width="48" height="48"
@@ -578,7 +611,7 @@ body='{
                                                 </div>
                                             </div>
                                             <div class="panel-relative panel-col-span-2" data-dd-key="services">
-                                                <input data-dd-input id="advSearchServices" name="services"
+                                                <input data-dd-input id="advSearchServices" name="_root.type"
                                                     data-field="services" type="text"
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                     placeholder="خدمات" />
@@ -593,18 +626,29 @@ body='{
                                     </div>
 
                                     <div class="panel-flex-1 panel-flex panel-items-center panel-gap-3 panel-mt-7">
-                                        <input id="advSearchBuyerInfo" name="buyer_info" data-field="buyer_info"
-                                            type="text"
-                                            class="panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                                               focus:panel-shadow-md panel-transition panel-duration-300"
-                                            placeholder="اطلاعات خریدار">
+                                        <div class="panel-flex-1">
+                                            <input id="advSearchBuyerInfoType" name="_root.account.accounttype"
+                                                type="radio" value="4" class="panel-w-5 panel-h-5">
+                                            <input id="advSearchBuyerInfo" name="_root.account.accountinfo__1.name"
+                                                data-field="buyer_info" type="text"
+                                                class="panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                                   focus:panel-shadow-md panel-transition panel-duration-300" placeholder="اطلاعات خریدار">
+                                        </div>
 
-                                        <input id="advSearchPassengerInfo" name="passenger_info"
-                                            data-field="passenger_info" type="text"
-                                            class="panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                                               focus:panel-shadow-md panel-transition panel-duration-300" placeholder="اطلاعات مسافر">
+                                        <div class="panel-flex-1">
+                                            <input id="advSearchPassengerInfoType" name="_root.account.accounttype"
+                                                type="radio" value="5" class="panel-w-5 panel-h-5">
+                                            <input id="advSearchPassengerInfo" name="_root.account.accountinfo__1.name"
+                                                data-field="passenger_info" type="text"
+                                                class="panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                                   focus:panel-shadow-md panel-transition panel-duration-300" placeholder="اطلاعات مسافر">
+                                        </div>
                                     </div>
                                 </section>
+                                <button
+                                    class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">
+                                    مشاهده نتایج
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -645,7 +689,7 @@ body='{
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
     <script>
-        async function onProcessed_list(args) {
+        async function onProcessedInvoice_list(args) {
             try {
                 const response = args.response;
                 const responseJson = await response.json();
@@ -668,6 +712,96 @@ body='{
                 $bc.setSource("db.list", [], get_option("db.list"));
             }
         }
+        async function callback_sourceInvoiceList(source) {
+  console.log(source)
+
+  const toStr = (v) => (v == null ? '' : String(v))
+  const normalizeDate = (s) => toStr(s).replaceAll('/', '-')
+
+  for (const element of source.source.rows) {
+    const root = element?._root
+    if (!root) continue
+
+    if (root?.date) {
+      root.date.begindate = normalizeDate(root.date.begindate)
+      root.date.enddate = normalizeDate(root.date.enddate)
+    }
+
+    if (root?.account?.accountinfo?.length > 0) {
+      const first = root.account.accountinfo[0]
+      if ((first?.id ?? '') === '') {
+        if (root.account.accountinfo.length === 1) {
+          delete first.id
+        } else {
+          root.account.accountinfo.shift()
+        }
+      }
+    }
+
+    $bc.setSource('cms.search', [
+      {
+        search: JSON.stringify(root),
+        run: true,
+      },
+    ])
+  }
+}
+
+        if (typeof datepickerHasRangesSetting === "undefined") {
+            var datepickerHasRangesSetting = {
+                dateProvider: "basisCalendar",
+                displayNote: false,
+                culture: "fa",
+                secondCulture: "en",
+                lid: 1,
+                todayButton: true,
+                rangeDates: true,
+                type: "click",
+                // rangeDatesSeparated: true,
+                mode: "desktop",
+                style: "[##cms.cms.cdn##]/asset/css/datepicker-style.css",
+            }
+        };
+        function submit_form_invoice(element, event) {
+            element.querySelectorAll(".date-picker-input").forEach(e => {
+                if (element.querySelector(".fdate-string")) {
+                    element.querySelector(".fdate-string").value = e.getAttribute("data-datepicker-sstring");
+                }
+                if (element.querySelector(".tdate-string")) {
+                    if (element.querySelector(".tdate-string")) {
+                        element.querySelector(".tdate-string").value = e.getAttribute("data-datepicker-to-sstring");
+                    }
+
+                }
+            });
+        };
+
+        async function OnRenderedStorage() {
+            const dataStorage = localStorage.getItem('invoiceSearch');
+            if (dataStorage) {
+                const jsonDataStorage = JSON.parse(dataStorage);
+                if (jsonDataStorage.date.begindate.length > 0) {
+                    document.querySelector(".date-picker-input").value = jsonDataStorage.date.begindate + ' - ' + jsonDataStorage.date.enddate
+                    document.querySelector(".date-picker-input").dataset.datepickerSstring = jsonDataStorage.date.begindate;
+                    document.querySelector(".date-picker-input").dataset.datepickerToSstring = jsonDataStorage.date.enddate;
+                }
+                document.querySelector(".date-picker-input").addEventListener("click", function () {
+                    document.querySelector(".date-picker-input").value = "";
+                    document.querySelector(".date-picker-input").dataset.datepickerSstring = ""
+                    document.querySelector(".date-picker-input").dataset.datepickerToSstring = ""
+                    document.querySelector("#advancedContractSearchContent").querySelector("input[name='_root.date.begindate']").value = "";
+                    document.querySelector("#advancedContractSearchContent").querySelector("input[name='_root.date.enddate']").value = "";
+                });
+
+
+            }
+
+
+
+
+
+        };
+
         async function setPage(args) {
             console.log("click paging");
             main_perpage = args.source.rows[0].pageSize;
@@ -1119,8 +1253,8 @@ body='{
 
                         const map = {
                             2: { text: "pending", cls: "!panel-text-red-700 panel-border-red-700" },
-                            1: { text: "صادر شده", cls: "!panel-text-green-700 panel-border-green-700" },
-                            0: { text: "صادر نشده", cls: "!panel-text-red-700 panel-border-red-700" },
+                            1: { text: "صادر نشده", cls: "!panel-text-red-700 panel-border-red-700" },
+                            0: { text: "صادر شده", cls: "!panel-text-green-700 panel-border-green-700" },
                         };
 
                         const item = Object.prototype.hasOwnProperty.call(map, s)

@@ -566,107 +566,274 @@ document.addEventListener('DOMContentLoaded', function () {
 })()
 
 // ----------dropdown menu (advanced search)--------------
+/* =========================================================
+   Shared Dropdown (Dynamic) + API JSON Adapter (NO LOGS)
+   - Uses one global store (window.sharedDDStore)
+   - Waits for response if data is not ready
+   - Reads: startcity/endcity/airline/routecode/hotel/train
+   - UI keys stay: origin_city/destination_city/airline/route_code/hotel/rail_company
+========================================================= */
+
+/* =======================
+   1) Global store
+======================= */
+document.addEventListener('DOMContentLoaded', () => {
+  const buyerRadio = document.getElementById('advSearchBuyerInfoType')
+  const buyerInput = document.getElementById('advSearchBuyerInfo')
+
+  const passengerRadio = document.getElementById('advSearchPassengerInfoType')
+  const passengerInput = document.getElementById('advSearchPassengerInfo')
+
+  if (!buyerRadio || !buyerInput || !passengerRadio || !passengerInput) return
+
+  const setMode = (mode) => {
+    const isBuyer = mode === 'buyer'
+    const isPassenger = mode === 'passenger'
+
+    buyerInput.disabled = !isBuyer
+    passengerInput.disabled = !isPassenger
+
+    if (!isBuyer) buyerInput.value = ''
+    if (!isPassenger) passengerInput.value = ''
+
+    buyerInput.dispatchEvent(new Event('input', { bubbles: true }))
+    buyerInput.dispatchEvent(new Event('change', { bubbles: true }))
+    passengerInput.dispatchEvent(new Event('input', { bubbles: true }))
+    passengerInput.dispatchEvent(new Event('change', { bubbles: true }))
+  }
+
+  buyerRadio.addEventListener('change', () => {
+    if (buyerRadio.checked) setMode('buyer')
+  })
+
+  passengerRadio.addEventListener('change', () => {
+    if (passengerRadio.checked) setMode('passenger')
+  })
+
+  buyerInput.addEventListener('focus', () => {
+    buyerRadio.checked = true
+    setMode('buyer')
+  })
+
+  passengerInput.addEventListener('focus', () => {
+    passengerRadio.checked = true
+    setMode('passenger')
+  })
+
+  // حالت اولیه
+  if (buyerRadio.checked) setMode('buyer')
+  else if (passengerRadio.checked) setMode('passenger')
+  else setMode('buyer') // پیش‌فرض: خریدار
+})
+
+window.sharedDDStore =
+  window.sharedDDStore ||
+  (() => {
+    let data = null
+    let pending = false
+    let waiters = []
+
+    const settleAll = (fn) => {
+      const arr = waiters
+      waiters = []
+      arr.forEach(fn)
+    }
+
+    const normalizeJson = (json) => {
+      let v = json
+
+      if (typeof v === 'string') {
+        try {
+          v = JSON.parse(v)
+        } catch {
+          v = null
+        }
+      }
+
+      if (v && (typeof v === 'object' || Array.isArray(v))) return v
+      return null
+    }
+
+    return {
+      startRequest() {
+        data = null
+        pending = true
+        document.dispatchEvent(new CustomEvent('sharedDropdown:dataPending'))
+      },
+
+      set(json) {
+        data = normalizeJson(json)
+        pending = false
+        settleAll((w) => w.resolve(data))
+        document.dispatchEvent(new CustomEvent('sharedDropdown:dataUpdated'))
+      },
+
+      fail(err) {
+        pending = false
+        settleAll((w) => w.reject(err || new Error('request failed')))
+        document.dispatchEvent(new CustomEvent('sharedDropdown:dataFailed'))
+      },
+
+      get() {
+        return data
+      },
+
+      has() {
+        return !!data
+      },
+
+      isPending() {
+        return pending
+      },
+
+      wait(timeoutMs = 15000) {
+        if (data) return Promise.resolve(data)
+
+        return new Promise((resolve, reject) => {
+          let t = null
+          if (timeoutMs) {
+            t = setTimeout(() => reject(new Error('timeout')), timeoutMs)
+          }
+
+          waiters.push({
+            resolve: (d) => {
+              t && clearTimeout(t)
+              resolve(d)
+            },
+            reject: (e) => {
+              t && clearTimeout(t)
+              reject(e)
+            },
+          })
+        })
+      },
+    }
+  })()
+
+/* =======================
+   2) API handler
+======================= */
+async function onProcessedSearch_item(args) {
+  const store = window.sharedDDStore
+  store.startRequest()
+
+  try {
+    const res = args?.response
+    if (!res) throw new Error('no response')
+
+    const json = await (res.clone ? res.clone().json() : res.json())
+    store.set(json)
+  } catch (e) {
+    store.fail(e)
+  }
+}
+
+/* =======================
+   3) Dropdown UI
+======================= */
 document.addEventListener('DOMContentLoaded', () => {
   const dropdown = document.getElementById('sharedDropdown')
   const search = document.getElementById('sharedDropdownSearch')
   const list = document.getElementById('sharedDropdownList')
-
   if (!dropdown || !search || !list) return
 
-  // ========= 1) تنظیمات هر فیلد =========
-  // items باید آرایه‌ای از { value, label } باشه
+  const store = window.sharedDDStore
+  const toStr = (v) => (v == null ? '' : String(v))
+
+  const jsonKeyMap = Object.freeze({
+    origin_city: 'startcity',
+    destination_city: 'endcity',
+    airline: 'airline',
+    route_code: 'routecode',
+    hotel: 'hotel',
+    rail_company: 'train',
+    services: 'type',
+  })
+
   const ddConfigs = {
     origin_city: {
-      searchPlaceholder: 'جستجوی شهر مبدا...',
-      items: [
-        { value: 'THR', label: 'تهران' },
-        { value: 'MHD', label: 'مشهد' },
-        { value: 'IFN', label: 'اصفهان' },
-        { value: 'SYZ', label: 'شیراز' },
-      ],
+      ph: 'جستجوی شهر مبدا...',
+      dynamic: true,
+      hiddenSelector: 'input[name="_root.route.start.city"]'
     },
     destination_city: {
-      searchPlaceholder: 'جستجوی شهر مقصد...',
-      items: [
-        { value: 'KIH', label: 'کیش' },
-        { value: 'TBZ', label: 'تبریز' },
-        { value: 'BDH', label: 'بندرعباس' },
-      ],
+      ph: 'جستجوی شهر مقصد...',
+      dynamic: true,
+      hiddenSelector: 'input[name="_root.route.end.city"]'
     },
     hotel: {
-      searchPlaceholder: 'جستجوی هتل...',
-      items: [],
-      // اگر میخوای از API بیاری:
-      // async getItems() { ... return [{value,label}, ...] }
+      ph: 'جستجوی هتل...',
+      dynamic: true,
+      hiddenSelector: 'input[name="_root.route.hotelid_search"]'
     },
-    airline: { searchPlaceholder: 'جستجوی ایرلاین...', items: [] },
-    rail_company: { searchPlaceholder: 'جستجوی شرکت ریلی...', items: [] },
-    route_code: { searchPlaceholder: 'جستجوی کد مسیر...', items: [] },
+    airline: {
+      ph: 'جستجوی ایرلاین...',
+      dynamic: true,
+      hiddenSelector: 'input[name="_root.route.airline"]'
+    },
+    rail_company: { ph: 'جستجوی شرکت ریلی...', dynamic: true },
+    route_code: { ph: 'جستجوی کد مسیر...', dynamic: true },
+
     status: {
-      searchPlaceholder: 'وضعیت...',
+      ph: 'وضعیت...',
       items: [
         { value: '0', label: 'قرارداد' },
         { value: '1', label: 'پیش قرارداد' },
       ],
     },
     tag: {
-      searchPlaceholder: 'برچسب...',
+      ph: 'برچسب...',
       items: [
-        { value: '', label: 'همه برچسب ها' },
-        { value: '0', label: 'تسویه نشده' },
-        { value: '1', label: 'تسویه شده' },
-        { value: '2', label: 'تسویه نشده با تایید مالی' },
-        { value: '3', label: 'ویرایش شده' },
-        { value: '4', label: 'ابطال شده' },
+        { value: '', label: 'تمام قراردادها' },
+        { value: '0', label: 'قراردادهای تسویه نشده' },
+        { value: '1', label: 'قراردادهای تسویه شده آنلاین' },
+        { value: '3', label: 'قراردادهای ویرایش شده' },
+        { value: '4', label: 'قراردادهای ابطال شده' },
+        { value: '7', label: 'قراردادهای ابطال نشده' },
+        { value: '2', label: 'قراردادهای تسویه نشده با تایید مالی' },
+        { value: '5', label: 'قراردادهای تسویه شده توسط مالی' },
+        { value: '6', label: 'قراردادهای پرداخت اعتباری' },
+        { value: '8', label: 'پرداخت اعتباری - تسویه شده توسط مالی' },
       ],
     },
     services: {
-      searchPlaceholder: 'خدمات...',
-      items: [
-        { value: '', label: 'همه خدمات' },
-        { value: '2', label: 'پرواز' },
-        { value: '3', label: 'هتل' },
-        { value: '4', label: 'تور' },
-        { value: '5', label: 'بیمه' },
-        { value: '6', label: 'پرواز + هتل' },
-        { value: '8', label: 'قطار' },
-      ],
+      ph: 'نوع...',
+      dynamic: true,
+      hiddenSelector: 'input[name="_root.type"]' 
     },
   }
 
-  // ========= 2) State + Cache =========
-  let activeWrap = null
-  let activeInput = null
-  let activeKey = null
+  const mapCity = (arr) =>
+    (Array.isArray(arr) ? arr : [])
+      .map((x) => ({ value: toStr(x?.id), label: toStr(x?.name) }))
+      .filter((x) => x.label)
 
-  const itemsCache = new Map() // key => items[]
+  const mapNameId = (arr) =>
+    (Array.isArray(arr) ? arr : [])
+      .map((x) => ({ value: toStr(x?.id ?? x?.name), label: toStr(x?.name) }))
+      .filter((x) => x.label)
 
-  const getItemsForKey = async (key) => {
-    const cfg = ddConfigs[key]
-    if (!cfg) return []
+  const mapRoute = (arr) =>
+    (Array.isArray(arr) ? arr : [])
+      .map((x) => {
+        const n = toStr(x?.name)
+        return { value: n, label: n }
+      })
+      .filter((x) => x.label)
 
-    if (itemsCache.has(key)) return itemsCache.get(key)
-
-    let items = cfg.items || []
-    if (typeof cfg.getItems === 'function') {
-      items = await cfg.getItems()
-    }
-
-    itemsCache.set(key, items)
-    return items
+  const renderEmpty = (text) => {
+    list.innerHTML = ''
+    const el = document.createElement('div')
+    el.className = 'panel-p-3 panel-text-sm panel-text-zinc-500'
+    el.textContent = text
+    list.appendChild(el)
   }
 
-  // ========= 3) Render =========
   const renderList = (items) => {
-    list.innerHTML = ''
+    if (!items?.length) return renderEmpty('موردی یافت نشد')
 
-    if (!items.length) {
-      const empty = document.createElement('div')
-      empty.className = 'panel-p-3 panel-text-sm panel-text-zinc-500'
-      empty.textContent = 'موردی یافت نشد'
-      list.appendChild(empty)
-      return
-    }
+    list.innerHTML = ''
+    const frag = document.createDocumentFragment()
 
     items.forEach((item) => {
       const btn = document.createElement('button')
@@ -674,36 +841,69 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.className =
         'panel-w-full panel-text-right panel-px-3 panel-py-3 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200'
       btn.setAttribute('role', 'option')
-      btn.dataset.value = item.value
-      btn.dataset.label = item.label
-      btn.textContent = item.label
-
-      btn.addEventListener('click', () => {
-        if (!activeInput) return
-        activeInput.value = item.label
-        activeInput.dataset.value = item.value
-
-        activeInput.dispatchEvent(new Event('input', { bubbles: true }))
-        activeInput.dispatchEvent(new Event('change', { bubbles: true }))
-
-        closeDropdown()
-      })
-
-      list.appendChild(btn)
+      btn.dataset.value = toStr(item.value)
+      btn.dataset.label = toStr(item.label)
+      btn.textContent = toStr(item.label)
+      frag.appendChild(btn)
     })
+
+    list.appendChild(frag)
   }
 
   const filterItems = (items, q) => {
-    const query = q.trim().toLowerCase()
+    const query = (q || '').trim().toLowerCase()
     if (!query) return items
-    return items.filter((x) => String(x.label).toLowerCase().includes(query))
+    return items.filter((x) => toStr(x.label).toLowerCase().includes(query))
   }
 
-  // ========= 4) Open/Close + Position =========
+  let lastData = null
+  const dynCache = new Map()
+
+  const getDynamicItems = (key) => {
+    const data = store.get()
+    if (!data) return []
+
+    if (data !== lastData) {
+      lastData = data
+      dynCache.clear()
+    }
+
+    if (dynCache.has(key)) return dynCache.get(key)
+
+    const raw = data?.[jsonKeyMap[key]]
+    let items = []
+
+    if (key === 'origin_city' || key === 'destination_city')
+      items = mapCity(raw)
+    else if (key === 'route_code') items = mapRoute(raw)
+    else items = mapNameId(raw)
+
+    dynCache.set(key, items)
+    return items
+  }
+
+  const getItems = (key) => {
+    const cfg = ddConfigs[key]
+    if (!cfg) return []
+    if (cfg.dynamic) return getDynamicItems(key)
+    return Array.isArray(cfg.items) ? cfg.items : []
+  }
+
+  let activeWrap = null
+  let activeInput = null
+  let activeKey = null
+
+  const isOpen = () => !dropdown.classList.contains('panel-hidden')
+
+  const closeDropdown = () => {
+    dropdown.classList.add('panel-hidden')
+    activeWrap = null
+    activeInput = null
+    activeKey = null
+  }
+
   const positionDropdownUnder = (wrapEl) => {
     const rect = wrapEl.getBoundingClientRect()
-
-    // fixed → نسبت به viewport
     dropdown.style.left = `${rect.left}px`
     dropdown.style.top = `${rect.bottom + 8}px`
     dropdown.style.width = `${rect.width}px`
@@ -712,7 +912,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const openDropdown = async (wrapEl) => {
     const key = wrapEl.getAttribute('data-dd-key')
     const input = wrapEl.querySelector('[data-dd-input]')
-
     if (!key || !input) return
 
     const cfg = ddConfigs[key]
@@ -723,48 +922,71 @@ document.addEventListener('DOMContentLoaded', () => {
     activeKey = key
 
     positionDropdownUnder(wrapEl)
-
     dropdown.classList.remove('panel-hidden')
 
-    // سرچ
     search.value = ''
-    search.placeholder = cfg.searchPlaceholder || 'جستجو...'
+    search.placeholder = cfg.ph || 'جستجو...'
     search.focus()
 
-    // دیتا
-    const items = await getItemsForKey(key)
-    renderList(items)
+    if (cfg.dynamic && !store.has()) {
+      renderEmpty('در حال دریافت اطلاعات...')
+      try {
+        await store.wait(15000)
+      } catch {
+        renderEmpty('دریافت اطلاعات طول کشید. دوباره تلاش کنید.')
+        return
+      }
+    }
+
+    renderList(filterItems(getItems(key), search.value))
   }
 
-  const closeDropdown = () => {
-    dropdown.classList.add('panel-hidden')
-    activeWrap = null
-    activeInput = null
-    activeKey = null
-  }
-
-  // با اسکرول/ریسایز اگر باز بود، جای dropdown آپدیت بشه
   const smartReposition = () => {
-    if (!activeWrap || dropdown.classList.contains('panel-hidden')) return
+    if (!activeWrap || !isOpen()) return
     positionDropdownUnder(activeWrap)
   }
   window.addEventListener('scroll', smartReposition, true)
   window.addEventListener('resize', smartReposition)
 
-  // ========= 5) Event Delegation =========
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[role="option"]')
+    if (!btn || !activeInput) return
+
+    const label = btn.dataset.label || ''
+    const value = btn.dataset.value || ''
+
+    // 1) متن (name) تو input اصلی
+    activeInput.value = label
+    activeInput.dataset.value = value
+
+    // 2) id تو hidden (اگر تعریف شده باشد)
+    const cfg = ddConfigs[activeKey]
+    if (cfg?.hiddenSelector && activeWrap) {
+      const hidden = activeWrap.querySelector(cfg.hiddenSelector)
+      if (hidden) {
+        hidden.value = value
+        hidden.dispatchEvent(new Event('input', { bubbles: true }))
+        hidden.dispatchEvent(new Event('change', { bubbles: true }))
+      }
+    }
+
+    // رویدادهای input اصلی
+    activeInput.dispatchEvent(new Event('input', { bubbles: true }))
+    activeInput.dispatchEvent(new Event('change', { bubbles: true }))
+
+    closeDropdown()
+  })
+
   document.addEventListener('click', async (e) => {
-    // اگر کلیک داخل خود dropdown بود، کاری نکن
     if (e.target.closest('#sharedDropdown')) return
 
     const wrap = e.target.closest('[data-dd-key]')
     if (!wrap) {
-      // کلیک بیرون → ببند
-      if (!dropdown.classList.contains('panel-hidden')) closeDropdown()
+      if (isOpen()) closeDropdown()
       return
     }
 
-    // اگر روی همون active کلیک شد → toggle
-    if (wrap === activeWrap && !dropdown.classList.contains('panel-hidden')) {
+    if (wrap === activeWrap && isOpen()) {
       closeDropdown()
       return
     }
@@ -776,12 +998,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') closeDropdown()
   })
 
-  search.addEventListener('input', async () => {
+  search.addEventListener('input', () => {
     if (!activeKey) return
-    const items = await getItemsForKey(activeKey)
-    renderList(filterItems(items, search.value))
+    const cfg = ddConfigs[activeKey]
+    if (cfg?.dynamic && !store.has())
+      return renderEmpty('در حال دریافت اطلاعات...')
+    renderList(filterItems(getItems(activeKey), search.value))
+  })
+
+  document.addEventListener('sharedDropdown:dataUpdated', () => {
+    if (!activeKey || !isOpen()) return
+    renderList(filterItems(getItems(activeKey), search.value))
   })
 })
+
 /**
  * Sends edited user data to backend and shows loading state.
  */
