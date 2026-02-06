@@ -1,4 +1,22 @@
-;(() => {
+let translations = {}
+let currentLanguage = document.documentElement.lang || 'fa'
+const loadTranslations = async () => {
+  try {
+      const res = await fetch(`/json/translations?lid=1`);
+      translations = await res.json();
+      currentLanguageTranslate = currentLanguage;
+  } catch (e) {
+      console.error('Failed to load translations');
+  }
+};
+
+const translate = (text) => translations[text]?.[currentLanguageTranslate] || text;
+
+(async () => {
+  await loadTranslations();
+})();
+
+; (() => {
   const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
   const panelWalletAmount = document.querySelector('.panel-wallet-amount')
   if (!visibilityAmountBtn || !panelWalletAmount) return
@@ -75,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 })
 
+//------- increase ballance payment----------
 document.addEventListener('DOMContentLoaded', () => {
   const root =
     document
@@ -137,25 +156,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   payBtn.addEventListener('click', (e) => {
     e.preventDefault()
-
+  
     const raw = amountInput.value
     const cleaned = normalizeNumber(raw)
-
+  
     if (!cleaned) {
-      showError('مبلغ را وارد کنید.')
+      showError(translate('enter_amount'))
       return
     }
-
+  
     if (cleaned.length < 5) {
-      showError('مبلغ باید حداقل ۵ رقم باشد.')
+      showError(translate('amount_min_5_digits'))
       return
     }
-
+  
     clearError()
-    showGateways() // ✅ فقط وقتی معتبره نمایش بده
+    showGateways()
   })
 })
 
+// ------validateLatin and validatePersian-------
 document.addEventListener('DOMContentLoaded', function () {
   // فیلدهای فارسی
   const persianInputs = document.querySelectorAll(
@@ -194,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document
       .getElementById('openPassengerModal')
       .addEventListener('click', function () {
-        document.getElementById('passengerModal').classList.remove('hidden')
+        document.getElementById('passengerModal').classList.remove('panel-hidden')
       })
   }
 
@@ -203,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document
       .getElementById('closePassengerModal')
       .addEventListener('click', function () {
-        document.getElementById('passengerModal').classList.add('hidden')
+        document.getElementById('passengerModal').classList.add('panel-hidden')
       })
   }
 })
@@ -223,6 +243,7 @@ function validateNumeric(input) {
   input.value = input.value.replace(/[^0-9]/g, '') // فقط اعداد مجاز هستند
 }
 
+// -----passenger list popup date---------
 document.addEventListener('DOMContentLoaded', function () {
   const openDobPopupButton = document.getElementById('dobInput')
   const openPassportExpiryPopupButton = document.getElementById(
@@ -259,41 +280,40 @@ document.addEventListener('DOMContentLoaded', function () {
   // تاریخ‌های میلادی
   const gregorianDates = {
     months: [
-      'ژانویه',
-      'فوریه',
-      'مارس',
-      'آوریل',
-      'مه',
-      'ژوئن',
-      'ژوئیه',
-      'اوت',
-      'سپتامبر',
-      'اکتبر',
-      'نوامبر',
-      'دسامبر',
+      translate('january'),
+      translate('february'),
+      translate('march'),
+      translate('april'),
+      translate('may'),
+      translate('june'),
+      translate('july'),
+      translate('august'),
+      translate('september'),
+      translate('october'),
+      translate('november'),
+      translate('december'),
     ],
     days: Array.from({ length: 31 }, (_, i) => i + 1),
-    years: Array.from({ length: 100 }, (_, i) => 1923 + i), // از 1923 تا 2022
+    years: Array.from({ length: 100 }, (_, i) => 1923 + i),
   }
-
-  // تاریخ‌های شمسی (برای مثال)
+  
   const jalaliDates = {
     months: [
-      'فروردین',
-      'اردیبهشت',
-      'خرداد',
-      'تیر',
-      'مرداد',
-      'شهریور',
-      'مهر',
-      'آبان',
-      'آذر',
-      'دی',
-      'بهمن',
-      'اسفند',
+      translate('farvardin'),
+      translate('ordibehesht'),
+      translate('khordad'),
+      translate('tir'),
+      translate('mordad'),
+      translate('shahrivar'),
+      translate('mehr'),
+      translate('aban'),
+      translate('azar'),
+      translate('dey'),
+      translate('bahman'),
+      translate('esfand'),
     ],
     days: Array.from({ length: 31 }, (_, i) => i + 1),
-    years: Array.from({ length: 100 }, (_, i) => 1400 + i), // از 1400 تا 1500
+    years: Array.from({ length: 100 }, (_, i) => 1400 + i),
   }
 
   // باز کردن پاپ‌آپ تاریخ تولد
@@ -424,29 +444,29 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       dates = jalaliDates
     }
-
+  
     // ماه‌ها
-    monthSelect.innerHTML = '<option value="">ماه</option>'
+    monthSelect.innerHTML = `<option value="">${translate('month')}</option>`
     dates.months.forEach((month, index) => {
       const option = document.createElement('option')
       option.value = index + 1
       option.textContent = month
       monthSelect.appendChild(option)
     })
-
+  
     // سال‌ها
-    yearSelect.innerHTML = '<option value="">سال</option>'
+    yearSelect.innerHTML = `<option value="">${translate('year')}</option>`
     dates.years.forEach((year) => {
       const option = document.createElement('option')
       option.value = year
       option.textContent = year
       yearSelect.appendChild(option)
     })
-
-    // روزها (بر اساس ماه و سال فعلی، اگر انتخاب شده باشه)
+  
+    // روزها
     updateDaysByMonth()
-
-    // پاک کردن انتخاب قبلی (بدون هیچ پیش‌فرضی)
+  
+    // ریست انتخاب‌ها
     daySelect.value = ''
     monthSelect.value = ''
     yearSelect.value = ''
@@ -461,28 +481,291 @@ document.addEventListener('DOMContentLoaded', function () {
     const day = daySelect.value
     const month = monthSelect.value
     const year = yearSelect.value
-
+  
+    // کانتینر خطا
+    const dateContainer = document.getElementById('dateSelectors')
+    let errorEl = dateContainer.querySelector('.date-error')
+  
+    // اگر قبلاً خطا بود، پاکش کن
+    if (errorEl) errorEl.remove()
+  
     if (!day || !month || !year) {
-      alert('لطفاً تاریخ را کامل انتخاب کنید')
+      // ایجاد المنت خطا
+      errorEl = document.createElement('div')
+      errorEl.className = 'date-error panel-text-red-600 panel-text-sm panel-mt-2'
+      errorEl.textContent = translate('select_complete_date') // کلید ترجمه
+      dateContainer.appendChild(errorEl)
       return
     }
-
+  
     const targetField = document.getElementById(targetInputField)
     if (!targetField) return
-
+  
     const formattedDate = `${year}/${pad(month)}/${pad(day)}`
-
+  
     targetField.value = formattedDate
     targetField.dataset.type = currentDateType
-
+  
     closeDatePopup()
   })
   monthSelect.addEventListener('change', updateDaysByMonth)
   yearSelect.addEventListener('change', updateDaysByMonth)
 })
+document.addEventListener('DOMContentLoaded', () => {
+  const nationalityInput = document.getElementById('nationality')
+  const nationalCodeInput = document.getElementById('nationalCode')
+  const nationalityDropdown = document.getElementById('nationalityDropdown')
+
+  if (!nationalityInput || !nationalityDropdown || !nationalCodeInput) return
+
+  /* انتخاب کشور */
+  function selectNationality(country) {
+    nationalityInput.value = country.fa
+    nationalityInput.dataset.id = country.id
+
+    if (country.fa !== 'ایران') {
+      nationalCodeInput.disabled = true
+      nationalCodeInput.value = ''
+      nationalCodeInput.classList.add(
+        'panel-bg-zinc-200',
+        'panel-text-zinc-400',
+        'panel-cursor-not-allowed'
+      )
+    } else {
+      nationalCodeInput.disabled = false
+      nationalCodeInput.classList.remove(
+        'panel-bg-zinc-200',
+        'panel-text-zinc-400',
+        'panel-cursor-not-allowed'
+      )
+    }
+
+    nationalityDropdown.classList.add('panel-hidden')
+  }
+
+  /* رندر لیست کشورها */
+  function renderCountries(list) {
+    nationalityDropdown.innerHTML = ''
+
+    if (!list || !list.length) {
+      nationalityDropdown.innerHTML =
+        `<div class="panel-p-3 panel-text-sm panel-text-zinc-400">
+          ${translate('no_results_found')}
+        </div>`
+      return
+    }
+
+    list.forEach((country) => {
+      const item = document.createElement('div')
+      item.className =
+        'panel-px-4 panel-py-2 panel-cursor-pointer hover:panel-bg-zinc-100 panel-text-sm'
+      item.textContent = country.fa
+
+      item.addEventListener('click', () => {
+        selectNationality(country)
+      })
+
+      nationalityDropdown.appendChild(item)
+    })
+  }
+
+  /* باز شدن dropdown */
+  nationalityInput.addEventListener('click', () => {
+    nationalityDropdown.classList.remove('panel-hidden')
+  })
+
+  /* سرچ کشور */
+  nationalityInput.addEventListener('input', () => {
+    const value = nationalityInput.value.trim()
+
+    if (value.length < 2) return
+
+    nationalityDropdown.classList.remove('panel-hidden')
+    nationalityDropdown.innerHTML =
+      '<div class="panel-w-full panel-h-12"><span class="loader panel-flex panel-mx-auto"></span></div>'
+
+    $bc.setSource('db.autoSearch', [
+      {
+        term: value,
+        type: 'کشور',
+        lang: 'fa',
+        run: true,
+      },
+    ])
+  })
+
+  /* بستن با کلیک بیرون */
+  document.addEventListener('click', (e) => {
+    if (
+      !nationalityInput.contains(e.target) &&
+      !nationalityDropdown.contains(e.target)
+    ) {
+      nationalityDropdown.classList.add('panel-hidden')
+    }
+  })
+
+  /* دریافت نتیجه از API */
+  window.onProcessed_autoSearch = async function (args) {
+    const responseJson = await args.response.json()
+
+    const countries = responseJson.map(item => ({
+      id: item.id,
+      fa: item.value,
+    }))
+
+    renderCountries(countries)
+  }
+})
+
+
+// ----- بررسی فیلدهای اجباری برای مسافر -----
+document.addEventListener('DOMContentLoaded', function () {
+  const addPassengerBtn = document.getElementById('add-passenger-button');
+
+  if (addPassengerBtn) {
+    addPassengerBtn.addEventListener('click', function (e) {
+      e.preventDefault(); // جلوگیری از ارسال فرم
+
+      const result = validatePassengerFields();
+      if (!result.isValid) {
+        highlightInvalidFields(result.invalidFields);
+        return;
+      }
+
+      clearAllHighlights(); // پاک کردن borderهای خطا
+      callback_sourcePassnegerNew();      // هم افزودن، هم ویرایش در یک فانکشن
+    });
+  }
+});
+
+function validatePassengerFields() {
+  const invalidFields = []
+
+  // گرفتن مقادیر فیلدها
+  const firstNameLatin = document.getElementById('firstNameLatin')
+  const lastNameLatin = document.getElementById('lastNameLatin')
+  const genderSelect = document.getElementById('gender')
+  const nationality = document.getElementById('nationality')
+  const nationalCode = document.getElementById('nationalCode')
+  const dobInput = document.getElementById('dobInput')
+  const passportNumber = document.getElementById('passportNumber')
+  const passportExpiry = document.getElementById('passportExpiryInput')
+
+  // بررسی فیلدهای اجباری
+  if (!firstNameLatin.value.trim()) {
+    invalidFields.push(firstNameLatin)
+  }
+
+  if (!lastNameLatin.value.trim()) {
+    invalidFields.push(lastNameLatin)
+  }
+
+  // بررسی select جنسیت - مقدار نباید "gender" باشد
+  if (!["1", "0"].includes(genderSelect.value)) {
+    invalidFields.push(genderSelect)
+  }
+
+  if (!nationality.value.trim()) {
+    invalidFields.push(nationality)
+  }
+
+  // کد ملی فقط برای ایرانیان اجباری است
+  if (nationality.value.trim() === 'ایران') {
+    if (!nationalCode.value.trim()) {
+      invalidFields.push(nationalCode)
+    } else if (!isValidIranianNationalCode(nationalCode.value.trim())) {
+      invalidFields.push(nationalCode)
+    }
+  }
+
+  // تاریخ تولد اجباری است
+  if (!dobInput.value.trim()) {
+    invalidFields.push(dobInput)
+} else if (!isValidDate(dobInput.value)) {
+    invalidFields.push(dobInput)
+}
+
+  // پاسپورت اختیاری ولی اگر وارد شد، اعتبارسنجی کن
+  if (passportNumber.value.trim() && !/^[A-Za-z0-9]{5,15}$/.test(passportNumber.value.trim())) {
+    invalidFields.push(passportNumber)
+  }
+
+  // تاریخ انقضای پاسپورت اختیاری ولی اگر پاسپورت وارد شد، اجباری است
+  if (passportExpiry.value && !isValidDate(passportExpiry.value)) {
+    invalidFields.push(passportExpiry)
+}
+
+  function isValidDate(dateStr) {
+    const parts = dateStr.split('/')
+    if(parts.length !== 3) return false
+    const year = parseInt(parts[0]), month = parseInt(parts[1]), day = parseInt(parts[2])
+    if(isNaN(year) || isNaN(month) || isNaN(day)) return false
+    if(month < 1 || month > 12) return false
+    if(day < 1 || day > 31) return false
+    return true
+}
+
+  return {
+    isValid: invalidFields.length === 0,
+    invalidFields: invalidFields,
+  }
+}
+
+function isValidIranianNationalCode(input) {
+  const code = input.toString().replace(/\D/g, '')
+
+  if (code.length !== 10) {
+    return false
+  }
+
+  const allDigitsSame = /^(\d)\1+$/.test(code)
+  if (allDigitsSame) {
+    return false
+  }
+
+  // الگوریتم اعتبارسنجی کد ملی ایران
+  let sum = 0
+
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(code.charAt(i)) * (10 - i)
+  }
+
+  let remainder = sum % 11
+  let controlDigit = parseInt(code.charAt(9))
+
+  if (remainder < 2) {
+    return controlDigit === remainder
+  } else {
+    return controlDigit === 11 - remainder
+  }
+}
+
+function highlightInvalidFields(invalidFields) {
+  clearAllHighlights()
+
+  invalidFields.forEach((field) => {
+    if (field) {
+      field.classList.add('border-error')
+    }
+  })
+
+  if (invalidFields.length > 0 && invalidFields[0]) {
+    invalidFields[0].scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    })
+    invalidFields[0].focus()
+  }
+}
+
+function clearAllHighlights() {
+  document.querySelectorAll('.border-error').forEach((el) => {
+    el.classList.remove('border-error')
+  })
+}
 
 //------------------------Advanced Search --------------------------
-;(() => {
+; (() => {
   const openBtn = document.getElementById('btnOpenAdvancedSearch')
   const modalId =
     openBtn?.getAttribute('data-modal-open') || 'advancedContractSearch'
@@ -523,47 +806,47 @@ document.addEventListener('DOMContentLoaded', function () {
   })
 })()
 
-//----------------clear advanced search---------------------
-;(() => {
-  const modal = document.getElementById('advancedContractSearch')
-  const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
+  //----------------clear advanced search---------------------
+  ; (() => {
+    const modal = document.getElementById('advancedContractSearch')
+    const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
 
-  if (!modal || !clearBtn) return
+    if (!modal || !clearBtn) return
 
-  const clearAdvancedSearchFilters = () => {
-    const scope = modal
+    const clearAdvancedSearchFilters = () => {
+      const scope = modal
 
-    scope
-      .querySelectorAll(
-        'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
-      )
-      .forEach((el) => {
+      scope
+        .querySelectorAll(
+          'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
+        )
+        .forEach((el) => {
+          el.value = ''
+          el.dispatchEvent(new Event('input', { bubbles: true }))
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope
+        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+        .forEach((el) => {
+          el.checked = false
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope.querySelectorAll('textarea').forEach((el) => {
         el.value = ''
         el.dispatchEvent(new Event('input', { bubbles: true }))
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
 
-    scope
-      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-      .forEach((el) => {
-        el.checked = false
+      scope.querySelectorAll('select').forEach((el) => {
+        el.selectedIndex = 0
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
+    }
 
-    scope.querySelectorAll('textarea').forEach((el) => {
-      el.value = ''
-      el.dispatchEvent(new Event('input', { bubbles: true }))
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-
-    scope.querySelectorAll('select').forEach((el) => {
-      el.selectedIndex = 0
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-  }
-
-  clearBtn.addEventListener('click', clearAdvancedSearchFilters)
-})()
+    clearBtn.addEventListener('click', clearAdvancedSearchFilters)
+  })()
 
 // ----------dropdown menu (advanced search)--------------
 /* =========================================================
@@ -752,54 +1035,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const ddConfigs = {
     origin_city: {
-      ph: 'جستجوی شهر مبدا...',
+      ph: translate('search_origin_city'),
       dynamic: true,
       hiddenSelector: 'input[name="_root.route.start.city"]'
     },
     destination_city: {
-      ph: 'جستجوی شهر مقصد...',
+      ph: translate('search_destination_city'),
       dynamic: true,
       hiddenSelector: 'input[name="_root.route.end.city"]'
     },
     hotel: {
-      ph: 'جستجوی هتل...',
+      ph: translate('search_hotel'),
       dynamic: true,
       hiddenSelector: 'input[name="_root.route.hotelid_search"]'
     },
     airline: {
-      ph: 'جستجوی ایرلاین...',
+      ph: translate('search_airline'),
       dynamic: true,
       hiddenSelector: 'input[name="_root.route.airline"]'
     },
-    rail_company: { ph: 'جستجوی شرکت ریلی...', dynamic: true },
-    route_code: { ph: 'جستجوی کد مسیر...', dynamic: true },
-
+    rail_company: {
+      ph: translate('search_rail_company'),
+      dynamic: true
+    },
+    route_code: {
+      ph: translate('search_route_code'),
+      dynamic: true
+    },
+  
     status: {
-      ph: 'وضعیت...',
+      ph: translate('status'),
       items: [
-        { value: '0', label: 'قرارداد' },
-        { value: '1', label: 'پیش قرارداد' },
+        { value: '0', label: translate('contract') },
+        { value: '1', label: translate('pre_contract') },
       ],
     },
+  
     tag: {
-      ph: 'برچسب...',
+      ph: translate('tag'),
       items: [
-        { value: '', label: 'تمام قراردادها' },
-        { value: '0', label: 'قراردادهای تسویه نشده' },
-        { value: '1', label: 'قراردادهای تسویه شده آنلاین' },
-        { value: '3', label: 'قراردادهای ویرایش شده' },
-        { value: '4', label: 'قراردادهای ابطال شده' },
-        { value: '7', label: 'قراردادهای ابطال نشده' },
-        { value: '2', label: 'قراردادهای تسویه نشده با تایید مالی' },
-        { value: '5', label: 'قراردادهای تسویه شده توسط مالی' },
-        { value: '6', label: 'قراردادهای پرداخت اعتباری' },
-        { value: '8', label: 'پرداخت اعتباری - تسویه شده توسط مالی' },
+        { value: '', label: translate('all_contracts') },
+        { value: '0', label: translate('unsettled_contracts') },
+        { value: '1', label: translate('online_settled_contracts') },
+        { value: '3', label: translate('edited_contracts') },
+        { value: '4', label: translate('canceled_contracts') },
+        { value: '7', label: translate('not_canceled_contracts') },
+        { value: '2', label: translate('unsettled_finance_approved') },
+        { value: '5', label: translate('finance_settled_contracts') },
+        { value: '6', label: translate('credit_payment_contracts') },
+        { value: '8', label: translate('credit_payment_finance_settled') },
       ],
     },
+  
     services: {
-      ph: 'نوع...',
+      ph: translate('type'),
       dynamic: true,
-      hiddenSelector: 'input[name="_root.type"]' 
+      hiddenSelector: 'input[name="_root.type"]'
     },
   }
 
@@ -830,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const renderList = (items) => {
-    if (!items?.length) return renderEmpty('موردی یافت نشد')
+    if (!items?.length) return renderEmpty(translate('no_items_found'))
 
     list.innerHTML = ''
     const frag = document.createDocumentFragment()
@@ -839,7 +1130,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = document.createElement('button')
       btn.type = 'button'
       btn.className =
-        'panel-w-full panel-text-right panel-px-3 panel-py-3 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200'
+        'panel-w-full panel-text-right panel-px-3 panel-py-2 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200'
       btn.setAttribute('role', 'option')
       btn.dataset.value = toStr(item.value)
       btn.dataset.label = toStr(item.label)
@@ -925,15 +1216,15 @@ document.addEventListener('DOMContentLoaded', () => {
     dropdown.classList.remove('panel-hidden')
 
     search.value = ''
-    search.placeholder = cfg.ph || 'جستجو...'
+    search.placeholder = translate(cfg.ph) || translate('search_default')
     search.focus()
 
     if (cfg.dynamic && !store.has()) {
-      renderEmpty('در حال دریافت اطلاعات...')
+      renderEmpty(translate('loading_data'))
       try {
         await store.wait(15000)
       } catch {
-        renderEmpty('دریافت اطلاعات طول کشید. دوباره تلاش کنید.')
+        renderEmpty(translate('loading_timeout'))
         return
       }
     }
@@ -1002,7 +1293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!activeKey) return
     const cfg = ddConfigs[activeKey]
     if (cfg?.dynamic && !store.has())
-      return renderEmpty('در حال دریافت اطلاعات...')
+      return renderEmpty(translate('loading_data'))
     renderList(filterItems(getItems(activeKey), search.value))
   })
 
@@ -1040,7 +1331,7 @@ const watchSchemaReady = ({
 
   if (isReady()) {
     applyReadyState()
-    return () => {}
+    return () => { }
   }
 
   const container = document.querySelector(containerSelector)

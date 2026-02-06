@@ -1,4 +1,4 @@
-;(() => {
+; (() => {
   const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
   const panelWalletAmount = document.querySelector('.panel-wallet-amount')
   if (!visibilityAmountBtn || !panelWalletAmount) return
@@ -735,7 +735,7 @@ function clearAllHighlights() {
 }
 
 //------------------------Advanced Search --------------------------
-;(() => {
+; (() => {
   const openBtn = document.getElementById('btnOpenAdvancedSearch')
   const modalId =
     openBtn?.getAttribute('data-modal-open') || 'advancedContractSearch'
@@ -776,47 +776,47 @@ function clearAllHighlights() {
   })
 })()
 
-//----------------clear advanced search---------------------
-;(() => {
-  const modal = document.getElementById('advancedContractSearch')
-  const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
+  //----------------clear advanced search---------------------
+  ; (() => {
+    const modal = document.getElementById('advancedContractSearch')
+    const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
 
-  if (!modal || !clearBtn) return
+    if (!modal || !clearBtn) return
 
-  const clearAdvancedSearchFilters = () => {
-    const scope = modal
+    const clearAdvancedSearchFilters = () => {
+      const scope = modal
 
-    scope
-      .querySelectorAll(
-        'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
-      )
-      .forEach((el) => {
+      scope
+        .querySelectorAll(
+          'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
+        )
+        .forEach((el) => {
+          el.value = ''
+          el.dispatchEvent(new Event('input', { bubbles: true }))
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope
+        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+        .forEach((el) => {
+          el.checked = false
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope.querySelectorAll('textarea').forEach((el) => {
         el.value = ''
         el.dispatchEvent(new Event('input', { bubbles: true }))
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
 
-    scope
-      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-      .forEach((el) => {
-        el.checked = false
+      scope.querySelectorAll('select').forEach((el) => {
+        el.selectedIndex = 0
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
+    }
 
-    scope.querySelectorAll('textarea').forEach((el) => {
-      el.value = ''
-      el.dispatchEvent(new Event('input', { bubbles: true }))
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-
-    scope.querySelectorAll('select').forEach((el) => {
-      el.selectedIndex = 0
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-  }
-
-  clearBtn.addEventListener('click', clearAdvancedSearchFilters)
-})()
+    clearBtn.addEventListener('click', clearAdvancedSearchFilters)
+  })()
 
 // ----------dropdown menu (advanced search)--------------
 document.addEventListener("DOMContentLoaded", () => {

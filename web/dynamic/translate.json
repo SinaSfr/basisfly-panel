@@ -1,0 +1,337 @@
+{
+    "enter_amount": {
+        "en": "Please enter the amount.",
+        "fa": "مبلغ را وارد کنید.",
+        "ar": "يرجى إدخال المبلغ."
+    },
+    "amount_min_5_digits": {
+        "en": "The amount must be at least 5 digits.",
+        "fa": "مبلغ باید حداقل ۵ رقم باشد.",
+        "ar": "يجب أن يتكون المبلغ من 5 أرقام على الأقل."
+    },
+    "january": {
+        "en": "January",
+        "fa": "ژانویه",
+        "ar": "يناير"
+    },
+    "february": {
+        "en": "February",
+        "fa": "فوریه",
+        "ar": "فبراير"
+    },
+    "march": {
+        "en": "March",
+        "fa": "مارس",
+        "ar": "مارس"
+    },
+    "april": {
+        "en": "April",
+        "fa": "آوریل",
+        "ar": "أبريل"
+    },
+    "may": {
+        "en": "May",
+        "fa": "مه",
+        "ar": "مايو"
+    },
+    "june": {
+        "en": "June",
+        "fa": "ژوئن",
+        "ar": "يونيو"
+    },
+    "july": {
+        "en": "July",
+        "fa": "ژوئیه",
+        "ar": "يوليو"
+    },
+    "august": {
+        "en": "August",
+        "fa": "اوت",
+        "ar": "أغسطس"
+    },
+    "september": {
+        "en": "September",
+        "fa": "سپتامبر",
+        "ar": "سبتمبر"
+    },
+    "october": {
+        "en": "October",
+        "fa": "اکتبر",
+        "ar": "أكتوبر"
+    },
+    "november": {
+        "en": "November",
+        "fa": "نوامبر",
+        "ar": "نوفمبر"
+    },
+    "december": {
+        "en": "December",
+        "fa": "دسامبر",
+        "ar": "ديسمبر"
+    },
+    "farvardin": {
+        "en": "Farvardin",
+        "fa": "فروردین",
+        "ar": "فروردين"
+    },
+    "ordibehesht": {
+        "en": "Ordibehesht",
+        "fa": "اردیبهشت",
+        "ar": "أرديبهشت"
+    },
+    "khordad": {
+        "en": "Khordad",
+        "fa": "خرداد",
+        "ar": "خرداد"
+    },
+    "tir": {
+        "en": "Tir",
+        "fa": "تیر",
+        "ar": "تير"
+    },
+    "mordad": {
+        "en": "Mordad",
+        "fa": "مرداد",
+        "ar": "مرداد"
+    },
+    "shahrivar": {
+        "en": "Shahrivar",
+        "fa": "شهریور",
+        "ar": "شهريور"
+    },
+    "mehr": {
+        "en": "Mehr",
+        "fa": "مهر",
+        "ar": "مهر"
+    },
+    "aban": {
+        "en": "Aban",
+        "fa": "آبان",
+        "ar": "آبان"
+    },
+    "azar": {
+        "en": "Azar",
+        "fa": "آذر",
+        "ar": "آذر"
+    },
+    "dey": {
+        "en": "Dey",
+        "fa": "دی",
+        "ar": "دي"
+    },
+    "bahman": {
+        "en": "Bahman",
+        "fa": "بهمن",
+        "ar": "بهمن"
+    },
+    "esfand": {
+        "en": "Esfand",
+        "fa": "اسفند",
+        "ar": "اسفند"
+    },
+    "month": {
+        "en": "Month",
+        "fa": "ماه",
+        "ar": "الشهر"
+    },
+    "year": {
+        "en": "Year",
+        "fa": "سال",
+        "ar": "السنة"
+    },
+    "select_complete_date": {
+        "en": "Please select a complete date",
+        "fa": "لطفاً تاریخ را کامل انتخاب کنید",
+        "ar": "يرجى اختيار التاريخ بالكامل"
+    },
+    "no_results_found": {
+        "en": "No results found",
+        "fa": "نتیجه‌ای یافت نشد",
+        "ar": "لم يتم العثور على نتائج"
+    },
+    "search_origin_city": {
+        "en": "Search origin city...",
+        "fa": "جستجوی شهر مبدا...",
+        "ar": "البحث عن مدينة الانطلاق..."
+    },
+    "search_destination_city": {
+        "en": "Search destination city...",
+        "fa": "جستجوی شهر مقصد...",
+        "ar": "البحث عن مدينة الوصول..."
+    },
+    "search_hotel": {
+        "en": "Search hotel...",
+        "fa": "جستجوی هتل...",
+        "ar": "البحث عن فندق..."
+    },
+    "search_airline": {
+        "en": "Search airline...",
+        "fa": "جستجوی ایرلاین...",
+        "ar": "البحث عن شركة طيران..."
+    },
+    "search_rail_company": {
+        "en": "Search rail company...",
+        "fa": "جستجوی شرکت ریلی...",
+        "ar": "البحث عن شركة السكك الحديدية..."
+    },
+    "search_route_code": {
+        "en": "Search route code...",
+        "fa": "جستجوی کد مسیر...",
+        "ar": "البحث عن رمز المسار..."
+    },
+    "status": {
+        "en": "Status...",
+        "fa": "وضعیت...",
+        "ar": "الحالة..."
+    },
+    "contract": {
+        "en": "Contract",
+        "fa": "قرارداد",
+        "ar": "عقد"
+    },
+    "pre_contract": {
+        "en": "Pre-contract",
+        "fa": "پیش قرارداد",
+        "ar": "عقد مبدئي"
+    },
+    "tag": {
+        "en": "Tag...",
+        "fa": "برچسب...",
+        "ar": "الوسم..."
+    },
+    "all_contracts": {
+        "en": "All contracts",
+        "fa": "تمام قراردادها",
+        "ar": "جميع العقود"
+    },
+    "unsettled_contracts": {
+        "en": "Unsettled contracts",
+        "fa": "قراردادهای تسویه نشده",
+        "ar": "العقود غير المسواة"
+    },
+    "online_settled_contracts": {
+        "en": "Online settled contracts",
+        "fa": "قراردادهای تسویه شده آنلاین",
+        "ar": "العقود المسواة عبر الإنترنت"
+    },
+    "edited_contracts": {
+        "en": "Edited contracts",
+        "fa": "قراردادهای ویرایش شده",
+        "ar": "العقود المعدلة"
+    },
+    "canceled_contracts": {
+        "en": "Canceled contracts",
+        "fa": "قراردادهای ابطال شده",
+        "ar": "العقود الملغاة"
+    },
+    "not_canceled_contracts": {
+        "en": "Not canceled contracts",
+        "fa": "قراردادهای ابطال نشده",
+        "ar": "العقود غير الملغاة"
+    },
+    "unsettled_finance_approved": {
+        "en": "Unsettled contracts approved by finance",
+        "fa": "قراردادهای تسویه نشده با تایید مالی",
+        "ar": "عقود غير مسواة بموافقة المالية"
+    },
+    "finance_settled_contracts": {
+        "en": "Finance settled contracts",
+        "fa": "قراردادهای تسویه شده توسط مالی",
+        "ar": "عقود مسواة من قبل المالية"
+    },
+    "credit_payment_contracts": {
+        "en": "Credit payment contracts",
+        "fa": "قراردادهای پرداخت اعتباری",
+        "ar": "عقود الدفع الائتماني"
+    },
+    "credit_payment_finance_settled": {
+        "en": "Credit payment - settled by finance",
+        "fa": "پرداخت اعتباری - تسویه شده توسط مالی",
+        "ar": "الدفع الائتماني - مسوى من قبل المالية"
+    },
+    "type": {
+        "en": "Type...",
+        "fa": "نوع...",
+        "ar": "النوع..."
+    },
+    "no_items_found": {
+        "en": "No items found",
+        "fa": "موردی یافت نشد",
+        "ar": "لم يتم العثور على عناصر"
+    },
+    "search_default": {
+        "en": "Search...",
+        "fa": "جستجو...",
+        "ar": "بحث..."
+    },
+    "loading_data": {
+        "en": "Loading data...",
+        "fa": "در حال دریافت اطلاعات...",
+        "ar": "جاري تحميل البيانات..."
+    },
+    "loading_timeout": {
+        "en": "Loading took too long. Please try again.",
+        "fa": "دریافت اطلاعات طول کشید. دوباره تلاش کنید.",
+        "ar": "استغرق التحميل وقتًا طويلاً. الرجاء المحاولة مرة أخرى."
+    },
+    "save_changes": {
+        "en": "Save Changes",
+        "fa": "ذخیره تغییرات",
+        "ar": "حفظ التغييرات"
+    },
+    "edit_passenger": {
+        "en": "Edit Passenger",
+        "fa": "ویرایش مسافر",
+        "ar": "تعديل الراكب"
+    },
+    "add_passenger": {
+        "en": "Add Passenger",
+        "fa": "افزودن مسافر",
+        "ar": "إضافة راكب"
+    },
+    "country_name": {
+        "en": "Country Name",
+        "fa": "نام کشور",
+        "ar": "اسم الدولة"
+    },
+    "city_name": {
+        "en": "City Name",
+        "fa": "نام شهر",
+        "ar": "اسم المدينة"
+    },
+    "hotel_name": {
+        "en": "Hotel Name",
+        "fa": "نام هتل",
+        "ar": "اسم الفندق"
+    },
+    "Available": {
+        "en": "Available",
+        "fa": "در دسترس",
+        "ar": "متاح"
+    },
+    "visa_name": {
+        "en": "Visa Name",
+        "fa": "نام ویزا",
+        "ar": "اسم التأشيرة"
+    },
+    "service": {
+        "en": "Service",
+        "fa": "خدمات",
+        "ar": "الخدمة"
+    },
+    "passengers": {
+        "en": "Passengers",
+        "fa": "مسافران",
+        "ar": "المسافرون"
+    },
+    "contract_date": {
+        "en": "Contract Date",
+        "fa": "تاریخ قرارداد",
+        "ar": "تاريخ العقد"
+    },
+    "view_contract": {
+        "en": "View Contract",
+        "fa": "مشاهده قرارداد",
+        "ar": "عرض العقد"
+    }
+}

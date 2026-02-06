@@ -1,0 +1,737 @@
+<basis core="callback" run="atclient" triggers="db.passengerlist" if="{##db.passengerlist.run|(false)##}"
+    method="callback_source"></basis>
+</basis>
+
+<basis core="callback" run="atclient" triggers="cms.new" if="{##cms.new.run|(false)##}"
+    method="callback_sourcePassnegerNew">
+</basis>
+
+<basis core="api" name="api.autoSearch"
+    url="https://data.basiscore.net/{##db.autoSearch.lang##}/bc/{##db.autoSearch.type##}/q/fix?term={##db.autoSearch.term##}&token=1E45BBAE-3BE7-4B08-8A8E-8DF7B2E0C7D7"
+    method="get" content-type="application/json" Access-Control-Allow-Origin='*' run="atclient" triggers="db.autoSearch"
+    if="{##db.autoSearch.run|(false)##}" onprocessed="onProcessed_autoSearch">
+</basis>
+
+<basis core="api" name="api.save" url="https://www.basisfly.com/panel/main/cms/upsert-passengers/[##cms.cookie.rkey##]"
+    method="post" content-type="application/json" run="atclient" triggers="db.add_passenger"
+    if="{##db.add_passenger.run|(false)##}" body='{
+        "member" : [
+            {
+                "passenger_list" : {##db.add_passenger.query##}
+            }
+        ]
+    }' onprocessed="onProcessed_save">
+</basis>
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <basis core="call" file="book/taglist" lid="1"></basis>
+    <title>لیست مسافرین</title>
+    <meta name="description" content="لیست مسافرین">
+    <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/css" rel="stylesheet" />
+</head>
+
+<style>
+    [data-bc-grid] * {
+        font-size: 12px !important;
+    }
+
+    [data-bc-grid="d1"] table[data-bc-table] thead td {
+        padding: 16px 12px !important;
+        background: #F4F4F5;
+        font-weight: 400 !important;
+        color: #18181B !important;
+    }
+
+    [data-bc-grid="d1"] table[data-bc-table] thead tr {
+        border-radius: 12px;
+    }
+
+    [data-bc-grid="d1"] table[data-bc-table] thead td:first-child {
+        border-radius: 0 12px 12px 0;
+    }
+
+    [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td {
+        text-align: center;
+    }
+
+    [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td:first-of-type {
+        text-align: right;
+    }
+
+    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]:first-child {
+        border-width: 1px 1px 1px 0;
+        border-radius: 0 12px 12px 0;
+    }
+
+    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody td {
+        padding: 12px 0 !important;
+    }
+
+    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody td:first-child {
+        padding-right: 12px !important;
+    }
+
+    .panel-bg-red-100 {
+        --tw-bg-opacity: 1;
+        background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
+    }
+
+    .panel-text-red-500 {
+        --tw-text-opacity: 1;
+        color: rgb(239 68 68 / var(--tw-text-opacity, 1))
+    }
+
+    .panel-bg-red-500 {
+        --tw-bg-opacity: 1;
+        background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1))
+            /* #ef4444 */
+        ;
+    }
+
+    .panel-justify-end {
+        justify-content: flex-end;
+    }
+</style>
+
+<body class="panel-bg-zinc-50">
+    <!-- Header -->
+    <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <!-- main -->
+    <main>
+        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+            <basis core="api" name="api.createpage"
+                url="https://www.basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]" method="post" body='{
+                "member" : [
+                    {
+                        "query" : {##db.search.query|(0)##}
+                    }
+                ]
+            }' content-type="application/json" run="atclient" triggers="db.search db.paging"
+                onProcessed="onProcessed_list"></basis>
+
+            <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
+                <section class="panel-flex panel-justify-between">
+                    <form class="panel-flex panel-items-center panel-gap-2">
+                        <input type="text" name="name" id="" class="panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                        focus:panel-shadow-md
+                        panel-transition panel-duration-300" placeholder="نام مسافر :">
+                        <input type="text" name="code" id="" class="panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                        focus:panel-shadow-md
+                        panel-transition panel-duration-300" placeholder="کد ملی / پاسپورت :">
+                        <button
+                            class="panel-flex panel-items-center panel-justify-center panel-w-28 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
+                            جستجو
+                        </button>
+                    </form>
+                    <button id="openPassengerModal" onclick="openCreatePassengerModal()"
+                        class="panel-button-add-passenger panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-w-40 panel-h-14 panel-border panel-border-solid panel-rounded-xl panel-border-green-700 panel-text-xs panel-text-green-700 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-white">
+                        <div class="panel-relative panel-z-10 panel-flex panel-items-center">
+                            <svg width="48" height="48">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-plus-person"></use>
+                            </svg>
+                            <span>افزودن مسافر جدید</span>
+                        </div>
+                        <span
+                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-green-700 group-hover:panel-scale-x-100"></span>
+                    </button>
+
+                    <!-- پاپ‌آپ افزودن مسافر -->
+                    <div id="passengerModal"
+                        class="panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+                        <form bc-triggers="submit" name="cms.new"
+                            class="panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+                            <input type="hidden" id="object_id" name="object_id" class="data-id" value="">
+                            <div
+                                class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-5 panel-mb-5">
+                                <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">افزودن مسافر</h2>
+                                <button id="closePassengerModal"
+                                    class="panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                                    aria-label="Close">
+                                    <svg width="48" height="48">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="panel-modal-body">
+                                <h3 class="panel-section-title panel-text-zinc-900 panel-mb-6">مشخصات مسافر</h3>
+                                <div class="panel-input-group panel-flex panel-flex-col panel-gap-6">
+                                    <!-- نام فارسی و نام خانوادگی فارسی -->
+                                    <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                        <input type="text" id="firstNamePersian" name="first_fa"
+                                            class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                            placeholder="نام فارسی">
+                                        <input type="text" id="lastNamePersian" name="last_fa"
+                                            class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                            placeholder="نام خانوادگی فارسی">
+                                    </div>
+                                    <!-- نام لاتین و نام خانوادگی لاتین -->
+                                    <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                        <input type="text" id="firstNameLatin" name="first_en"
+                                            class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                            placeholder="نام لاتین">
+                                        <input type="text" id="lastNameLatin" name="last_en"
+                                            class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                            placeholder="نام خانوادگی لاتین">
+                                    </div>
+                                    <!-- جنسیت و دیگر اطلاعات -->
+                                    <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                        <select name="gender" id="gender"
+                                            class="panel-select panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-text-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                            <option value="gender" selected disabled class="panel-hidden">جنسیت</option>
+                                            <option value="1">مرد</option>
+                                            <option value="0">زن</option>
+                                        </select>
+                                        <div class="panel-relative panel-w-1/4 panel-h-14">
+                                            <input type="text" id="nationality" name="country"
+                                                class="panel-input panel-w-full panel-h-full panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                                placeholder="ملیت">
+                                            <div id="nationalityDropdown"
+                                                class="panel-absolute panel-hidden panel-z-50 panel-bg-white panel-border panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-w-full panel-max-h-60 panel-overflow-y-auto">
+                                            </div>
+                                        </div>
+                                        <input type="text" id="nationalCode" name="national_code"
+                                            class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                            placeholder="کد ملی">
+                                        <input type="text" id="dobInput" name="birthdate"
+                                            class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                            placeholder="تاریخ تولد" readonly>
+                                    </div>
+                                    <!-- سایر اطلاعات -->
+                                    <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                        <input type="text" id="passportNumber" name="passport_code"
+                                            class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                            placeholder="شماره پاسپورت">
+                                        <input type="text" id="passportExpiryInput" name="passportdate"
+                                            class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                            placeholder="تاریخ انقضای پاسپورت" readonly>
+
+                                    </div>
+                                    <div id="datePopup"
+                                        class="panel-date-popup-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+                                        <div
+                                            class="panel-date-popup-content panel-bg-white panel-rounded-xl panel-p-6 panel-w-96">
+                                            <!-- عنوان پاپ‌آپ -->
+                                            <div class="panel-flex panel-items-center panel-justify-between panel-mb-4">
+                                                <h2 class="panel-font-bold panel-text-zinc-900">تایید</h2>
+                                                <button id="closeDatePopup"
+                                                    class="panel-modal-close-button panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-200 panel-transition-all panel-duration-300">
+                                                    <svg width="48" height="48">
+                                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-close">
+                                                        </use>
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <!-- دکمه‌های انتخاب تاریخ میلادی و شمسی -->
+                                            <div class="panel-flex panel-gap-4 panel-mb-4">
+                                                <button id="gregorianBtn"
+                                                    class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
+                                                    میلادی</button>
+                                                <button id="jalaliBtn"
+                                                    class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
+                                                    شمسی</button>
+                                            </div>
+
+                                            <!-- فرم انتخاب تاریخ (روز، ماه، سال) -->
+                                            <div id="dateSelectors" class="panel-flex panel-flex-col panel-gap-4">
+                                                <div class="panel-flex panel-items-center panel-gap-4">
+                                                    <select id="day"
+                                                        class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                                        <option>روز</option>
+                                                    </select>
+                                                    <select id="month"
+                                                        class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                                        <option>ماه</option>
+                                                    </select>
+                                                    <select id="year"
+                                                        class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                                        <option>سال</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- دکمه برای تایید تاریخ انتخاب‌شده -->
+                                            <div class="panel-flex panel-items-center panel-justify-center panel-mt-4">
+                                                <button id="selectDateBtn"
+                                                    class="panel-btn-submit panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-32 panel-h-10 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mx-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                                    <div
+                                                        class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
+                                                        <span>تایید</span>
+                                                    </div>
+                                                    <span
+                                                        class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- دکمه افزودن مسافر -->
+                                <button id="add-passenger-button"
+                                    class="panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                    <div
+                                        class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
+                                        <span>افزودن مسافر</span>
+                                    </div>
+                                    <span
+                                        class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+                <section class="panel-mt-12">
+                    <h1 class="panel-text-zinc-900 panel-font-medium panel-mb-6">لیست مسافران</h1>
+                    <div class="Panel_invoice_List">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.order"
+                            options="reportItems">
+                        </basis>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Remove Passenger Modal -->
+    <div id="removePassengerModal"
+        class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-hidden">
+        <div class="panel-bg-white panel-rounded-2xl panel-w-96
+            panel-p-6 panel-shadow-xl">
+
+            <h3 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
+                حذف مسافر
+            </h3>
+
+            <p class="panel-text-sm panel-text-zinc-600 panel-mb-6">
+                آیا از حذف این مسافر مطمئن هستید؟
+            </p>
+
+            <input type="hidden" id="removePassengerId" />
+
+            <div class="panel-flex panel-justify-end panel-gap-3">
+                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
+             panel-bg-zinc-200 panel-text-zinc-700
+             hover:panel-bg-zinc-300" onclick="closeRemovePassengerModal()">
+                    انصراف
+                </button>
+
+                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
+             panel-bg-red-500 panel-text-white
+             hover:panel-bg-red-700" onclick="removePassenger()">
+                    حذف
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Footer-->
+    <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/javascript"></script>
+
+    <script>
+        async function onProcessed_save(args) {
+            const response = args.response;
+            if (response.status === 200) {
+                const responseJson = await response.json();
+                const errorId = parseInt(responseJson.errorid);
+            }
+
+            $bc.setSource("db.add_passenger", [{
+                "run": false
+            }]);
+        }
+
+        async function onProcessed_list(args) {
+            try {
+                const response = args.response;
+                const responseJson = await response.json();
+                const data = responseJson;
+
+                $bc.setSource("db.order", data);
+            } catch (e) {
+                $bc.setSource("db.order", []);
+            }
+        }
+
+        async function callback_source(source) {
+            for (const element of source.source.rows) {
+
+                data = JSON.parse(element.query);
+
+                var json = {};
+
+                if (data.name) {
+                    json.name = data.name;
+                }
+
+                if (data.code) {
+                    json.code = data.code;
+                }
+
+                $bc.setSource('db.search', [{
+                    "query": JSON.stringify(json),
+                    "run": true
+                },])
+            }
+        };
+
+
+        async function callback_sourcePassnegerNew(source) {
+            // برای هر عنصر در source
+            const objectId = document.querySelector('.data-id#object_id').value;
+
+            // گرفتن مقادیر فرم
+            const passengerData = {
+                firstName: document.getElementById('firstNameLatin').value.trim(),
+                lastName: document.getElementById('lastNameLatin').value.trim(),
+                persianFirstName: document.getElementById('firstNamePersian').value.trim(),
+                persianLastName: document.getElementById('lastNamePersian').value.trim(),
+                nationalCode: document.getElementById('nationalCode').value.trim(),
+                passportCode: document.getElementById('passportNumber').value.trim(),
+                birthDate: document.getElementById('dobInput').value.replace(/\//g, '-') ?? '',
+                passportExpiration: document.getElementById('passportExpiryInput').value.replace(/\//g, '-') ?? '',
+                gender: document.getElementById('gender').value === '1' ? 1 : 0,
+                issueCountryId: document.getElementById('nationality').dataset.id ?? 1002236,
+                issueCountryName: document.getElementById('nationality').value || 'Iran'
+            };
+
+            if (objectId) {
+                // حالت ویرایش
+                passengerData.id = objectId;
+            }
+
+            // ارسال به API
+            $bc.setSource("db.add_passenger", [{
+                query: JSON.stringify(passengerData),
+                run: true
+            }]);
+
+            // بستن مودال و ریست فرم
+            document.getElementById('passengerModal').classList.add('panel-hidden');
+            resetPassengerForm();
+        }
+
+        async function onProcessed_autoSearch(args) {
+            stop_running_autoSearch()
+
+            const response = args.response
+            if (response.status !== 200) return
+
+            const data = await response.json()
+
+            nationalityDropdown.innerHTML = ''
+
+            if (!data || !data.length) {
+                nationalityDropdown.innerHTML =
+                    `<div class="panel-p-3 panel-text-sm panel-text-zinc-400">
+                        ${translate('no_results_found')}
+                    </div>`
+                return
+            }
+
+            data.forEach((country) => {
+                const item = document.createElement('div')
+                item.className =
+                    'panel-px-4 panel-py-2 panel-cursor-pointer hover:panel-bg-zinc-100 panel-text-sm'
+                item.textContent = country.value
+
+                item.onclick = () => selectNationality(country)
+
+                nationalityDropdown.appendChild(item)
+            })
+        }
+
+        function stop_running_autoSearch() {
+            $bc.setSource('db.autoSearch', [{ run: false }])
+        }
+
+        function editObject(row) {
+            // حالت ویرایش
+            document.getElementById('add-passenger-button').textContent = translate('save_changes')
+            document.querySelector('.panel-modal-title').textContent = translate('edit_passenger')
+
+            // ذخیره id برای submit
+            document.querySelector('.data-id#object_id').value = row._id
+
+            // نام‌ها
+            document.getElementById('firstNameLatin').value = row.firstName ?? ''
+            document.getElementById('lastNameLatin').value = row.lastName ?? ''
+            document.getElementById('firstNamePersian').value = row.persianFirstName ?? ''
+            document.getElementById('lastNamePersian').value = row.persianLastName ?? ''
+
+            // جنسیت
+            if (row.gender) {
+                document.getElementById('gender').value =
+                    row.gender == 1 ? 'male' : 'female'
+            }
+
+            // کد ملی
+            document.getElementById('nationalCode').value = row.nationalCode ?? ''
+
+            // تاریخ تولد
+            if (row.birthDate) {
+                document.getElementById('dobInput').value =
+                    row.birthDate.replace(/-/g, '/')
+            }
+
+            // پاسپورت
+            document.getElementById('passportNumber').value = row.passportCode ?? ''
+            if (row.passportExpiration) {
+                document.getElementById('passportExpiryInput').value =
+                    row.passportExpiration.replace(/-/g, '/')
+            }
+
+            // کشور صادرکننده
+            document.getElementById('nationality').value = row.issueCountryName ?? ''
+            document.getElementById('nationality').dataset.id = row.issueCountryId ?? ''
+
+            // باز کردن مودال
+            document.getElementById('passengerModal').classList.remove('panel-hidden')
+        }
+
+        function removeObject(row) {
+            // ست کردن id برای حذف
+            document.querySelector('.data-id#delete_id').value = row._id
+
+        }
+
+        function openRemovePassengerModal(passengerId) {
+            document.getElementById('removePassengerId').value = passengerId
+            document
+                .getElementById('removePassengerModal')
+                .classList.remove('panel-hidden')
+        }
+
+        function closeRemovePassengerModal() {
+            document
+                .getElementById('removePassengerModal')
+                .classList.add('panel-hidden')
+        }
+
+        function removePassenger() {
+            const passengerId =
+                document.getElementById('removePassengerId').value
+
+            if (!passengerId) return
+
+
+            closeRemovePassengerModal()
+        }
+
+        function resetPassengerForm() {
+            const fields = [
+                'firstNameLatin', 'lastNameLatin',
+                'firstNamePersian', 'lastNamePersian',
+                'nationalCode', 'passportNumber',
+                'dobInput', 'passportExpiryInput',
+                'nationality'
+            ]
+
+            fields.forEach(id => {
+                const el = document.getElementById(id)
+                if (el) el.value = ''
+            })
+
+            document.getElementById('gender').value = 'gender'
+            document.querySelector('.data-id#object_id').value = ''
+            
+            document.querySelector('.panel-modal-title').textContent = translate('add_passenger')
+            document.getElementById('add-passenger-button').textContent = translate('add_passenger')
+        }
+
+        function openCreatePassengerModal() {
+            resetPassengerForm()
+            document.getElementById('passengerModal').classList.remove('panel-hidden')
+        }
+
+
+        var national_code_list = [];
+        var reportItems = {
+            columns: {
+                accountname: {
+                    title: "نام مسافر",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const {
+                            firstName,
+                            lastName,
+                            persianFirstName,
+                            persianLastName,
+                            index
+                        } = row;
+
+                        // شماره مسافر (از index مثل 0_1 → 1)
+                        const passengerNumber = index?.split('_')?.[1] ?? '';
+
+                        const fullName = `${firstName ?? ''} ${lastName ?? ''}`.trim();
+                        const persianFullName =
+                            persianFirstName && persianLastName
+                                ? `${persianFirstName} ${persianLastName}`
+                                : null;
+
+                        return `
+            <div class="panel-flex panel-items-center panel-gap-2">
+                <span
+                    class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-xl">
+                    <svg width="48" height="48" class="panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-sidebar-person"></use>
+                    </svg>
+                </span>
+
+                <div class="panel-flex panel-flex-col">
+                    <h2 class="panel-text-sm panel-text-zinc-900 panel-font-medium panel-flex panel-gap-1">
+                        <span>${fullName}</span>
+                    </h2>
+
+                    ${persianFullName
+                                ? `<p class="panel-text-xs panel-text-zinc-700">${persianFullName}</p>`
+                                : ''
+                            }
+
+                    <p class="panel-flex panel-gap-0.5 panel-text-xs panel-text-zinc-900">
+                        <span>شماره</span>
+                        <span>${passengerNumber}</span>
+                    </p>
+                </div>
+            </div>
+        `;
+                    }
+                },
+                gender: {
+                    title: "جنسیت",
+                    filter: false,
+                    sort: false,
+                    source: row => {
+                        if (row.gender == 1) {
+                            return 'آقا'
+                        } else {
+                            return 'خانم'
+                        }
+                    },
+                    cellMaker: (row, data, td) => {
+                        if (row.gender == 1) {
+                            return 'آقا'
+                        } else {
+                            return 'خانم'
+                        }
+                    }
+                },
+                nationalCode: {
+                    title: "کد ملی",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+                        national_code_list.push(row.nationalCode);
+                        return row.nationalCode;
+                    }
+                },
+                birthDate: {
+                    title: "تاریخ تولد",
+                    filter: false,
+                    sort: false,
+                },
+                passportCode: {
+                    title: "شماره پاسپورت",
+                    filter: false,
+                    sort: false,
+                },
+                passportExpiration: {
+                    title: "تاریخ انقضا پاسپورت",
+                    filter: false,
+                    sort: false,
+                },
+                operation: {
+                    title: "عملیات",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        return `
+            <div class="panel-flex panel-items-center panel-justify-center panel-gap-2">
+
+                <!-- Edit -->
+                <button
+                    type="button"
+                    class="panel-group panel-flex panel-items-center panel-justify-center
+                           panel-w-12 panel-h-12 panel-bg-primary-50 panel-rounded-xl
+                           panel-transition-all panel-duration-200 hover:panel-bg-primary-800"
+                    onclick='editObject(${JSON.stringify(row).replace(/'/g, "\\'")})'
+                    title="ویرایش">
+                    
+                    <svg width="24" height="24"
+                         class="panel-text-primary-800 panel-transition-all panel-duration-200
+                                group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pencil"></use>
+                    </svg>
+                </button>
+
+                <!-- Delete -->
+                <button
+                    type="button"
+                    class="panel-group panel-flex panel-items-center panel-justify-center
+                           panel-w-12 panel-h-12 panel-bg-red-100 panel-rounded-xl
+                           panel-transition-all panel-duration-200 hover:panel-bg-red-500"
+                    onclick="openRemovePassengerModal('${row._id}')"
+                    title="حذف">
+                    
+                    <svg width="24" height="24"
+                         class="panel-text-red-500 panel-transition-all panel-duration-200
+                                group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-trash"></use>
+                    </svg>
+                </button>
+
+            </div>
+        `;
+                    }
+                }
+            },
+            filter: 'row',
+            rowNumber: false,
+            defaultSort: false,
+            direction: "rtl",
+            paging: 50,
+            information: true,
+            firstAndLastBtn: true,
+            culture: {
+                labels: {
+                    "refresh": "",
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}"
+                }
+            },
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+                                    <div class="icon">
+                                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z"
+                                                fill="#D0D0D0">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div class="text" style="padding-top: 10px;">
+                                        هیچ موردی یافت نشد. </div>
+                                </div>`
+            },
+            mode: "grid",
+            pageCount: false,
+            refresh: true,
+            refreshSourceId: "list.refresh",
+        };
+
+    </script>
+</body>
+
+</html>

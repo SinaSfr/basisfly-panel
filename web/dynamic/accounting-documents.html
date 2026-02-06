@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <basis core="call" file="book/taglist" lid="1"></basis>
+    <title>لیست اسناد حسابداری</title>
+    <meta name="description" content="لیست اسناد حسابداری">
+    <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/css" rel="stylesheet" />
+</head>
+
+<body class="panel-bg-zinc-50">
+    <!-- Header -->
+    <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <!-- main -->
+    <main>
+        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+            <basis core="api" name="api.createpage"
+                url="https://basisfly.com/accounting/get_report-document/[##cms.cms.rkey##]" method="post"
+                body='[##cms.form.query##]' content-type="application/json" run="atclient"
+                triggers="db.search cms.form" OnProcessing="submitReportForm"></basis>
+
+            <div class="panel-flex-1">
+                <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6">
+                    <h2 class="panel-text-zinc-900 panel-font-medium">جستجوی تراکنش
+                    </h2>
+                    <div class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
+                        <input type="text" name="" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                                   focus:panel-shadow-md
+                                   panel-transition panel-duration-300" placeholder="شماره قرارداد:">
+                        <div class="panel-relative">
+                            <input type="text" name="" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                                focus:panel-shadow-md
+                                panel-transition panel-duration-300" placeholder="عنوان سند:">
+                            <svg width="48" height="48"
+                                class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                            </svg>
+                        </div>
+                        <div class="panel-relative">
+                            <input type="text" name="" id="" class="panel-w-40 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                                focus:panel-shadow-md
+                                panel-transition panel-duration-300" placeholder="از تاریخ:">
+                            <svg width="48" height="48"
+                                class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                            </svg>
+                        </div>
+                        <div class="panel-relative">
+                            <input type="text" name="" id="" class="panel-w-40 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                                   focus:panel-shadow-md
+                                   panel-transition panel-duration-300" placeholder="تا تاریخ:">
+                            <svg width="48" height="48"
+                                class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                            </svg>
+                        </div>
+                        <button
+                            class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                            aria-label="جستجو">
+                            <svg width="24" height="24" class="panel-text-white">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
+                            </svg>
+                        </button>
+                    </div>
+                </section>
+                <section
+                    class="panel-flex panel-flex-col panel-gap-2 panel-bg-primary-50 panel-rounded-xl panel-p-3 panel-mt-3">
+                    <div class="panel-flex panel-items-center panel-gap-2">
+                        <svg width="24" height="26" class="panel-text-primary-800">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-information"></use>
+                        </svg>
+                        <p class="panel-text-xs panel-text-zinc-900">در صورتی که جستجو بر اساس تاریخ انجام نشده باشد
+                            اسناد از روز گذشته تا امروز نمایش داده خواهد شد</p>
+                    </div>
+                    <div class="panel-flex panel-items-center panel-gap-2">
+                        <svg width="24" height="26" class="panel-text-primary-800">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-information"></use>
+                        </svg>
+                        <p class="panel-text-xs panel-text-zinc-900">در صورتی که جستجو بر اساس شماره قرارداد انجام شود .
+                            مانده از قبل در لیست نمایش داده نخواهد شد</p>
+                    </div>
+                </section>
+                <nav class="panel-bg-zinc-200 panel-rounded-xl panel-p-2 panel-mt-6">
+                    <ul class="panel-flex panel-items-center panel-gap-8">
+                        <li
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="48" height="48">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-layers"></use>
+                            </svg>
+                            <span>لیست اسناد حسابداری</span>
+                        </li>
+                        <li
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="48" height="48">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-file-flow"></use>
+                            </svg>
+                            <span>لیست اسناد اعتبار</span>
+                        </li>
+                        <li
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="48" height="48">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-database"></use>
+                            </svg>
+                            <span>نمایش اعتبار</span>
+                        </li>
+                    </ul>
+                </nav>
+                <section class="panel-flex panel-items-center panel-gap-2 panel-mt-5">
+                    <div
+                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                        <span
+                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                            <svg width="31" height="31">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-star"></use>
+                            </svg>
+                        </span>
+                        <div class="panel-flex panel-flex-col panel-justify-between">
+                            <span class="panel-text-xs panel-text-zinc-900">بدهکاری (ریال)</span>
+                            <span class="panel-text-red-500 panel-font-bold">694501</span>
+                        </div>
+                    </div>
+                    <div
+                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                        <span
+                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                            <svg width="31" height="31">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-ticket"></use>
+                            </svg>
+                        </span>
+                        <div class="panel-flex panel-flex-col panel-justify-between">
+                            <span class="panel-text-xs panel-text-zinc-900">بستنکار ( ریال )</span>
+                            <span class="panel-text-green-600 panel-font-bold">694501</span>
+                        </div>
+                    </div>
+                    <div
+                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                        <span
+                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                            <svg width="31" height="31">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-all-point"></use>
+                            </svg>
+                        </span>
+                        <div class="panel-flex panel-flex-col panel-justify-between">
+                            <span class="panel-text-xs panel-text-zinc-900">مانده (ریال)</span>
+                            <span class="panel-text-zinc-900 panel-font-bold">694501</span>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="remaining_balance" data-run="0">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.total"
+                            options="remainingItems" triggers="cms.remaining_balance"
+                            if="{##cms.remaining_balance.run|(false)##}"></basis>
+                    </div>
+
+                    <div class="credit" data-run="0">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.credit"
+                            options="creditItems" triggers="cms.credit" if="{##cms.credit.run|(false)##}"></basis>
+                    </div>
+
+                    <div class="report" data-run="1">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.report"
+                            options="reportItems"></basis>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    <!-- Footer-->
+    <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/javascript"></script>
+
+    <script>
+
+        async function submitReportForm() {
+            const main_json = {
+                lid: 1,
+                dmnid: [##cms.cms.domainid##],
+                ownerid: [##cms.cms.ownerid##],
+                userid: [##db.ownerid.result##],
+                factorid: document.querySelector(".factorid")?.value ?? '',
+                accnumber: document.querySelector(".accnumber")?.value ?? '',
+                fromdate: document.querySelector(".start_date")?.value ?? '',
+                todate: document.querySelector(".end_date")?.value ?? ''
+            };
+
+            $bc.setSource("api.createpage", [{
+                body: JSON.stringify(main_json),
+                run: true
+            }]);
+        }
+        var creditItems = {
+            columns: {
+                AccountNo: {
+                    title: "کدتفضیلی",
+                    filter: true,
+                    sort: false
+
+                },
+
+                docID: {
+                    title: "شماره سند",
+                    sort: true,
+                    filter: true
+                },
+
+                accountname: {
+                    title: "نام حساب",
+                    filter: true,
+                    sort: false,
+                },
+
+                factorid: {
+                    title: "شماره قرارداد",
+                    filter: true,
+                    sort: true,
+
+                },
+                debtor: {
+                    title: "مبلغ بدهکاری",
+                    filter: true,
+                    sort: true,
+                    cellMaker: (row, data, td) =>
+                        `<p class="is-separated" style="color:red;direction: ltr"> - ${Intl.NumberFormat().format(parseFloat(row.debtor))} </p>`
+
+                },
+
+                creditor: {
+                    title: "مبلغ بستانکاری",
+                    filter: true,
+                    sort: true,
+                    cellMaker: (row, data, td) =>
+                        `<p class="is-separated" style="color:green;direction: ltr"> + ${Intl.NumberFormat().format(parseFloat(row.creditor))} </p>`
+                },
+
+                doctype: {
+                    title: "عنوان سند",
+                    filter: true,
+                    sort: false,
+                    cellMaker: (row, data, td) =>
+                        `<p>${row.doctype} </p><input type="hidden" class="doctypeid" name="doctypeid" value=${row.doctypeID} />`
+
+                },
+                description: {
+                    title: "توضیحات",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+                        let description = ``
+                        console.log(row)
+                        if (row) {
+                            if (row.description.desc !== null && row.description.desc != "") {
+                                description += `<span>${row.description.desc} </span>`
+                            }
+                            if (row.description.bankname !== null && row.description.bankname != "") {
+                                description += `<span>/${row.description.bankname} </span>`
+                            }
+                            if (row.description.refnumber !== null && row.description.refnumber != "") {
+                                description += `<span>/${row.description.refnumber} </span>`
+                            }
+                            return description;
+                        }
+                    }
+                },
+                date: {
+                    title: "تاریخ",
+                    filter: true,
+                    sort: true,
+
+                },
+                hour: {
+                    title: "ساعت",
+                    filter: true,
+                    sort: true,
+
+                }
+
+            },
+            filter: 'row',
+            defaultSort: false,
+            rowNumber: false,
+            direction: "rtl",
+            paging: 0,
+            information: false,
+            firstAndLastBtn: false,
+            mode: "grid"
+        };
+
+
+        var reportItems = {
+            columns: {
+                AccountNo: {
+                    title: "کدتفضیلی",
+                    filter: true,
+                    sort: false
+
+                },
+
+                docID: {
+                    title: "شماره سند",
+                    sort: true,
+                    filter: true
+                },
+
+
+
+                factorid: {
+                    title: " قرارداد",
+                    filter: true,
+                    sort: true,
+
+                },
+                debtor: {
+                    title: " بدهکاری",
+                    filter: true,
+                    sort: true,
+                    cellMaker: (row, data, td) =>
+                        `<p class="is-separated" style="color:red;direction: ltr"> - ${Intl.NumberFormat().format(parseFloat(row.debtor))} </p>`
+
+                },
+
+                creditor: {
+                    title: " بستانکاری",
+                    filter: true,
+                    sort: true,
+                    cellMaker: (row, data, td) =>
+                        `<p class="is-separated" style="color:green;direction: ltr"> + ${Intl.NumberFormat().format(parseFloat(row.creditor))} </p>`
+                },
+                doctype: {
+                    title: "عنوان سند",
+                    filter: true,
+                    sort: false,
+                    cellMaker: (row, data, td) =>
+                        `<p style="width: 120px;">${row.doctype} </p><input type="hidden" class="doctypeid" name="doctypeid" value=${row.doctypeID} />`
+
+                },
+                description: {
+                    title: "توضیحات",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+
+                        let description = ``
+                        if (row) {
+                            if (row.description.desc !== null && row.description.desc != "") {
+                                description += `<span>${row.description.desc} </span>`
+                            }
+                            if (row.description.bankname !== null && row.description.bankname != "") {
+                                description += `<span>/${row.description.bankname} </span>`
+                            }
+                            if (row.description.refnumber !== null && row.description.refnumber != "") {
+                                description += `<span>/${row.description.refnumber} </span>`
+                            }
+                            return description;
+
+                        }
+
+
+
+
+                    }
+
+
+                },
+                date: {
+                    title: "تاریخ",
+                    filter: true,
+                    sort: true,
+
+                },
+                hour: {
+                    title: "ساعت",
+                    filter: true,
+                    sort: true,
+
+                },
+                remaining: {
+                    title: "مانده ازقبل",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) =>
+                        `<p class="is-separated" style="direction:ltr;width: 100px;">${Intl.NumberFormat().format(parseFloat(row.remaining))} </p>`
+
+                }
+
+            },
+            filter: 'row',
+            rowNumber: 'ردیف',
+            defaultSort: false,
+            direction: "rtl",
+            paging: 50,
+            information: true,
+            firstAndLastBtn: true,
+            culture: {
+                labels: {
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}"
+                }
+            },
+
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+    <div class="icon">
+        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z"
+                fill="#D0D0D0">
+            </path>
+        </svg>
+    </div>
+    <div class="text">
+        هیچ موردی یافت نشد. </div></div>`
+            },
+            mode: "grid",
+            pageCount: false
+        };
+
+    </script>
+</body>
+
+</html>

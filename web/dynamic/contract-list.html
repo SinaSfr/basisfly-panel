@@ -27,6 +27,11 @@
         type="text/css" rel="stylesheet" />
 </head>
 <style>
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-400) var(--primary-50);
+    }
+
     [data-bc-grid] {
         --red-label: #CE0E0E;
         --blue-label: #085BA9;
@@ -79,6 +84,7 @@
         border-top-width: 1px;
     }
 
+
     .panel-border-dashed {
         border-style: dashed;
     }
@@ -90,12 +96,26 @@
         ;
     }
 
+    .panel-mb-0 {
+        margin-bottom: 0px;
+    }
+
+    .panel-items-end {
+        align-items: flex-end;
+    }
+
     .panel-w-\[92\%\] {
         width: 92%;
     }
 
     .panel-float-right {
         float: right;
+    }
+
+    .panel-max-h-40 {
+        max-height: 10rem
+            /* 160px */
+        ;
     }
 
     [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td {
@@ -218,6 +238,12 @@
         cursor: help;
     }
 
+    .hover\:panel-scale-90:hover {
+        --tw-scale-x: .9;
+        --tw-scale-y: .9;
+        transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+    }
+
     [data-sys-tooltip] {
         position: relative;
     }
@@ -334,7 +360,7 @@
 <body class="panel-bg-zinc-50">
     <!-- Header -->
     <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
-    <!-- Main-->
+    <!-- main -->
     <main>
         <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
@@ -364,43 +390,43 @@
             </basis>
 
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
-                <section>
-                    <div class="panel-flex panel-items-center panel-gap-3">
-                        <h2 class="panel-text-zinc-900 panel-font-medium">جستجو براساس تاریخ قرارداد</h2>
-                        <div class="panel-flex panel-items-center panel-gap-2">
-                            <div class="panel-relative">
-                                <input type="text"
-                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-44 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
-                                    placeholder="ازتاریخ:" />
-                                <svg width="48" height="48"
-                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
-                                </svg>
-                            </div>
-                            <div class="panel-relative">
-                                <input type="text" name="" id="" placeholder="تا تاریخ:"
-                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-44 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300">
-                                <svg width="48" height="48"
-                                    class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
-                                </svg>
+                <div class="panel-flex panel-items-end panel-justify-between">
+                    <form bc-triggers="submit" name="cms.form" onsubmit="submit_form_invoice(this,event)"
+                        class="panel-mb-0">
+                        <div class="panel-flex panel-items-center panel-gap-3">
+                            <h2 class="panel-text-zinc-900 panel-font-medium">جستجو براساس تاریخ قرارداد</h2>
+                            <input type="hidden" name="_root.date.basedate" value="0">
+                            <div class="panel-flex panel-items-center panel-gap-2">
+                                <div class="panel-relative">
+                                    <input type="hidden" class="fdate-string" name="_root.date.begindate">
+                                    <input type="hidden" class="tdate-string" name="_root.date.enddate">
+                                    <basis core="component.calendar.datepicker" name="datepicker" run="atclient"
+                                        options="datepickerHasRangesSetting" OnRendered="OnRenderedStorage"></basis>
+                                    <svg width="48" height="48"
+                                        class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="panel-flex panel-justify-between panel-mt-2">
-                        <div class="panel-flex panel-items-center panel-gap-2">
-                            <input type="text" name="" id="" placeholder="جستجو براساس شماره قرارداد"
-                                class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300">
-                            <input type="text" name="" id="" placeholder="جستجو بر اساس شماره رفرنس" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                            focus:panel-shadow-md panel-transition panel-duration-300">
-                            <button
-                                class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
-                                aria-label="جستجو">
-                                <svg width="24" height="24" class="panel-text-white">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
-                                </svg>
-                            </button>
+                        <div class="panel-flex panel-justify-between panel-mt-2">
+                            <div class="panel-flex panel-items-center panel-gap-2">
+                                <input type="text" name="_root.factorid" id="" placeholder="جستجو براساس شماره قرارداد"
+                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300">
+                                <input type="text" name="_root.refnumber" id="" placeholder="جستجو بر اساس شماره رفرنس"
+                                    class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                focus:panel-shadow-md panel-transition panel-duration-300">
+                                <button
+                                    class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                                    aria-label="جستجو">
+                                    <svg width="24" height="24" class="panel-text-white">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
+                    </form>
+                    <section>
                         <button id="btnOpenAdvancedSearch" type="button" data-modal-open="advancedContractSearch"
                             class="panel-relative panel-group panel-overflow-hidden panel-z-10 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-w-36 panel-h-14 panel-text-sm panel-text-primary-800 panel-font-medium panel-transition-all panel-duration-300 hover:panel-text-white">
                             <span class="panel-relative panel-z-10">جستجو پیشرفته</span>
@@ -462,7 +488,8 @@
                                                 <input type="hidden" class="tdate-string" name="_root.date.enddate">
                                                 <basis core="component.calendar.datepicker" name="datepicker"
                                                     run="atclient" options="datepickerHasRangesSetting"
-                                                    OnRendered="OnRenderedStorage"></basis>
+                                                    OnRendered="OnRenderedStorage">
+                                                </basis>
                                             </div>
 
                                         </div>
@@ -470,23 +497,26 @@
                                         <div class="panel-flex-1 panel-flex panel-items-center panel-justify-between"
                                             role="radiogroup" aria-label="نوع سفر">
                                             <label for="advSearchTripTypeOutbound"
-                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900 panel-cursor-pointer">
                                                 <input id="advSearchTripTypeOutbound" name="_root.date.typedate"
-                                                    type="radio" value="0" class="panel-w-5 panel-h-5" checked>
+                                                    type="radio" value="0"
+                                                    class="panel-w-5 panel-h-5 panel-cursor-pointer" checked>
                                                 رفت
                                             </label>
 
                                             <label for="advSearchTripTypeReturn"
-                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900 panel-cursor-pointer">
                                                 <input id="advSearchTripTypeReturn" name="_root.date.typedate"
-                                                    type="radio" value="1" class="panel-w-5 panel-h-5">
+                                                    type="radio" value="1"
+                                                    class="panel-w-5 panel-h-5 panel-cursor-pointer">
                                                 برگشت
                                             </label>
 
                                             <label for="advSearchTripTypeRoundTrip"
-                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900">
+                                                class="panel-flex panel-items-center panel-gap-4 panel-font-medium panel-text-zinc-900 panel-cursor-pointer">
                                                 <input id="advSearchTripTypeRoundTrip" name="_root.date.typedate"
-                                                    type="radio" value="2" class="panel-w-5 panel-h-5">
+                                                    type="radio" radiovalue="2"
+                                                    class="panel-w-5 panel-h-5 panel-cursor-pointer">
                                                 رفت وبرگشت
                                             </label>
                                         </div>
@@ -499,7 +529,7 @@
                                             <div class="panel-relative" data-dd-key="origin_city">
                                                 <input data-dd-input id="advSearchOriginCity"
                                                     name="_root.route.start.city_name" type="text" readonly
-                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                     placeholder="شهر مبدا" />
                                                 <input type="hidden" name="_root.route.start.city" class="data-id"
                                                     value="">
@@ -514,8 +544,8 @@
                                             <div class="panel-relative" data-dd-key="destination_city">
                                                 <input data-dd-input id="advSearchDestinationCity"
                                                     name="_root.route.end.city_name" data-field="destination_city"
-                                                    type="text"
-                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    type="text" readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                     placeholder="شهر مقصد" />
                                                 <input type="hidden" name="_root.route.end.city" class="data-id"
                                                     value="">
@@ -529,8 +559,8 @@
 
                                             <div class="panel-relative" data-dd-key="hotel">
                                                 <input data-dd-input id="advSearchHotel" name="_root.route.hotelname"
-                                                    data-field="hotel" type="text"
-                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    data-field="hotel" type="text" readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                     placeholder="هتل" />
                                                 <input type="hidden" name="_root.route.hotelid_search" class="data-id">
                                                 <svg width="48" height="48"
@@ -544,7 +574,8 @@
                                             <div class="panel-relative" data-dd-key="rail_company">
                                                 <input data-dd-input id="advSearchRailCompany"
                                                     name="_root.trainscompany" data-field="rail_company" type="text"
-                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                     placeholder="شرکت ریلی" />
                                                 <svg width="48" height="48"
                                                     class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
@@ -556,8 +587,8 @@
 
                                             <div class="panel-relative" data-dd-key="airline">
                                                 <input data-dd-input id="advSearchAirline" name="_root.route.airline1"
-                                                    data-field="airline" type="text"
-                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    data-field="airline" type="text" readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                     placeholder="ایرلاین" />
                                                 <input type="hidden" name="_root.route.airline" class="data-id">
                                                 <svg width="48" height="48"
@@ -571,7 +602,8 @@
                                             <div class="panel-relative" data-dd-key="route_code">
                                                 <input data-dd-input id="advSearchRouteCode"
                                                     name="_root.route.routecode" data-field="route_code" type="text"
-                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                     placeholder="کد مسیر" />
                                                 <svg width="48" height="48"
                                                     class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
@@ -586,8 +618,8 @@
                                             <div class="panel-grid panel-grid-cols-2 panel-gap-3">
                                                 <div class="panel-relative" data-dd-key="status">
                                                     <input data-dd-input id="advSearchStatus" name="_root.open"
-                                                        data-field="status" type="text"
-                                                        class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                        data-field="status" type="text" readonly
+                                                        class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                         placeholder="وضعیت" />
                                                     <svg width="48" height="48"
                                                         class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
@@ -600,7 +632,8 @@
                                                 <div class="panel-relative" data-dd-key="tag">
                                                     <input data-dd-input id="advSearchTag"
                                                         name="_root.status.invoicestatus" data-field="tag" type="text"
-                                                        class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                        readonly
+                                                        class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                         placeholder="برچسب" />
                                                     <svg width="48" height="48"
                                                         class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
@@ -612,8 +645,8 @@
                                             </div>
                                             <div class="panel-relative panel-col-span-2" data-dd-key="services">
                                                 <input data-dd-input id="advSearchServices" name="_root.type"
-                                                    data-field="services" type="text"
-                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                                    data-field="services" type="text" readonly
+                                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
                                                     placeholder="خدمات" />
                                                 <svg width="48" height="48"
                                                     class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
@@ -627,33 +660,44 @@
 
                                     <div class="panel-flex-1 panel-flex panel-items-center panel-gap-3 panel-mt-7">
                                         <div class="panel-flex-1">
-                                            <input id="advSearchBuyerInfoType" name="_root.account.accounttype"
-                                                type="radio" value="4" class="panel-w-5 panel-h-5">
+                                            <label for="advSearchBuyerInfoType"
+                                                class="panel-flex panel-items-center panel-gap-2 panel-mb-3 panel-cursor-pointer">
+                                                <input id="advSearchBuyerInfoType" name="_root.account.accounttype"
+                                                    type="radio" value="4"
+                                                    class="panel-w-5 panel-h-5 panel-cursor-pointer">
+                                                <p>جستجو در اطلاعات خریدار</p>
+                                            </label>
                                             <input id="advSearchBuyerInfo" name="_root.account.accountinfo__1.name"
                                                 data-field="buyer_info" type="text"
-                                                class="panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                                                   focus:panel-shadow-md panel-transition panel-duration-300" placeholder="اطلاعات خریدار">
+                                                class="panel-w-full panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
+                                                placeholder="اطلاعات خریدار">
                                         </div>
 
                                         <div class="panel-flex-1">
-                                            <input id="advSearchPassengerInfoType" name="_root.account.accounttype"
-                                                type="radio" value="5" class="panel-w-5 panel-h-5">
+                                            <label for="advSearchPassengerInfoType"
+                                                class="panel-flex panel-items-center panel-gap-2 panel-mb-3 panel-cursor-pointer">
+                                                <input id="advSearchPassengerInfoType" name="_root.account.accounttype"
+                                                    type="radio" value="5"
+                                                    class="panel-w-5 panel-h-5 panel-cursor-pointer">
+                                                <p>جستجو در اطلاعات مسافرین</p>
+                                            </label>
                                             <input id="advSearchPassengerInfo" name="_root.account.accountinfo__1.name"
                                                 data-field="passenger_info" type="text"
-                                                class="panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                                                                   focus:panel-shadow-md panel-transition panel-duration-300" placeholder="اطلاعات مسافر">
+                                                class="panel-w-full panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
+                                                               focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
+                                                placeholder="اطلاعات مسافر">
                                         </div>
                                     </div>
                                 </section>
                                 <button
-                                    class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">
+                                    class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">
                                     مشاهده نتایج
                                 </button>
                             </form>
                         </div>
-                    </div>
-
-                </section>
+                    </section>
+                </div>
                 <section class="panel-mt-12">
                     <div
                         class="panel-flex panel-items-center panel-justify-between panel-h-12 panel-float-right panel-w-[92%]">
@@ -682,7 +726,7 @@
         </div>
 
 
-        <div id="sharedDropdownList" class="panel-max-h-60 panel-overflow-y-auto panel-p-2"></div>
+        <div id="sharedDropdownList" class="panel-max-h-40 panel-overflow-y-auto panel-p-2"></div>
     </div>
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
@@ -713,39 +757,39 @@
             }
         }
         async function callback_sourceInvoiceList(source) {
-  console.log(source)
+            console.log(source)
 
-  const toStr = (v) => (v == null ? '' : String(v))
-  const normalizeDate = (s) => toStr(s).replaceAll('/', '-')
+            const toStr = (v) => (v == null ? '' : String(v))
+            const normalizeDate = (s) => toStr(s).replaceAll('/', '-')
 
-  for (const element of source.source.rows) {
-    const root = element?._root
-    if (!root) continue
+            for (const element of source.source.rows) {
+                const root = element?._root
+                if (!root) continue
 
-    if (root?.date) {
-      root.date.begindate = normalizeDate(root.date.begindate)
-      root.date.enddate = normalizeDate(root.date.enddate)
-    }
+                if (root?.date) {
+                    root.date.begindate = normalizeDate(root.date.begindate)
+                    root.date.enddate = normalizeDate(root.date.enddate)
+                }
 
-    if (root?.account?.accountinfo?.length > 0) {
-      const first = root.account.accountinfo[0]
-      if ((first?.id ?? '') === '') {
-        if (root.account.accountinfo.length === 1) {
-          delete first.id
-        } else {
-          root.account.accountinfo.shift()
+                if (root?.account?.accountinfo?.length > 0) {
+                    const first = root.account.accountinfo[0]
+                    if ((first?.id ?? '') === '') {
+                        if (root.account.accountinfo.length === 1) {
+                            delete first.id
+                        } else {
+                            root.account.accountinfo.shift()
+                        }
+                    }
+                }
+
+                $bc.setSource('cms.search', [
+                    {
+                        search: JSON.stringify(root),
+                        run: true,
+                    },
+                ])
+            }
         }
-      }
-    }
-
-    $bc.setSource('cms.search', [
-      {
-        search: JSON.stringify(root),
-        run: true,
-      },
-    ])
-  }
-}
 
         if (typeof datepickerHasRangesSetting === "undefined") {
             var datepickerHasRangesSetting = {
@@ -851,35 +895,36 @@
                             var details = this_service[`${this_poduct}status`].Details;
                             var p_class = 'clear';
                             if (details) {
-                                if (this_poduct == 'hotel') {
+                                if (this_product == 'hotel') {
                                     var status = status_code[details.H_status];
-                                    var desc = `نام کشور : ${details.H_countryname} |
-                                            نام شهر : ${details.H_cityname} |
-                                            نام هتل : ${details.HotelName} |
-                                            وضعیت : ${status}`
 
-                                    // check cancelation
-                                    if (this_service.cancellation_policies) {
-                                        if (this_service.cancellation_policies.length > 0) {
-                                            refund_status = this_service.hotelstatus.cancellation_policies[0];
-                                            var refund = cancel_info[refund_status.refundable];
-                                            var cancel_date = refund_status.cancellation_policies[0].fromDate;
-                                            var penalty = refund_status.cancellation_policies[0].amount;
-                                            cancel_desc = ` | ${refund} | ${cancel_date}:  ${penalty}`;
-                                            desc += cancel_date;
-                                        }
+                                    var desc = `${translate('country_name')}: ${details.H_countryname} |
+                    ${translate('city_name')}: ${details.H_cityname} |
+                    ${translate('hotel_name')}: ${details.HotelName} |
+                    ${translate('status')}: ${translate(status)}`
+
+                                    // check cancellation
+                                    if (this_service.cancellation_policies?.length > 0) {
+                                        refund_status = this_service.hotelstatus.cancellation_policies[0];
+                                        var refund = cancel_info[refund_status.refundable];
+                                        var cancel_date = refund_status.cancellation_policies[0].fromDate;
+                                        var penalty = refund_status.cancellation_policies[0].amount;
+                                        cancel_desc = ` | ${refund} | ${cancel_date}: ${penalty}`;
+                                        desc += cancel_date;
                                     }
+
                                     var status_text = 'A';
-                                    if (status != 'Available') {
+                                    if (status != 'Available') {  // ⚠️ بهتره status_code هم کلید ثابت داشته باشه
                                         status_text = 'H'
                                     }
+
                                     if (details.H_status == '1') {
                                         p_class = 'confirm'
                                     } else if (details.H_status == '3') {
                                         p_class = 'nclear'
                                     }
                                 }
-                                if (this_poduct == 'visa') {
+                                if (this_product == 'visa') {
                                     var status = status_code[parseInt(details.v_status).toString()];
 
                                     if (details.v_status == '3') {
@@ -887,11 +932,11 @@
                                     }
 
                                     if (details.v_countryname && details.visaName) {
-                                        var desc = `نام کشور : ${details.v_countryname} |
-                                                نام ویزا: ${details.visaName} |
-                                                وضعیت : ${status}`
+                                        var desc = `${translate('country_name')}: ${details.v_countryname} |
+                    ${translate('visa_name')}: ${details.visaName} |
+                    ${translate('status')}: ${translate(status)}`
                                     } else {
-                                        var desc = `وضعیت : ${status}`
+                                        var desc = `${translate('status')}: ${translate(status)}`
                                     }
                                     var status_text = 'V';
 
@@ -899,25 +944,22 @@
                                         p_class = 'confirm'
                                     }
                                 }
-                                if (this_poduct == 'cip') {
+
+                                if (this_product == 'cip') {
                                     var status = status_code[parseInt(details.c_status).toString()];
-                                    var desc = `وضعیت : ${status}`
+                                    var desc = `${translate('status')}: ${translate(status)}`
                                     var status_text = 'C';
                                 }
-                                if (this_poduct == 'cip') {
-                                    var status = status_code[parseInt(details.c_status).toString()];
-                                    var desc = `وضعیت : ${status}`
-                                    var status_text = 'C';
-                                }
-                                if (this_poduct == 'service' || this_poduct == 'transfer') {
+
+                                if (this_product == 'service' || this_product == 'transfer') {
                                     var desc = '';
                                     if (details.s_status) {
                                         var status = status_code[parseInt(details.s_status).toString()];
-                                        desc += `وضعیت : ${status} |`
+                                        desc += `${translate('status')}: ${translate(status)} |`
                                         var status_text = 'S';
                                     }
                                     if (details.service_name) {
-                                        desc += `خدمات : ${details.service_name} |`
+                                        desc += `${translate('service')}: ${details.service_name} |`
                                         var status_text = 'S';
                                     }
                                 }
@@ -1012,7 +1054,7 @@
 
         <div class="accountName-sub panel-mt-1 panel-text-right">
           <span class="!panel-text-zinc-500">شماره قرارداد:</span>
-          <span class="en-numbers invoice-id cursor-pointer">${contractId}</span>
+          <span class="en-numbers invoice-id">${contractId}</span>
         </div>
       </div>
     `;
@@ -1330,7 +1372,7 @@
             refresh: true,
             noData: (td) => {
                 td.innerHTML = `<div class="noData">
-                                    <div class="icon">
+                                    <div class="icon panel-flex panel-justify-center panel-mb-3">
                                         <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z" fill="#D0D0D0"></path>
                                         </svg>
@@ -1414,19 +1456,19 @@
       <div class="passenger-detail panel-border-t panel-border-dashed panel-border-zinc-200 !panel-px-3 !panel-pt-3 is-open">
         <div class="passenger-detail__content panel-flex panel-items-center panel-justify-between">
           <div class="passenger-detail__item panel-flex panel-gap-2">
-            <span class="k !panel-text-zinc-500">مسافران:</span>
+            <span class="k !panel-text-zinc-500">${translate('passengers')}:</span>
             <span class="v panel-flex panel-items-center panel-gap-3">${passengersHtml}</span>
           </div>
 
           <div class="passenger-detail__item panel-flex panel-gap-2">
-            <span class="k !panel-text-zinc-500">تاریخ قرارداد:</span>
+            <span class="k !panel-text-zinc-500">${translate('contract_date')}:</span>
             <span class="v en-numbers">${contractDateText}</span>
           </div>
 
           <div class="passenger-detail__actions">
             <button type="button"
               class="panel-flex panel-items-center panel-justify-center panel-w-28 panel-h-12 panel-border panel-border-solid panel-border-primary-700 panel-rounded-lg panel-text-primary-700 panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">
-              مشاهده قرارداد
+               ${translate('view_contract')}
             </button>
           </div>
         </div>
