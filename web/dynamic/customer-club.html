@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <basis core="call" file="book/taglist" lid="1"></basis>
+    <title>باشگاه مشتریان</title>
+    <meta name="description" content="باشگاه مشتریان">
+    <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/css" rel="stylesheet" />
+</head>
+
+<body class="panel-bg-zinc-50">
+    <!-- Header -->
+    <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <!-- main -->
+    <main>
+        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+            <basis core="api" name="club_members_user_point" run="atclient"
+                url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total,agency"
+                method="post" body='{
+                    "name": "db",
+                    "mid": "20",
+                    "member": [
+                        {
+                        "name": "q",
+                        "type": "list",
+                        "request": "club_members_user_point_view",
+                        "pageindex": "{##cms.paging.pageno|(1)##}",
+                        "perpage": "0",
+                        "rkey": "[##cms.cookie.rkey##]",
+                        "lid":"[##cms.query.lid|(1)##]"
+                        }
+                    ]
+                }' content-type="application/json" triggers="cms.search cms.paging"
+                onProcessed="onProcessedClubMembers">
+            </basis>
+
+            <div class="panel-flex-1">
+                <section class="panel-flex panel-items-center panel-gap-2">
+                    <basis core="print" datamembername="db.total" run="atclient">
+                        <layout>
+                            <script type="text/template">
+                                <div
+                                    class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border  panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                    <span
+                                        class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl    panel-w-12 panel-h-12">
+                                        <svg width="31" height="31">
+                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-star"></use>
+                                        </svg>
+                                    </span>
+                                    <div class="panel-flex panel-flex-col panel-justify-between">
+                                        <span class="panel-text-xs panel-text-zinc-900">کل امتیاز باقی مانده</span>
+                                        @child
+                                    </div>
+                                </div>
+                            </script>
+                        </layout>
+                        <face>
+                            <script type="text/template">
+                                <span class="panel-text-green-700 panel-font-bold">@info.remaining@</span>
+                            </script>
+                        </face>
+                    </basis>
+
+                    <basis core="print" datamembername="db.total" run="atclient">
+                        <layout>
+                            <script type="text/template">
+                            <div
+                                class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-ticket"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    <span class="panel-text-xs panel-text-zinc-900">کل امتیاز خرج کرده</span>
+                                    @child
+                                </div>
+                            </div>
+                        </script>
+                        </layout>
+                        <face>
+                            <script type="text/template">
+                                <span class="panel-text-red-500 panel-font-bold">@info.total_used@</span>
+                            </script>
+                        </face>
+                    </basis>
+
+                    <basis core="print" datamembername="db.total" run="atclient">
+                        <layout>
+                            <script type="text/template">
+                            <div
+                                class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-all-point"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    <span class="panel-text-xs panel-text-zinc-900">کل امتیاز کسب کرده</span>
+                                    @child
+                                </div>
+                            </div>
+                        </script>
+                        </layout>
+                        <face>
+                            <script type="text/template">
+                                <span class="panel-text-zinc-900 panel-font-bold">@info.total_received@</span>
+                            </script>
+                        </face>
+                    </basis>
+
+                </section>
+                <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6 panel-mt-6">
+                    <div class="panel-flex panel-items-center">
+                        <svg width="48" height="48" class="panel-text-primary-800">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-customer-club"></use>
+                        </svg>
+                        <h2 class="panel-text-zinc-900 panel-font-medium">لیست امتیاز ها</h2>
+                    </div>
+                    <div class="panel_grid_style">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
+                            options="CustomerClubList">
+                        </basis>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    <!-- Footer-->
+    <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/javascript"></script>
+
+    <script>
+        async function onProcessedClubMembers(args) {
+            try {
+                const responseJson = await args.response.json()
+
+                const list = responseJson?.sources?.find(s => s?.options?.tableName === "db.list")?.data
+                const total = responseJson?.sources?.find(s => s?.options?.tableName === "db.total")?.data
+                console.log(total);
+
+                $bc.setSource("db.list", Array.isArray(list) ? list : [])
+
+                const t = total && typeof total === "object" ? total : {}
+                const received = Number(t.total_received ?? 0) || 0
+                const used = Number(t.total_used ?? 0) || 0
+
+                const totalView = {
+                    info: {
+                        ...t,
+                        remaining: received - used,
+                    }
+                }
+
+                $bc.setSource("db.total", totalView)
+            } catch {
+                $bc.setSource("db.list", [])
+                $bc.setSource("db.total", { info: {} })
+            }
+        }
+
+        var CustomerClubList = {
+            columns: {
+                description: {
+                    title: "عنوان",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => `<p>${row.description ?? ""}</p>`,
+                },
+
+                points: {
+                    title: "امتیاز",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const received = Number(row.received_points ?? 0) || 0
+                        const used = Number(row.used_points ?? 0) || 0
+                        const net = received - used
+                        const sign = net > 0 ? "+" : net < 0 ? "-" : ""
+                        const absVal = Math.abs(net)
+                        const netText = `${sign} ${Intl.NumberFormat().format(absVal)}`
+
+                        const cls =
+                            net > 0
+                                ? "panel-text-green-600"
+                                : net < 0
+                                    ? "panel-text-red-600"
+                                    : "panel-text-zinc-900"
+
+                        return `<p class="is-separated panel-direction-ltr ${cls}">${netText}</p>`
+                    },
+                },
+
+                date: {
+                    title: "تاریخ",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const g = row?.create_date?.mstring ?? ""
+                        const j = row?.create_date?.sstring ?? ""
+                        if (!g && !j) return `<p>-</p>`
+
+                        return `
+          <div class="panel-flex panel-flex-col panel-gap-0.5">
+            ${j ? `<span>${j}</span>` : ""}
+            ${g ? `<span class="panel-direction-ltr">${g}</span>` : ""}
+          </div>
+        `
+                    },
+                },
+
+                hour: {
+                    title: "ساعت",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p class="panel-direction-ltr">${row.create_hour ?? ""}</p>`,
+                },
+
+                received_points: {
+                    title: "کسب کرده",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const val = Number(row.received_points ?? 0) || 0
+                        return `<p class="is-separated panel-direction-ltr panel-text-green-600">+ ${Intl.NumberFormat().format(val)}</p>`
+                    },
+                },
+
+                used_points: {
+                    title: "خرج کرده",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const val = Number(row.used_points ?? 0) || 0
+                        return `<p class="is-separated panel-direction-ltr panel-text-red-600">- ${Intl.NumberFormat().format(val)}</p>`
+                    },
+                },
+            },
+
+            // ===== این بخش باید ثابت و دست‌نخورده بماند =====
+            filter: 'row',
+            rowNumber: 'ردیف',
+            defaultSort: false,
+            direction: "rtl",
+            paging: 50,
+            information: true,
+            firstAndLastBtn: true,
+            culture: {
+                labels: {
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}"
+                }
+            },
+
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+    <div class="icon">
+        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z"
+                fill="#D0D0D0">
+            </path>
+        </svg>
+    </div>
+    <div class="text">
+        هیچ موردی یافت نشد. </div></div>`
+            },
+            mode: "grid",
+            pageCount: false
+        };
+
+    </script>
+</body>
+
+</html>

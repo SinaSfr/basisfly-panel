@@ -23,6 +23,37 @@
     }' onprocessed="onProcessed_save">
 </basis>
 
+
+<basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient">
+    <member name="get_company_ownerid" method="panel" query='{
+        "name": "db",
+        "mid": "20",
+        "member":
+        [
+            {
+                "type":"list",
+                "name": "q",
+                "request":"get_company_ownerid"
+            }
+        ]
+    }' preview=""></member>
+</basis>
+
+<basis core="api" name="apidmn" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post"
+    body='{
+    "name": "db",
+    "mid": "20",
+    "member":
+    [
+        {
+            "type":"list",
+            "name": "q",
+            "request":"get_company_ownerid"
+        }
+    ]
+}' content-type="application/json">
+</basis>
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -33,69 +64,6 @@
     <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/css" rel="stylesheet" />
 </head>
-
-<style>
-    [data-bc-grid] * {
-        font-size: 12px !important;
-    }
-
-    [data-bc-grid="d1"] table[data-bc-table] thead td {
-        padding: 16px 12px !important;
-        background: #F4F4F5;
-        font-weight: 400 !important;
-        color: #18181B !important;
-    }
-
-    [data-bc-grid="d1"] table[data-bc-table] thead tr {
-        border-radius: 12px;
-    }
-
-    [data-bc-grid="d1"] table[data-bc-table] thead td:first-child {
-        border-radius: 0 12px 12px 0;
-    }
-
-    [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td {
-        text-align: center;
-    }
-
-    [data-bc-grid="d1"][data-bc-grid-direction="rtl"] table[data-bc-table] thead td:first-of-type {
-        text-align: right;
-    }
-
-    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td]:first-child {
-        border-width: 1px 1px 1px 0;
-        border-radius: 0 12px 12px 0;
-    }
-
-    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody td {
-        padding: 12px 0 !important;
-    }
-
-    .Panel_invoice_List [data-bc-grid="d1"] table[data-bc-table] tbody td:first-child {
-        padding-right: 12px !important;
-    }
-
-    .panel-bg-red-100 {
-        --tw-bg-opacity: 1;
-        background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
-    }
-
-    .panel-text-red-500 {
-        --tw-text-opacity: 1;
-        color: rgb(239 68 68 / var(--tw-text-opacity, 1))
-    }
-
-    .panel-bg-red-500 {
-        --tw-bg-opacity: 1;
-        background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1))
-            /* #ef4444 */
-        ;
-    }
-
-    .panel-justify-end {
-        justify-content: flex-end;
-    }
-</style>
 
 <body class="panel-bg-zinc-50">
     <!-- Header -->
@@ -110,14 +78,13 @@
                 "member" : [
                     {
                         "query" : {##db.search.query|(0)##}
-                    }
+                    }   
                 ]
-            }' content-type="application/json" run="atclient" triggers="db.search db.paging"
+            }' content-type="application/json" run="atclient" triggers="db.search list.refresh"
                 onProcessed="onProcessed_list"></basis>
-
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
                 <section class="panel-flex panel-justify-between">
-                    <form class="panel-flex panel-items-center panel-gap-2">
+                    <form class="panel-flex panel-items-center panel-gap-2 panel-mb-0">
                         <input type="text" name="name" id="" class="panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
                         focus:panel-shadow-md
                         panel-transition panel-duration-300" placeholder="نام مسافر :">
@@ -273,7 +240,7 @@
                                 </div>
                                 <!-- دکمه افزودن مسافر -->
                                 <button id="add-passenger-button"
-                                    class="panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                    class="panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-90">
                                     <div
                                         class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
                                         <span>افزودن مسافر</span>
@@ -287,7 +254,7 @@
                 </section>
                 <section class="panel-mt-12">
                     <h1 class="panel-text-zinc-900 panel-font-medium panel-mb-6">لیست مسافران</h1>
-                    <div class="Panel_invoice_List">
+                    <div class="panel_grid_style panel_grid_passenger">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.order"
                             options="reportItems">
                         </basis>
@@ -343,6 +310,8 @@
                 const responseJson = await response.json();
                 const errorId = parseInt(responseJson.errorid);
             }
+            const element = document.querySelector('[data-bc-refresh-container]');
+            element.querySelector('span').click();
 
             $bc.setSource("db.add_passenger", [{
                 "run": false
@@ -398,7 +367,7 @@
                 passportCode: document.getElementById('passportNumber').value.trim(),
                 birthDate: document.getElementById('dobInput').value.replace(/\//g, '-') ?? '',
                 passportExpiration: document.getElementById('passportExpiryInput').value.replace(/\//g, '-') ?? '',
-                gender: document.getElementById('gender').value === '1' ? 1 : 0,
+                gender: document.getElementById('gender').value === '1' ? "1" : "0",
                 issueCountryId: document.getElementById('nationality').dataset.id ?? 1002236,
                 issueCountryName: document.getElementById('nationality').value || 'Iran'
             };
@@ -454,6 +423,7 @@
         }
 
         function editObject(row) {
+            clearAllHighlights()
             // حالت ویرایش
             document.getElementById('add-passenger-button').textContent = translate('save_changes')
             document.querySelector('.panel-modal-title').textContent = translate('edit_passenger')
@@ -468,9 +438,11 @@
             document.getElementById('lastNamePersian').value = row.persianLastName ?? ''
 
             // جنسیت
-            if (row.gender) {
-                document.getElementById('gender').value =
-                    row.gender == 1 ? 'male' : 'female'
+            // جنسیت
+            if (row.gender !== undefined && row.gender !== null) {
+                document.getElementById('gender').value = String(row.gender) // "0" یا "1"
+            } else {
+                document.getElementById('gender').value = '' // یا هر placeholder که داری
             }
 
             // کد ملی
@@ -517,11 +489,22 @@
         }
 
         function removePassenger() {
-            const passengerId =
-                document.getElementById('removePassengerId').value
+            const id = (document.getElementById('removePassengerId')?.value || '').trim()
 
-            if (!passengerId) return
+            if (!id) {
+                closeRemovePassengerModal()
+                return
+            }
 
+            const json_input = {
+                id: id,
+                delete: "1"
+            }
+
+            $bc.setSource("db.add_passenger", [{
+                query: JSON.stringify(json_input),
+                run: true
+            }])
 
             closeRemovePassengerModal()
         }
@@ -542,7 +525,7 @@
 
             document.getElementById('gender').value = 'gender'
             document.querySelector('.data-id#object_id').value = ''
-            
+
             document.querySelector('.panel-modal-title').textContent = translate('add_passenger')
             document.getElementById('add-passenger-button').textContent = translate('add_passenger')
         }
@@ -569,8 +552,6 @@
                             index
                         } = row;
 
-                        // شماره مسافر (از index مثل 0_1 → 1)
-                        const passengerNumber = index?.split('_')?.[1] ?? '';
 
                         const fullName = `${firstName ?? ''} ${lastName ?? ''}`.trim();
                         const persianFullName =
@@ -582,12 +563,12 @@
             <div class="panel-flex panel-items-center panel-gap-2">
                 <span
                     class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-xl">
-                    <svg width="48" height="48" class="panel-text-white">
-                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-sidebar-person"></use>
+                    <svg width="48" height="48">
+                        <use class="panel-text-white" href="/userPanel/images/panel-sprite-icons.svg#icon-sidebar-person"></use>
                     </svg>
                 </span>
 
-                <div class="panel-flex panel-flex-col">
+                <div class="panel-flex panel-flex-col panel-text-right">
                     <h2 class="panel-text-sm panel-text-zinc-900 panel-font-medium panel-flex panel-gap-1">
                         <span>${fullName}</span>
                     </h2>
@@ -596,11 +577,6 @@
                                 ? `<p class="panel-text-xs panel-text-zinc-700">${persianFullName}</p>`
                                 : ''
                             }
-
-                    <p class="panel-flex panel-gap-0.5 panel-text-xs panel-text-zinc-900">
-                        <span>شماره</span>
-                        <span>${passengerNumber}</span>
-                    </p>
                 </div>
             </div>
         `;
@@ -666,10 +642,9 @@
                     onclick='editObject(${JSON.stringify(row).replace(/'/g, "\\'")})'
                     title="ویرایش">
                     
-                    <svg width="24" height="24"
-                         class="panel-text-primary-800 panel-transition-all panel-duration-200
-                                group-hover:panel-text-white">
-                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pencil"></use>
+                    <svg width="24" height="24">
+                        <use class="panel-text-primary-800 panel-transition-all panel-duration-200
+                                group-hover:panel-text-white" href="/userPanel/images/panel-sprite-icons.svg#icon-pencil"></use>
                     </svg>
                 </button>
 
@@ -682,10 +657,9 @@
                     onclick="openRemovePassengerModal('${row._id}')"
                     title="حذف">
                     
-                    <svg width="24" height="24"
-                         class="panel-text-red-500 panel-transition-all panel-duration-200
-                                group-hover:panel-text-white">
-                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-trash"></use>
+                    <svg width="24" height="24">
+                        <use class="panel-text-red-500 panel-transition-all panel-duration-200
+                                group-hover:panel-text-white" href="/userPanel/images/panel-sprite-icons.svg#icon-trash"></use>
                     </svg>
                 </button>
 

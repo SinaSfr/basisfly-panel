@@ -1,3 +1,19 @@
+<basis core="api" name="db.get_company_ownerid" run="atclient"
+    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
+    "name": "db",
+    "mid": "20",
+    "member":
+    [
+        {
+            "type":"list",
+            "name": "q",
+            "request":"get_company_ownerid"
+        }
+    ]
+}' content-type="application/json">
+</basis>
+
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -18,9 +34,16 @@
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
             <basis core="api" name="api.createpage"
-                url="https://basisfly.com/accounting/get_report-document/[##cms.cms.rkey##]" method="post"
-                body='[##cms.form.query##]' content-type="application/json" run="atclient"
-                triggers="db.search cms.form" OnProcessing="submitReportForm"></basis>
+                url="https://basisfly.com/accounting/get_report-document/[##cms.cms.rkey##]" method="post" body='{
+              "lid": 1,
+              "dmnid": [##cms.cms.domainid##],
+              "ownerid": [##cms.cms.ownerid##],
+              "userid": 6,
+              "factorid": "{##cms.form.factorid|()##}",
+              "accnumber": "{##cms.form.accnumber|()##}",
+              "fromdate": "{##cms.form.start_date|()##}",
+              "todate": "{##cms.form.end_date|()##}"
+            }' content-type="application/json" run="atclient" triggers="db.search cms.form"></basis>
 
             <div class="panel-flex-1">
                 <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6">
@@ -85,22 +108,22 @@
                 </section>
                 <nav class="panel-bg-zinc-200 panel-rounded-xl panel-p-2 panel-mt-6">
                     <ul class="panel-flex panel-items-center panel-gap-8">
-                        <li
-                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-white">
+                        <li data-target="report"
+                            class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
                             <svg width="48" height="48">
                                 <use href="/userPanel/images/panel-sprite-icons.svg#icon-layers"></use>
                             </svg>
                             <span>لیست اسناد حسابداری</span>
                         </li>
-                        <li
-                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-white">
+                        <li data-target="credit"
+                            class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
                             <svg width="48" height="48">
                                 <use href="/userPanel/images/panel-sprite-icons.svg#icon-file-flow"></use>
                             </svg>
                             <span>لیست اسناد اعتبار</span>
                         </li>
-                        <li
-                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-white">
+                        <li data-target="remaining_balance"
+                            class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
                             <svg width="48" height="48">
                                 <use href="/userPanel/images/panel-sprite-icons.svg#icon-database"></use>
                             </svg>
@@ -108,60 +131,60 @@
                         </li>
                     </ul>
                 </nav>
-                <section class="panel-flex panel-items-center panel-gap-2 panel-mt-5">
-                    <div
-                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
-                        <span
-                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
-                            <svg width="31" height="31">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-star"></use>
-                            </svg>
-                        </span>
-                        <div class="panel-flex panel-flex-col panel-justify-between">
-                            <span class="panel-text-xs panel-text-zinc-900">بدهکاری (ریال)</span>
-                            <span class="panel-text-red-500 panel-font-bold">694501</span>
-                        </div>
-                    </div>
-                    <div
-                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
-                        <span
-                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
-                            <svg width="31" height="31">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-ticket"></use>
-                            </svg>
-                        </span>
-                        <div class="panel-flex panel-flex-col panel-justify-between">
-                            <span class="panel-text-xs panel-text-zinc-900">بستنکار ( ریال )</span>
-                            <span class="panel-text-green-600 panel-font-bold">694501</span>
-                        </div>
-                    </div>
-                    <div
-                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
-                        <span
-                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
-                            <svg width="31" height="31">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-all-point"></use>
-                            </svg>
-                        </span>
-                        <div class="panel-flex panel-flex-col panel-justify-between">
-                            <span class="panel-text-xs panel-text-zinc-900">مانده (ریال)</span>
-                            <span class="panel-text-zinc-900 panel-font-bold">694501</span>
-                        </div>
-                    </div>
-                </section>
                 <section>
-                    <div class="remaining_balance" data-run="0">
+                    <div class="panel_grid_style panel-hidden" data-panel="remaining_balance" data-run="0">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.total"
                             options="remainingItems" triggers="cms.remaining_balance"
                             if="{##cms.remaining_balance.run|(false)##}"></basis>
+                        <section class="panel-flex panel-items-center panel-gap-2 panel-mt-5">
+                            <div
+                                class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-star"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    <span class="panel-text-xs panel-text-zinc-900">بدهکاری (ریال)</span>
+                                    <span class="panel-text-red-500 panel-font-bold">694501</span>
+                                </div>
+                            </div>
+                            <div
+                                class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-ticket"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    <span class="panel-text-xs panel-text-zinc-900">بستنکار ( ریال )</span>
+                                    <span class="panel-text-green-600 panel-font-bold">694501</span>
+                                </div>
+                            </div>
+                            <div
+                                class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-all-point"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    <span class="panel-text-xs panel-text-zinc-900">مانده (ریال)</span>
+                                    <span class="panel-text-zinc-900 panel-font-bold">694501</span>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
-                    <div class="credit" data-run="0">
+                    <div class="panel_grid_style panel-hidden" data-panel="credit" data-run="0">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.credit"
                             options="creditItems" triggers="cms.credit" if="{##cms.credit.run|(false)##}"></basis>
                     </div>
 
-                    <div class="report" data-run="1">
+                    <div class="panel_grid_style" data-panel="report" data-run="1">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.report"
                             options="reportItems"></basis>
                     </div>
@@ -173,26 +196,41 @@
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.panel-tab[data-target]')
+            const panels = document.querySelectorAll('[data-panel]')
 
+            function setActiveTab(activeTab) {
+                tabs.forEach((t) => t.classList.remove('panel-bg-white'))
+                activeTab.classList.add('panel-bg-white')
+            }
+
+            function showPanel(name) {
+                panels.forEach((p) => p.classList.add('panel-hidden'))
+                const target = document.querySelector(`[data-panel="${name}"]`)
+                target?.classList.remove('panel-hidden')
+            }
+
+            tabs.forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    setActiveTab(tab)
+                    showPanel(tab.dataset.target)
+                })
+            })
+
+            // پیش‌فرض: اولین تب فعال شود
+            if (tabs[0]) {
+                setActiveTab(tabs[0])
+                showPanel(tabs[0].dataset.target)
+            }
+        })
+    </script>
     <script>
 
-        async function submitReportForm() {
-            const main_json = {
-                lid: 1,
-                dmnid: [##cms.cms.domainid##],
-                ownerid: [##cms.cms.ownerid##],
-                userid: [##db.ownerid.result##],
-                factorid: document.querySelector(".factorid")?.value ?? '',
-                accnumber: document.querySelector(".accnumber")?.value ?? '',
-                fromdate: document.querySelector(".start_date")?.value ?? '',
-                todate: document.querySelector(".end_date")?.value ?? ''
-            };
+        // async function submitReportForm() {
 
-            $bc.setSource("api.createpage", [{
-                body: JSON.stringify(main_json),
-                run: true
-            }]);
-        }
+        // }
         var creditItems = {
             columns: {
                 AccountNo: {

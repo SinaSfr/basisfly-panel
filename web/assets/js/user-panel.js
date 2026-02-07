@@ -2,21 +2,21 @@ let translations = {}
 let currentLanguage = document.documentElement.lang || 'fa'
 const loadTranslations = async () => {
   try {
-      const res = await fetch(`/json/translations?lid=1`);
-      translations = await res.json();
-      currentLanguageTranslate = currentLanguage;
+    const res = await fetch(`/userPanel/json/translations?lid=1`)
+    translations = await res.json()
+    currentLanguageTranslate = currentLanguage
   } catch (e) {
-      console.error('Failed to load translations');
+    console.error('Failed to load translations')
   }
-};
+}
 
-const translate = (text) => translations[text]?.[currentLanguageTranslate] || text;
+const translate = (text) =>
+  translations[text]?.[currentLanguageTranslate] || text
 
-(async () => {
-  await loadTranslations();
-})();
-
-; (() => {
+;(async () => {
+  await loadTranslations()
+})()
+;(() => {
   const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
   const panelWalletAmount = document.querySelector('.panel-wallet-amount')
   if (!visibilityAmountBtn || !panelWalletAmount) return
@@ -156,20 +156,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   payBtn.addEventListener('click', (e) => {
     e.preventDefault()
-  
+
     const raw = amountInput.value
     const cleaned = normalizeNumber(raw)
-  
+
     if (!cleaned) {
       showError(translate('enter_amount'))
       return
     }
-  
+
     if (cleaned.length < 5) {
       showError(translate('amount_min_5_digits'))
       return
     }
-  
+
     clearError()
     showGateways()
   })
@@ -214,7 +214,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document
       .getElementById('openPassengerModal')
       .addEventListener('click', function () {
-        document.getElementById('passengerModal').classList.remove('panel-hidden')
+        clearAllHighlights()
+        document
+          .getElementById('passengerModal')
+          .classList.remove('panel-hidden')
       })
   }
 
@@ -223,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document
       .getElementById('closePassengerModal')
       .addEventListener('click', function () {
+        clearAllHighlights()
         document.getElementById('passengerModal').classList.add('panel-hidden')
       })
   }
@@ -296,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
     days: Array.from({ length: 31 }, (_, i) => i + 1),
     years: Array.from({ length: 100 }, (_, i) => 1923 + i),
   }
-  
+
   const jalaliDates = {
     months: [
       translate('farvardin'),
@@ -444,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       dates = jalaliDates
     }
-  
+
     // ماه‌ها
     monthSelect.innerHTML = `<option value="">${translate('month')}</option>`
     dates.months.forEach((month, index) => {
@@ -453,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function () {
       option.textContent = month
       monthSelect.appendChild(option)
     })
-  
+
     // سال‌ها
     yearSelect.innerHTML = `<option value="">${translate('year')}</option>`
     dates.years.forEach((year) => {
@@ -462,10 +466,10 @@ document.addEventListener('DOMContentLoaded', function () {
       option.textContent = year
       yearSelect.appendChild(option)
     })
-  
+
     // روزها
     updateDaysByMonth()
-  
+
     // ریست انتخاب‌ها
     daySelect.value = ''
     monthSelect.value = ''
@@ -481,31 +485,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const day = daySelect.value
     const month = monthSelect.value
     const year = yearSelect.value
-  
+
     // کانتینر خطا
     const dateContainer = document.getElementById('dateSelectors')
     let errorEl = dateContainer.querySelector('.date-error')
-  
+
     // اگر قبلاً خطا بود، پاکش کن
     if (errorEl) errorEl.remove()
-  
+
     if (!day || !month || !year) {
       // ایجاد المنت خطا
       errorEl = document.createElement('div')
-      errorEl.className = 'date-error panel-text-red-600 panel-text-sm panel-mt-2'
+      errorEl.className =
+        'date-error panel-text-red-600 panel-text-sm panel-mt-2'
       errorEl.textContent = translate('select_complete_date') // کلید ترجمه
       dateContainer.appendChild(errorEl)
       return
     }
-  
+
     const targetField = document.getElementById(targetInputField)
     if (!targetField) return
-  
+
     const formattedDate = `${year}/${pad(month)}/${pad(day)}`
-  
+
     targetField.value = formattedDate
     targetField.dataset.type = currentDateType
-  
+
     closeDatePopup()
   })
   monthSelect.addEventListener('change', updateDaysByMonth)
@@ -529,14 +534,14 @@ document.addEventListener('DOMContentLoaded', () => {
       nationalCodeInput.classList.add(
         'panel-bg-zinc-200',
         'panel-text-zinc-400',
-        'panel-cursor-not-allowed'
+        'panel-cursor-not-allowed',
       )
     } else {
       nationalCodeInput.disabled = false
       nationalCodeInput.classList.remove(
         'panel-bg-zinc-200',
         'panel-text-zinc-400',
-        'panel-cursor-not-allowed'
+        'panel-cursor-not-allowed',
       )
     }
 
@@ -548,8 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nationalityDropdown.innerHTML = ''
 
     if (!list || !list.length) {
-      nationalityDropdown.innerHTML =
-        `<div class="panel-p-3 panel-text-sm panel-text-zinc-400">
+      nationalityDropdown.innerHTML = `<div class="panel-p-3 panel-text-sm panel-text-zinc-400">
           ${translate('no_results_found')}
         </div>`
       return
@@ -608,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.onProcessed_autoSearch = async function (args) {
     const responseJson = await args.response.json()
 
-    const countries = responseJson.map(item => ({
+    const countries = responseJson.map((item) => ({
       id: item.id,
       fa: item.value,
     }))
@@ -617,26 +621,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })
 
-
 // ----- بررسی فیلدهای اجباری برای مسافر -----
 document.addEventListener('DOMContentLoaded', function () {
-  const addPassengerBtn = document.getElementById('add-passenger-button');
+  const addPassengerBtn = document.getElementById('add-passenger-button')
 
   if (addPassengerBtn) {
     addPassengerBtn.addEventListener('click', function (e) {
-      e.preventDefault(); // جلوگیری از ارسال فرم
+      e.preventDefault() // جلوگیری از ارسال فرم
 
-      const result = validatePassengerFields();
+      const result = validatePassengerFields()
       if (!result.isValid) {
-        highlightInvalidFields(result.invalidFields);
-        return;
+        highlightInvalidFields(result.invalidFields)
+        return
       }
 
-      clearAllHighlights(); // پاک کردن borderهای خطا
-      callback_sourcePassnegerNew();      // هم افزودن، هم ویرایش در یک فانکشن
-    });
+      clearAllHighlights() // پاک کردن borderهای خطا
+      callback_sourcePassnegerNew() // هم افزودن، هم ویرایش در یک فانکشن
+    })
   }
-});
+})
 
 function validatePassengerFields() {
   const invalidFields = []
@@ -661,7 +664,7 @@ function validatePassengerFields() {
   }
 
   // بررسی select جنسیت - مقدار نباید "gender" باشد
-  if (!["1", "0"].includes(genderSelect.value)) {
+  if (!['1', '0'].includes(genderSelect.value)) {
     invalidFields.push(genderSelect)
   }
 
@@ -681,29 +684,40 @@ function validatePassengerFields() {
   // تاریخ تولد اجباری است
   if (!dobInput.value.trim()) {
     invalidFields.push(dobInput)
-} else if (!isValidDate(dobInput.value)) {
+  } else if (!isValidDate(dobInput.value)) {
     invalidFields.push(dobInput)
-}
+  }
 
   // پاسپورت اختیاری ولی اگر وارد شد، اعتبارسنجی کن
-  if (passportNumber.value.trim() && !/^[A-Za-z0-9]{5,15}$/.test(passportNumber.value.trim())) {
+  if (
+    passportNumber.value.trim() &&
+    !/^[A-Za-z0-9]{5,15}$/.test(passportNumber.value.trim())
+  ) {
     invalidFields.push(passportNumber)
   }
 
   // تاریخ انقضای پاسپورت اختیاری ولی اگر پاسپورت وارد شد، اجباری است
-  if (passportExpiry.value && !isValidDate(passportExpiry.value)) {
+  // تاریخ انقضای پاسپورت اختیاری است، اما اگر شماره پاسپورت وارد شد => تاریخ انقضا اجباری می‌شود
+  if (passportNumber.value.trim() && !passportExpiry.value.trim()) {
     invalidFields.push(passportExpiry)
-}
+  } else if (
+    passportExpiry.value.trim() &&
+    !isValidDate(passportExpiry.value.trim())
+  ) {
+    invalidFields.push(passportExpiry)
+  }
 
   function isValidDate(dateStr) {
     const parts = dateStr.split('/')
-    if(parts.length !== 3) return false
-    const year = parseInt(parts[0]), month = parseInt(parts[1]), day = parseInt(parts[2])
-    if(isNaN(year) || isNaN(month) || isNaN(day)) return false
-    if(month < 1 || month > 12) return false
-    if(day < 1 || day > 31) return false
+    if (parts.length !== 3) return false
+    const year = parseInt(parts[0]),
+      month = parseInt(parts[1]),
+      day = parseInt(parts[2])
+    if (isNaN(year) || isNaN(month) || isNaN(day)) return false
+    if (month < 1 || month > 12) return false
+    if (day < 1 || day > 31) return false
     return true
-}
+  }
 
   return {
     isValid: invalidFields.length === 0,
@@ -765,7 +779,7 @@ function clearAllHighlights() {
 }
 
 //------------------------Advanced Search --------------------------
-; (() => {
+;(() => {
   const openBtn = document.getElementById('btnOpenAdvancedSearch')
   const modalId =
     openBtn?.getAttribute('data-modal-open') || 'advancedContractSearch'
@@ -806,47 +820,47 @@ function clearAllHighlights() {
   })
 })()
 
-  //----------------clear advanced search---------------------
-  ; (() => {
-    const modal = document.getElementById('advancedContractSearch')
-    const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
+//----------------clear advanced search---------------------
+;(() => {
+  const modal = document.getElementById('advancedContractSearch')
+  const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
 
-    if (!modal || !clearBtn) return
+  if (!modal || !clearBtn) return
 
-    const clearAdvancedSearchFilters = () => {
-      const scope = modal
+  const clearAdvancedSearchFilters = () => {
+    const scope = modal
 
-      scope
-        .querySelectorAll(
-          'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
-        )
-        .forEach((el) => {
-          el.value = ''
-          el.dispatchEvent(new Event('input', { bubbles: true }))
-          el.dispatchEvent(new Event('change', { bubbles: true }))
-        })
-
-      scope
-        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-        .forEach((el) => {
-          el.checked = false
-          el.dispatchEvent(new Event('change', { bubbles: true }))
-        })
-
-      scope.querySelectorAll('textarea').forEach((el) => {
+    scope
+      .querySelectorAll(
+        'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
+      )
+      .forEach((el) => {
         el.value = ''
         el.dispatchEvent(new Event('input', { bubbles: true }))
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
 
-      scope.querySelectorAll('select').forEach((el) => {
-        el.selectedIndex = 0
+    scope
+      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+      .forEach((el) => {
+        el.checked = false
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
-    }
 
-    clearBtn.addEventListener('click', clearAdvancedSearchFilters)
-  })()
+    scope.querySelectorAll('textarea').forEach((el) => {
+      el.value = ''
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+
+    scope.querySelectorAll('select').forEach((el) => {
+      el.selectedIndex = 0
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+  }
+
+  clearBtn.addEventListener('click', clearAdvancedSearchFilters)
+})()
 
 // ----------dropdown menu (advanced search)--------------
 /* =========================================================
@@ -1037,32 +1051,32 @@ document.addEventListener('DOMContentLoaded', () => {
     origin_city: {
       ph: translate('search_origin_city'),
       dynamic: true,
-      hiddenSelector: 'input[name="_root.route.start.city"]'
+      hiddenSelector: 'input[name="_root.route.start.city"]',
     },
     destination_city: {
       ph: translate('search_destination_city'),
       dynamic: true,
-      hiddenSelector: 'input[name="_root.route.end.city"]'
+      hiddenSelector: 'input[name="_root.route.end.city"]',
     },
     hotel: {
       ph: translate('search_hotel'),
       dynamic: true,
-      hiddenSelector: 'input[name="_root.route.hotelid_search"]'
+      hiddenSelector: 'input[name="_root.route.hotelid_search"]',
     },
     airline: {
       ph: translate('search_airline'),
       dynamic: true,
-      hiddenSelector: 'input[name="_root.route.airline"]'
+      hiddenSelector: 'input[name="_root.route.airline"]',
     },
     rail_company: {
       ph: translate('search_rail_company'),
-      dynamic: true
+      dynamic: true,
     },
     route_code: {
       ph: translate('search_route_code'),
-      dynamic: true
+      dynamic: true,
     },
-  
+
     status: {
       ph: translate('status'),
       items: [
@@ -1070,7 +1084,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { value: '1', label: translate('pre_contract') },
       ],
     },
-  
+
     tag: {
       ph: translate('tag'),
       items: [
@@ -1086,11 +1100,11 @@ document.addEventListener('DOMContentLoaded', () => {
         { value: '8', label: translate('credit_payment_finance_settled') },
       ],
     },
-  
+
     services: {
       ph: translate('type'),
       dynamic: true,
-      hiddenSelector: 'input[name="_root.type"]'
+      hiddenSelector: 'input[name="_root.type"]',
     },
   }
 
@@ -1331,7 +1345,7 @@ const watchSchemaReady = ({
 
   if (isReady()) {
     applyReadyState()
-    return () => { }
+    return () => {}
   }
 
   const container = document.querySelector(containerSelector)
