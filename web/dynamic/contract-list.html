@@ -993,7 +993,7 @@
                         const adl = row.passengers?.adult ?? 0;
                         const chd = row.passengers?.child ?? 0;
                         const inf = row.passengers?.infant ?? 0;
-
+                        const rowId = row.id?.id ?? '';
                         const shamsi = row.createdate?.sstring ?? '-';
                         const miladi = row.createdate?.mstring ?? '-';
                         const hour = row.createhour ?? '';
@@ -1003,7 +1003,7 @@
     data-adl="${adl}"
           data-chd="${chd}"
           data-inf="${inf}"
-
+          data-id="${rowId}"                      
           data-contract-shamsi="${shamsi}"
           data-contract-miladi="${miladi}"
           data-contract-hour="${hour}"
@@ -1042,13 +1042,13 @@
             refresh: true,
             noData: (td) => {
                 td.innerHTML = `<div class="noData">
-                                    <div class="icon panel-flex panel-justify-center panel-mb-3">
-                                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z" fill="#D0D0D0"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="text">
-                                        هیچ موردی یافت نشد.
+                 <div class="icon panel-flex panel-justify-center panel-mb-3">
+                    <svg width="70" height="70">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-no-items"></use>
+                    </svg>
+                </div>
+                                    <div class="text">no_items_found
+                                          ${translate('no_items_found')}
                                     </div>
                                 </div>
                                 `
@@ -1063,59 +1063,61 @@
     </script>
     <script>
         function onPassengerRowClick(el, event) {
-            event.preventDefault();
-            event.stopPropagation();
+            event.preventDefault()
+            event.stopPropagation()
 
-            const tr = el.closest("tr[data-sys-tr]");
-            if (!tr) return;
+            const tr = el.closest('tr[data-sys-tr]')
+            if (!tr) return
 
-            // اگر قبلاً باز شده بود => ببند
-            if (tr.classList.contains("passenger-row-expanded")) {
-                if (tr._originalInnerHTML) tr.innerHTML = tr._originalInnerHTML;
-                tr.classList.remove("passenger-row-expanded");
-                return;
+            if (tr.classList.contains('passenger-row-expanded')) {
+                if (tr._originalInnerHTML) tr.innerHTML = tr._originalInnerHTML
+                tr.classList.remove('passenger-row-expanded')
+                return
             }
+            const tds = Array.from(tr.querySelectorAll('td[data-sys-td], td'))
+            const colCount = tds.length || 1
 
-            // تعداد ستون‌ها
-            const tds = Array.from(tr.querySelectorAll("td[data-sys-td], td"));
-            const colCount = tds.length || 1;
+            if (!tr._originalInnerHTML) tr._originalInnerHTML = tr.innerHTML
 
-            // ذخیره HTML اولیه برای restore
-            if (!tr._originalInnerHTML) tr._originalInnerHTML = tr.innerHTML;
+            const d = el.dataset
 
-            const d = el.dataset;
-
-            // خلاصه ردیف (grid)
             const summaryHtml = tds
-                .map((td) => `<div class="passenger-summary-cell panel-flex panel-items-center !panel-py-3">${td.innerHTML}</div>`)
-                .join("");
+                .map(
+                    (td) =>
+                        `<div class="passenger-summary-cell panel-flex panel-items-center !panel-py-3">${td.innerHTML}</div>`,
+                )
+                .join('')
 
-            // آماده‌سازی مقادیر مسافر
             const passengersHtml = `
     <span class="pass-pill pass-inf">INF: <span class="en-numbers panel-font-sans panel-font-medium">${d.inf || 0}</span></span>
     <span class="pass-pill pass-adl">ADL: <span class="en-numbers panel-font-sans panel-font-medium">${d.adl || 0}</span></span>
     <span class="pass-pill pass-chd">CHD: <span class="en-numbers panel-font-sans panel-font-medium">${d.chd || 0}</span></span>
-  `;
+  `
 
-            const sh = (d.contractShamsi && d.contractShamsi !== "-") ? d.contractShamsi : "";
-            const mi = (d.contractMiladi && d.contractMiladi !== "-") ? d.contractMiladi : "";
+            const sh = d.contractShamsi && d.contractShamsi !== '-' ? d.contractShamsi : ''
+            const mi = d.contractMiladi && d.contractMiladi !== '-' ? d.contractMiladi : ''
 
-            let contractDateText = "—";
-            if (sh && mi) contractDateText = `${sh} - (${mi})`;
-            else if (sh) contractDateText = sh;
-            else if (mi) contractDateText = mi;
+            let contractDateText = '—'
+            if (sh && mi) contractDateText = `${sh} - (${mi})`
+            else if (sh) contractDateText = sh
+            else if (mi) contractDateText = mi
 
-            if (d.contractHour) contractDateText = `${contractDateText}  ${d.contractHour}`;
+            if (d.contractHour) contractDateText = `${contractDateText}  ${d.contractHour}`
 
-            // تبدیل tr به یک td با colspan
-            tr.innerHTML = "";
-            tr.classList.add("passenger-row-expanded");
+            // ===== لینک قرارداد =====
+            const contractId = d.id || ''
+            const contractHref = `/userPanel/booking/view?id=${encodeURIComponent(contractId)}`
 
-            const td = document.createElement("td");
-            td.colSpan = colCount;
-            td.setAttribute("data-sys-td", "");
-            td.setAttribute("data-bc-data", "");
-            td.setAttribute("data-bc-order", "");
+            tr.innerHTML = ''
+            tr.classList.add('passenger-row-expanded')
+
+            console.log(tr.classList.contains("passenger-row-expanded"));
+
+            const td = document.createElement('td')
+            td.colSpan = colCount
+            td.setAttribute('data-sys-td', '')
+            td.setAttribute('data-bc-data', '')
+            td.setAttribute('data-bc-order', '')
 
             td.innerHTML = `
     <div class="passenger-row-wrap panel-flex panel-flex-col">
@@ -1136,17 +1138,19 @@
           </div>
 
           <div class="passenger-detail__actions">
-            <button type="button"
-              class="panel-flex panel-items-center panel-justify-center panel-w-28 panel-h-12 panel-border panel-border-solid panel-border-primary-700 panel-rounded-lg panel-text-primary-700 panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">
-               ${translate('view_contract')}
-            </button>
+            <a
+              class="panel-flex panel-items-center panel-justify-center panel-bg-white panel-w-28 panel-h-12 panel-border panel-border-solid panel-border-primary-700 panel-rounded-lg panel-text-primary-700 panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white"
+              href="${contractHref}" target="_blank">
+              ${translate('view_contract')}
+            </a>
           </div>
         </div>
       </div>
     </div>
-  `;
+  `
 
-            tr.appendChild(td);
+            tr.appendChild(td)
+            td.style.backgroundColor = '#FAFAFA'
         }
 
     </script>

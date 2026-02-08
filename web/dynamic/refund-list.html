@@ -1,0 +1,535 @@
+<basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient" triggers="db.edit"
+    if="{##db.edit.run|(false)##}">
+    <member name="invoice_refund_request_view" method="panel" query='{ 
+        "name": "db", 
+        "mid": "20",
+        "member":
+        [
+            { 
+                "name": "q",
+                "type":"list",
+                "request": "invoice_refund_request_view",
+                "id" : "{##db.edit.id##}"
+            }
+        ] 
+    }' preview=""></member>
+</basis>
+<basis core="callback" run="atclient" triggers="db.invoice_refund_request_view" method="callback_sourceRefundItem">
+</basis>
+</basis>
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <basis core="call" file="book/taglist" lid="1"></basis>
+    <title>لیست درخواست ها"</title>
+    <meta name="description" content="لیست درخواست ها">
+    <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/css" rel="stylesheet" />
+</head>
+
+<body class="panel-bg-zinc-50">
+    <!-- Header -->
+    <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <!-- main -->
+    <main>
+        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+            <basis core="api" name="invoice_refund_list"
+                url="https://www.basisfly.com/panel/main/list/[##cms.cookie.rkey##]" method="post" body='{
+                "member" : [
+                    {
+                        "search" : {
+                            "dmnid": 2452,
+                            "lid": 1,
+                            "ownerid": 8394,
+                            "user_id": 1006946
+                        },
+                        "pageindex" : "{##db.paging.pageno|(1)##}",
+                        "perpage" : "{##db.paging.perpage|(1000)##}",
+                        "request" : "invoice_refund_list",
+                        "lid" : "1"
+                    }
+                ]
+            }' content-type="application/json" run="atclient" triggers="db.refundlist db.paging"
+                onProcessed="onProcessedRefundList"></basis>
+
+            <div class="panel-flex-1">
+                <section class="panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
+                    <h1 class="panel-font-bold panel-mb-3">درخواست پشتیبانی</h1>
+                    <div class="panel-relative panel-w-80">
+                        <input type="text"
+                            class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                            placeholder="عنوان درخواست">
+                        <svg width="48" height="48" class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down">
+                            </use>
+                        </svg>
+                    </div>
+                    <textarea name="" id="" placeholder="توضیحات"
+                        class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-pt-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-mt-3"></textarea>
+                    <button
+                        class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mt-5 panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
+                        ثبت درخواست
+                    </button>
+                </section>
+                <section class="panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3 panel-mt-6">
+                    <h2 class="panel-flex panel-items-center">
+                        <svg width="48" height="48" class="panel-text-primary-800">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-customer-club"></use>
+                        </svg>
+                        <span class="panel-text-zinc-900 panel-font-medium">لیست درخواست ها</span>
+                    </h2>
+                    <div class="panel_grid_style panel-refund__list">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.orders"
+                            options="refundList"></basis>
+                    </div>
+                    <form bc-triggers="submit" name="cms.form"
+                        class="panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-mb-0">
+                        <input type="hidden" name="run" class="check-run" value="false" />
+                        <input type="hidden" name="_root.oid" value="{##db.edit.id##}" />
+                        <input type="hidden" class="userid-whoIs-logined" name="_root.userid"
+                            value="[##db.checkrkey.userid|(0)##]" />
+                        <input type="hidden" class="username-whoIs-logined" name="_root.username"
+                            value="{##db.userinfo.username##}" />
+
+                        <div
+                            class="panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+                            <div
+                                class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-mb-5">
+                                <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">درخواست استرداد و
+                                    تغییر</h2>
+                                <button id="closeRefundModal"
+                                    class="panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                                    aria-label="Close">
+                                    <svg width="48" height="48">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="panel_grid_style panel-mb-5">
+                                <basis core="component.grid.grid" run="atclient" dataMemberName="refresh.RefundItemForm"
+                                    options="view_invoicePassengersRefundItemGrid"></basis>
+                            </div>
+                            <div
+                                class="panel-border-b panel-border-solid panel-border-zinc-300 panel-pb-10 panel-mb-10">
+                                <h3 class="panel-text-zinc-900 panel-mb-6">متن درخواستی</h3>
+                                <textarea name="" id="" placeholder="توضیحات"
+                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-pt-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"></textarea>
+                            </div>
+                            <div>
+                                <h3 class="panel-text-zinc-900 panel-mb-6">پاسخ پشتیبانی</h3>
+                                <textarea name="" id="" placeholder="لطفا پاسخ خود را تایپ کنید"
+                                    class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-pt-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"></textarea>
+                            </div>
+                            <button
+                                class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mt-5 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
+                                ثبت پاسخ پشتیبانی
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer-->
+    <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/javascript"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalOverlay = document.querySelector('.panel-modal-overlay');
+            const modalContent = document.querySelector('.panel-modal-content');
+            const closeModalButton = document.getElementById('closeRefundModal');
+
+            if (!modalOverlay || !modalContent || !closeModalButton) return;
+
+            // تابع بستن مودال
+            const closeModal = () => {
+                modalOverlay.classList.add('panel-hidden');  // مخفی کردن مودال
+            };
+
+            // بستن با کلیک روی ضربدر
+            closeModalButton.addEventListener('click', closeModal);
+
+            // بستن با کلیک روی overlay
+            modalOverlay.addEventListener('click', (event) => {
+                if (!modalContent.contains(event.target)) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+    <script>
+        async function onProcessedRefundList(args) {
+
+            var emptyOptions = {
+                "tableName": "db.orders",
+                "keyFieldName": null,
+                "statusFieldName": null,
+                "mergeType": 0,
+                "extra": { 'total': 0, 'from': 0 }
+            };
+            try {
+                const response = args.response;
+                const responseJson = await response.json();
+                const data = responseJson.sources[0].data;
+                var options = responseJson.sources[0].options;
+                if (data.length) {
+                    $bc.setSource("db.orders", data, options);
+                } else {
+                    $bc.setSource("db.orders", [], emptyOptions);
+                }
+            } catch (e) {
+                $bc.setSource("db.orders", [], emptyOptions);
+            }
+        }
+
+        function onClickShowMoreActions(element, event) {
+            event.stopPropagation();
+
+            const container = element.closest('.panel-refund__menu__container');
+            if (!container) return;
+
+            const currentMenu = container.querySelector('.panel-refund__menu');
+            if (!currentMenu) return;
+
+            const isHidden = currentMenu.classList.contains('panel-hidden');
+
+            // بستن همه منوها
+            document.querySelectorAll('.panel-refund__menu').forEach(menu => {
+                menu.classList.add('panel-hidden');
+                menu.classList.remove('panel-flex');
+            });
+
+            // toggle منوی فعلی
+            if (isHidden) {
+                currentMenu.classList.remove('panel-hidden');
+                currentMenu.classList.add('panel-flex');
+            }
+
+            // بستن با کلیک بیرون
+            document.onclick = function (e) {
+                if (!e.target.closest('.panel-refund__menu__container')) {
+                    document.querySelectorAll('.panel-refund__menu').forEach(menu => {
+                        menu.classList.add('panel-hidden');
+                        menu.classList.remove('panel-flex');
+                    });
+                }
+            };
+        }
+
+        async function editInvoiceRefund(element, event, id) {
+            // ست کردن دیتا برای مودال
+            $bc.setSource("db.edit", [{
+                id: id,
+                run: true
+            }]);
+
+            // باز کردن مودال
+            const modalOverlay = document.querySelector('.panel-modal-overlay');
+            if (modalOverlay) {
+                modalOverlay.classList.remove('panel-hidden');
+            }
+        }
+
+        async function callback_sourceRefundItem(args) {
+            const resultJson = args.source?.rows;
+            if (!resultJson?.length) return;
+
+            const firstItem = resultJson[0];
+            const result = firstItem?.requests?.result;
+            const passengerList = firstItem?.requests?.form?.[0]?.passengerlist ?? [];
+
+            console.log(result);
+            // ست کردن result
+            $bc.setSource("refresh.RefundItemResult", result);
+
+            const container = document.querySelector(".panel_grid_style");
+            if (container) {
+                if (passengerList.length > 0) {
+                    container.classList.remove("unvisible");
+                    $bc.setSource("refresh.RefundItemForm", passengerList);
+                } else {
+                    container.classList.add("unvisible");
+                }
+            }
+        }
+
+
+        var refundList = {
+            process: "mix",
+            ProcessActionType: {
+                search: "client",
+                paging: "server",
+                sort: "client"
+            },
+            filter: "row",
+            columns: {
+                request: {
+                    title: "نام درخواست کننده",
+                    sort: true,
+                    filter: false,
+                    source: row => `${row.result.username}`,
+                    cellMaker: (row, data, td) =>
+                        `<span class="city1 city-start">${row.result.username} </span>`
+                },
+                date: {
+                    title: "تاریخ",
+                    filter: false,
+                    sort: true,
+                    source: row => `${row.result.date.sstring}`,
+                    cellMaker: (row, data, td) =>
+                        `<div class="panel-flex panel-flex-col en-numbers">
+                            <span>${row.result.date.sstring}</span>
+                            <span class="messageValue">(${row.result.date.mstring})</span>
+                        </div>`
+                },
+                houre: {
+                    title: "ساعت",
+                    filter: false,
+                    sort: false,
+                    source: row => `${row.result.hour.hour}`,
+                    cellMaker: (row, data, td) =>
+                        `<span class="city1 city-start en-numbers">${row.result.hour.hour} </span>`
+                },
+                subject: {
+                    title: "عنوان درخواست",
+                    filter: false,
+                    sort: true,
+                    source: row => `${row.result.notetype}`,
+                    cellMaker: (row, data, td) =>
+                        `<span class="city1 city-start">${row.result.notetype}</span>`
+                },
+                text: {
+                    title: "متن درخواست",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+                        const max_length = 30;
+
+                        const note = row?.result?.note
+                            ? row.result.note.replace(/<break>/g, ' ')
+                            : '';
+
+                        let main_text = note.slice(0, max_length);
+
+                        if (note.length > max_length) {
+                            main_text += ' .....';
+                        }
+
+                        return `
+                            <span class="pointer">
+                                <div class="InvoiceStatus">
+                                    <span
+                                        class="canceled en-numbers panel-w-fit panel-bg-transparent"
+                                        data-descr="${note}"
+                                    >
+                                        ${main_text}
+                                    </span>
+                                </div>
+                            </span>
+                        `;
+                    }
+                },
+                status: {
+                    title: "وضعیت",
+                    filter: false,
+                    sort: true,
+                    cellMaker: (row, data, td) => {
+                        const answer = Number(row?.result?.answer ?? 0);
+
+                        const statusMap = {
+                            1: { className: 'answer', text: 'بررسی شده' },
+                            2: { className: 'closed', text: 'بسته شده' },
+                            0: { className: 'notAnswer', text: 'بررسی نشده' }
+                        };
+
+                        const status = statusMap[answer] || statusMap[0];
+
+                        return `
+                            <div class="requestStatus">
+                                <span class="${status.className}">
+                                    ${status.text}
+                                </span>
+                            </div>
+                        `;
+                    }
+                },
+                serviceType: {
+                    title: "خدمات",
+                    filter: false,
+                    sort: true,
+                    source: row => `${row.result.invoicetype}`,
+                    cellMaker: (row, data, td) =>
+                        `<span class="city1 city-start">${row.result.invoicetype}</span>`
+                },
+                factorid: {
+                    title: "شماره قرارداد",
+                    filter: false,
+                    sort: true,
+                    source: row => `${row.result.id}`,
+                    cellMaker: (row, data, td) =>
+                        `<span class="city1 city-start en-numbers">${row.result.id}</span>`
+                },
+                operation: {
+                    title: "عملیات",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+
+                        const id = row?.result?._id ?? '';
+                        const isClosed = Number(row?.result?.close ?? 0) === 1;
+
+                        const closeAction = !isClosed
+                            ? `
+        <button class="refund-list__icon-item remove panel-flex panel-items-center panel-gap-1"
+           onclick="deleteInvoiceRefund(this,event,'${id}')">
+           <svg width="24" height="24">
+               <use class="!panel-text-red-500 panel-transition-all panel-duration-200
+                       group-hover:panel-text-white" href="/userPanel/images/panel-sprite-icons.svg#icon-trash"></use>
+           </svg>
+            <span class="title" data-sys-text-delete="">
+                بستن درخواست
+            </span>
+        </button>
+    `
+                            : '';
+
+                        return `
+    <div class="panel-refund__menu__container panel-relative">
+        <div class="panel-flex panel-justify-center" onclick="onClickShowMoreActions(this, event)">
+            <svg width="6" height="20" viewBox="0 0 6 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3.00717 7.80503C1.81669 7.80503 0.86431 8.78064 0.86431 10.0002C0.86431 11.2197 1.81669 12.1953 3.00717 12.1953C4.1976412.1953 5.15002 11.2197 5.15002 10.0002C5.15002 8.78064 4.19764 7.80503 3.00717 7.80503ZM5.15002 2.19527C5.15002 3.41479 4.19764 4.3904 3.00717 4.3904C1.81669 4.3904 0.86431 3.41479 0.86431 2.19527C0.86431 0.975762 1.81669 0.000152588 3.00717 0.000152588C4.19764 0.000152588 5.15002 0.975762 5.15002 2.19527ZM5.15002 17.805C5.15002 19.0245 4.19764 20.0002 3.00717 20.0002C1.81669 20.00020.86431 19.0245 0.86431 17.805C0.86431 16.5855 1.81669 15.6099 3.00717 15.6099C4.19764 15.6099 5.15002 16.5855 5.15002 17.805Z" fill="#71717A"></path>
+            </svg>
+        </div>
+
+        <div class="panel-refund__menu panel-w-32 panel-absolute panel-top-full panel-z-10 panel-left-0 panel-rounded-xl !panel-p-2 panel-bg-white panel-shadow-lg panel-border panel-border-solid panel-border-zinc-300 panel-flex-col panel-gap-4 panel-hidden">
+            <button class="panel-refund__item panel-flex panel-items-center panel-gap-1" onclick="editInvoiceRefund(this,event,'${id}')">
+                <svg width="24" height="24" class="panel-text-zinc-900">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
+                </svg>
+                <span class="title">مشاهده</span>
+            </button>
+
+            ${closeAction}
+        </div>
+    </div>
+`;
+                    }
+                },
+            },
+            rowNumber: "ردیف",
+            defaultSort: { name: "groupname" },
+            paging: [30, 20, 10],
+            defaultPagingIndex: 1,
+            pagingFilterType: "server",
+            culture: {
+                labels: {
+                    "refresh": "",
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}",
+                    "pageSize": "تعداد قابل نمایش در هر صفحه :"
+                }
+            },
+            pageSize: 10,
+            pageNumber: 1,
+            refreshSourceId: "list.refresh",
+            refresh: true,
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+                                    <div class="icon">
+                                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z" fill="#D0D0D0"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text">
+                                        هیچ موردی یافت نشد.
+                                    </div>
+                                </div>
+                                `
+            }
+        };
+
+        var view_invoicePassengersRefundItemGrid = {
+            columns: {
+                firstname: {
+                    title: "نام",
+                    cellMaker: (row, data, td) => {
+                        return `<input type="hidden" value="${row.firstname}" data-name="_root.passengers__${row.rownumber}.firstname"/>${row.lastname}`;
+                    },
+                },
+                lastname: {
+                    title: "نام خانوادگی",
+                    cellMaker: (row, data, td) => {
+                        return `<input type="hidden"  value="${row.lastname}" data-name="_root.passengers__${row.rownumber}.lastname"/>${row.lastname}`;
+                    },
+                },
+                username: {
+                    title: "کد ملی",
+                    cellMaker: (row, data, td) => {
+                        return `<input type="hidden"  value="${row.nationalcode}" data-name="_root.passengers__${row.rownumber}.nationalcode"/>${row.nationalcode}`;
+                    },
+                },
+                birthdate: {
+                    title: "تاریخ تولد",
+                    cellMaker: (row, data, td) => {
+                        return `<input type="hidden" value="${row.birthdate}" data-name="_root.passengers__${row.rownumber}.birthdate"/><span class="en-numbers">${row.birthdate}</span>`;
+                    },
+                },
+                gender: {
+                    title: "جنسیت",
+                    cellMaker: (row, data, td) => {
+                        if (row.gender == 0) {
+                            return `<input type="hidden" value="0" data-name="_root.passengers__${row.rownumber}.gender"/>خانم`
+                        } else if (row.gender == 1) {
+                            return `<input type="hidden" value="1" data-name="_root.passengers__${row.rownumber}.gender"/>آقا`
+                        } else {
+                            return '-'
+                        }
+
+                    },
+                },
+                answer: {
+                    title: "رنج سنی مسافر",
+                    cellMaker: (row, data, td) => {
+                        if (row.type == 0) {
+                            return `<input  type="hidden" value="0" data-name="_root.passengers__${row.rownumber}.type"/>Infant`
+                        } else if (row.type == 1) {
+                            return `<input type="hidden" value="1" data-name="_root.passengers__${row.rownumber}.type"/>Child`
+                        } else if (row.type == 2) {
+                            return `<input type="hidden" value="2" data-name="_root.passengers__${row.rownumber}.type"/>Adult`
+                        } else if (row.type == 3) {
+                            return `<input type="hidden" value="3" data-name="_root.passengers__${row.rownumber}.type"/>Child`
+                        } else if (row.type == 4) {
+                            return `<input type="hidden" value="4" data-name="_root.passengers__${row.rownumber}.type"/>Adult (Extra)`
+                        }
+
+                    },
+                },
+
+
+            },
+
+            sorting: false,
+            filter: false,
+            rowNumber: false,
+            defaultSort: false,
+            direction: "rtl",
+            paging: "",
+            information: false,
+            firstAndLastBtn: false,
+
+        }
+
+    </script>
+</body>
+
+</html>
