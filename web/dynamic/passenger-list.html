@@ -12,7 +12,7 @@
     if="{##db.autoSearch.run|(false)##}" onprocessed="onProcessed_autoSearch">
 </basis>
 
-<basis core="api" name="api.save" url="https://www.basisfly.com/panel/main/cms/upsert-passengers/[##cms.cookie.rkey##]"
+<basis core="api" name="api.save" url="https://basisfly.com/panel/main/cms/upsert-passengers/[##cms.cookie.rkey##]"
     method="post" content-type="application/json" run="atclient" triggers="db.add_passenger"
     if="{##db.add_passenger.run|(false)##}" body='{
         "member" : [
@@ -24,23 +24,8 @@
 </basis>
 
 
-<basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient">
-    <member name="get_company_ownerid" method="panel" query='{
-        "name": "db",
-        "mid": "20",
-        "member":
-        [
-            {
-                "type":"list",
-                "name": "q",
-                "request":"get_company_ownerid"
-            }
-        ]
-    }' preview=""></member>
-</basis>
-
-<basis core="api" name="apidmn" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post"
-    body='{
+<basis core="api" name="db.get_company_ownerid" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+    method="post" body='{
     "name": "db",
     "mid": "20",
     "member":
@@ -51,7 +36,7 @@
             "request":"get_company_ownerid"
         }
     ]
-}' content-type="application/json">
+}' content-type="application/json" onProcessed="onProcessedCompanyOwnerid">
 </basis>
 
 <!DOCTYPE html>
@@ -74,7 +59,7 @@
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
             <basis core="api" name="api.createpage"
-                url="https://www.basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]" method="post" body='{
+                url="https://basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]" method="post" body='{
                 "member" : [
                     {
                         "query" : {##db.search.query|(0)##}
@@ -84,15 +69,17 @@
                 onProcessed="onProcessed_list"></basis>
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
                 <section class="panel-flex panel-justify-between">
-                    <form class="panel-flex panel-items-center panel-gap-2 panel-mb-0">
-                        <input type="text" name="name" id="" class="panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                        focus:panel-shadow-md
-                        panel-transition panel-duration-300" placeholder="نام مسافر :">
-                        <input type="text" name="code" id="" class="panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
-                        focus:panel-shadow-md
-                        panel-transition panel-duration-300" placeholder="کد ملی / پاسپورت :">
-                        <button
-                            class="panel-flex panel-items-center panel-justify-center panel-w-28 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
+                    <form class="passenger-list__search panel-flex panel-items-center panel-gap-2 panel-mb-0">
+                        <input type="text" name="name" id="passengerSearchName"
+                            class="passenger-list__search-name panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                            placeholder="نام مسافر :" />
+
+                        <input type="text" name="code" id="passengerSearchCode"
+                            class="passenger-list__search-code panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                            placeholder="کد ملی / پاسپورت :" />
+
+                        <button type="submit"
+                            class="passenger-list__search-submit panel-flex panel-items-center panel-justify-center panel-w-28 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
                             جستجو
                         </button>
                     </form>
@@ -254,7 +241,7 @@
                 </section>
                 <section class="panel-mt-12">
                     <h1 class="panel-text-zinc-900 panel-font-medium panel-mb-6">لیست مسافران</h1>
-                    <div class="panel_grid_style panel_grid_passenger">
+                    <div class="panel_grid_style panel_grid_passenger passenger-list__scroll-top">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.order"
                             options="reportItems">
                         </basis>
@@ -535,6 +522,68 @@
             document.getElementById('passengerModal').classList.remove('panel-hidden')
         }
 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const passengerListForm = document.querySelector('.passenger-list__search')
+            if (!passengerListForm) return
+
+            const passengerListFormName =
+                passengerListForm.querySelector('#passengerSearchName') || passengerListForm.querySelector('.passenger-list__search-name')
+            const passengerListFormCode =
+                passengerListForm.querySelector('#passengerSearchCode') || passengerListForm.querySelector('.passenger-list__search-code')
+
+            passengerListForm.addEventListener('submit', (event) => {
+                event.preventDefault()
+
+                const main_json = buildPassengerSearchQuery(passengerListFormName, passengerListFormCode)
+                scrollToPassengerListTop()
+
+                if (!window.$bc || typeof window.$bc.setSource !== 'function') return
+
+                window.$bc.setSource('db.passengerlist', [
+                    {
+                        query: JSON.stringify(main_json),
+                        run: true,
+                    },
+                ])
+            })
+        })
+
+        async function onProcessedCompanyOwnerid(args) {
+            const responseJson = await args.response.json();
+            if (responseJson && responseJson !== 0) {
+                $bc.setSource("db.ownerid", [{
+                    "result": responseJson
+                }]);
+            }
+        }
+        function buildPassengerSearchQuery(passengerListFormName, passengerListFormCode) {
+            const q = {
+                dmnid: [##cms.cms.domainid##],
+                ownerid: [##cms.cms.ownerid##]
+            }
+
+            const name = safeTrim(passengerListFormName?.value)
+            const code = safeTrim(passengerListFormCode?.value)
+
+            if (name) q.name = name
+            if (code) q.code = code
+
+            return q
+        }
+
+        function safeTrim(v) {
+            const s = v == null ? '' : String(v)
+            const t = s.trim()
+            return t ? t : ''
+        }
+
+        function scrollToPassengerListTop() {
+            const target = document.querySelector('.passenger-list__scroll-top') || document.querySelector('.ScrollTop')
+            if (!target) return
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
 
         var national_code_list = [];
         var reportItems = {

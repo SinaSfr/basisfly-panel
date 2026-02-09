@@ -333,5 +333,20 @@
         "en": "View Contract",
         "fa": "مشاهده قرارداد",
         "ar": "عرض العقد"
+    },
+    "save_success": {
+        "en": "Saved successfully",
+        "fa": "ذخیره با موفقیت انجام شد",
+        "ar": "تم الحفظ بنجاح"
+    },
+    "save_failed": {
+        "en": "Save failed",
+        "fa": "ذخیره با خطا انجام شد",
+        "ar": "فشل الحفظ"
+    },
+    "operation_failed": {
+        "en": "The operation failed",
+        "fa": "عملیات با خطا انجام شد",
+        "ar": "فشلت العملية"
     }
 }
