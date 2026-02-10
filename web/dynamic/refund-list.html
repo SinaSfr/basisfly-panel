@@ -101,10 +101,10 @@
                             options="refundList"></basis>
                     </div>
                     <div
-                        class="refund-search__overlay panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-mb-0">
+                        class="refund-search__overlay panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-hidden panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-mb-0">
 
                         <form bc-triggers="submit" name="cms.form"
-                            class="refund-search__form panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+                            class="refund-search__form panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto panel-max-h-[600px] max-h panel-overflow-y-auto">
                             <input type="hidden" name="run" class="check-run" value="false" />
                             <input type="hidden" name="_root.oid" value="{##db.edit.id##}" />
                             <input type="hidden" class="userid-whoIs-logined" name="_root.userid"
@@ -134,7 +134,7 @@
                                 if="{##refresh.RefundItemResult##}" OnRendered="OnRendered_refundItem">
                                 <face>
                                     <script type="text/template">
-                                    <div class="refund-search__column panel-border-b panel-border-solid panel-border-zinc-300 panel-pb-10 panel-mb-10"
+                                    <div class="refund-search__column panel-w-1/2 panel-mb-10"
                                          data-userid="@res.userid@" data-close="@res.close@" data-user_name="@res.user_name@">
                                         <div class="panel-flex panel-items-center panel-gap-2">
                                             <span>@res.user_name@</span>
@@ -145,7 +145,7 @@
                                             <input type="hidden" data-name="_root.description__@res.id@.id" value="@res.id@" />
                                         </div>
                 
-                                        <h3 class="panel-text-zinc-900 panel-mb-6">متن درخواستی</h3>
+                                        <h3 class="panel-refund__name panel-text-zinc-900 panel-mb-6"></h3>
                 
                                         <div class="">
                                             <_textarea class="is-required data-input panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-pt-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
@@ -157,18 +157,17 @@
                                 </face>
                             </basis>
 
-                            <div
-                                class="refund-search__column refund-search__response">
+                            <div class="refund-search__column panel-w-1/2 refund-search__response">
                                 <div class="refund-search__response-username user-name"></div>
                                 <input type="hidden" class="refund-search__response-id id" data-name="" value="" />
                                 <input type="hidden" class="refund-search__response-userid userid" data-name=""
                                     value="[##db.checkrkey.userid|(0)##]" />
 
-                                <h3 class="panel-text-zinc-900 panel-mb-6">پاسخ پشتیبانی</h3>
+                                <h3 class="panel-text-zinc-900 panel-mb-6">درخواست جدید</h3>
 
                                 <textarea
                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-pt-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
-                                    data-name="" placeholder="لطفا پاسخ خود را تایپ نمایید..." rows="4" readonly="">
+                                    data-name="" placeholder="لطفا پاسخ خود را تایپ نمایید..." readonly="">
                             </textarea>
                             </div>
 
@@ -176,7 +175,7 @@
                                 <div class="refund-search__actions">
                                     <button
                                         class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mt-5 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
-                                        ثبت پاسخ پشتیبانی
+                                        ثبت پاسخ
                                     </button>
                                 </div>
                             </div>
@@ -276,6 +275,16 @@
         }
 
         async function editInvoiceRefund(element, event, id) {
+
+
+            const refundMenuContainer = element.closest('.panel-refund__menu__container');
+            const refundMenu = refundMenuContainer ? refundMenuContainer.querySelector('.panel-refund__menu') : null;
+
+            const refundType = refundMenu ? (refundMenu.getAttribute('data-refundtype') || '') : '';
+
+            const refunfNameEl = document.querySelector('.panel-refund__name');
+            if (refunfNameEl) refunfNameEl.textContent = refundType;
+
             // ست کردن دیتا برای مودال
             $bc.setSource("db.edit", [{
                 id: id,
@@ -297,7 +306,7 @@
             const result = firstItem?.requests?.result;
             const passengerList = firstItem?.requests?.form?.[0]?.passengerlist ?? [];
 
-  
+
             $bc.setSource("refresh.RefundItemResult", result);
 
             const container = document.querySelector(".panel_grid_style");
@@ -359,19 +368,11 @@
 
             footer.insertAdjacentHTML(
                 'beforeend',
-                `<div class="refund-search__alert alertMessages">
-      <p class="messageItem infoMsg">
-        <svg class="ionicon" viewBox="0 0 512 512" width="20">
-          <path d="M248 64C146.39 64 64 146.39 64 248s82.39 184 184 184 184-82.39 184-184S349.61 64 248 64z"
-            fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></path>
-          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-            stroke-width="32" d="M220 220h32v116"></path>
-          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10"
-            stroke-width="32" d="M208 340h88"></path>
-          <path d="M248 130a26 26 0 1026 26 26 26 0 00-26-26z"></path>
-        </svg>
-        <span>این درخواست بسته شده است امکان درخواست جدید وجود ندارد</span>
-      </p>
+                `<div class="refund-search__alert alertMessages panel-flex panel-items-center">
+              <svg width="35" height="35" class="!panel-text-red-500">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-fill-warning"></use>
+                    </svg>
+        <span class="!panel-text-red-500">این درخواست بسته شده است، امکان درخواست جدید وجود ندارد.</span>
     </div>`,
             )
         }
@@ -446,6 +447,13 @@
             if (!len) return
 
             setResponseMeta(len)
+
+            // ---- Layout: زوج ها mr-auto بگیرن ----
+            cols.forEach((col, idx) => {
+                col.classList.remove('panel-mr-auto')
+                const n = idx + 1 // 1-based
+                if (n % 2 === 0) col.classList.add('panel-mr-auto')
+            })
 
             const prev = cols[len - 2] || null
             const last = cols[len - 1] || null
@@ -660,7 +668,7 @@
 
                         const statusMap = {
                             1: { className: 'answer !panel-text-green-700', text: 'بررسی شده' },
-                            2: { className: 'closed ', text: 'بسته شده' },
+                            2: { className: 'closed !panel-text-blue-600', text: 'بسته شده' },
                             0: { className: 'notAnswer !panel-text-red-500', text: 'بررسی نشده' }
                         };
 
@@ -700,6 +708,9 @@
                         const id = row?.result?._id ?? '';
                         const isClosed = Number(row?.result?.close ?? 0) === 1;
 
+                        const invoiceTypeRaw = row?.result?.invoicetype ?? '';
+                        const invoiceType = String(invoiceTypeRaw).replace(/'/g, '&#39;');
+
                         const closeAction = !isClosed
                             ? `
         <button class="refund-list__icon-item remove panel-flex panel-items-center panel-gap-1"
@@ -716,14 +727,14 @@
                             : '';
 
                         return `
-    <div class="panel-refund__menu__container panel-relative">
+    <div class="panel-refund__menu__container panel-relative panel-cursor-pointer">
         <div class="panel-flex panel-justify-center" onclick="onClickShowMoreActions(this, event)">
-            <svg width="6" height="20" viewBox="0 0 6 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3.00717 7.80503C1.81669 7.80503 0.86431 8.78064 0.86431 10.0002C0.86431 11.2197 1.81669 12.1953 3.00717 12.1953C4.1976412.1953 5.15002 11.2197 5.15002 10.0002C5.15002 8.78064 4.19764 7.80503 3.00717 7.80503ZM5.15002 2.19527C5.15002 3.41479 4.19764 4.3904 3.00717 4.3904C1.81669 4.3904 0.86431 3.41479 0.86431 2.19527C0.86431 0.975762 1.81669 0.000152588 3.00717 0.000152588C4.19764 0.000152588 5.15002 0.975762 5.15002 2.19527ZM5.15002 17.805C5.15002 19.0245 4.19764 20.0002 3.00717 20.0002C1.81669 20.00020.86431 19.0245 0.86431 17.805C0.86431 16.5855 1.81669 15.6099 3.00717 15.6099C4.19764 15.6099 5.15002 16.5855 5.15002 17.805Z" fill="#71717A"></path>
-            </svg>
+        <svg width="24" height="24" class="panel-text-zinc-900">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-kebab-menu"></use>
+                </svg>
         </div>
 
-        <div class="panel-refund__menu panel-w-32 panel-absolute panel-top-full panel-z-10 panel-left-0 panel-rounded-xl !panel-p-2 panel-bg-white panel-shadow-lg panel-border panel-border-solid panel-border-zinc-300 panel-flex-col panel-gap-4 panel-hidden">
+        <div data-refundtype='${invoiceType}' class="panel-refund__menu panel-w-32 panel-absolute panel-top-full panel-z-10 panel-left-0 panel-rounded-xl !panel-p-2 panel-bg-white panel-shadow-lg panel-border panel-border-solid panel-border-zinc-300 panel-flex-col panel-gap-4 panel-hidden">
             <button class="panel-refund__item panel-flex panel-items-center panel-gap-1" onclick="editInvoiceRefund(this,event,'${id}')">
                 <svg width="24" height="24" class="panel-text-zinc-900">
                     <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>

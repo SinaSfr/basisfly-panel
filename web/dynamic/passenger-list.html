@@ -558,10 +558,7 @@
             }
         }
         function buildPassengerSearchQuery(passengerListFormName, passengerListFormCode) {
-            const q = {
-                dmnid: [##cms.cms.domainid##],
-                ownerid: [##cms.cms.ownerid##]
-            }
+            const q = {}
 
             const name = safeTrim(passengerListFormName?.value)
             const code = safeTrim(passengerListFormCode?.value)

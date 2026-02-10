@@ -1,0 +1,339 @@
+<basis core="api" name="find_user_list" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+    method="post" body='{ 
+        "name": "db",
+        "mid": "20",
+        "member":[{ 
+            "name": "q", 
+            "type":"list",
+            "request": "find_user_list"
+        }]} ' content-type="application/json" onProcessed="onProcessedCompanyOwnerid" triggers="db.ownerid"
+        if="{##db.ownerid.run|(false)##}">
+</basis>
+
+<basis core="api" name="find_comgrouplist_by_userid" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+    method="post" body='{
+        "name": "db",
+        "mid": "20",
+        "member": [
+            {
+                "type": "list",
+                "name": "q",
+                "request": "find_comgrouplist_by_userid",
+                "userid": "[##cms.query.userid##]",
+                "ownerid": "[##cms.cms.ownerid##]",
+                "dmnid": "[##cms.cms.domainid##]"
+            }
+        ]
+    } ' content-type="application/json" onProcessed="onProcessed">
+</basis>
+
+<basis core="api" name="commission_counter_add" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+    method="post" body='{
+        "name": "db",
+        "mid": "20",
+        "member": [
+            {
+                "type": "list",
+                "name": "q",
+                "request": "commission_counter_add",
+                "commissonid": "5b2e01f174a3d38a35482019",
+                "companyid": "5c331ba9ef6e7f64cd514f42",
+                "user": ""
+            }
+        ]
+    } ' content-type="application/json" onProcessed="">
+</basis>
+
+<basis core="api" name="comgroup_agency_by_user" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+    method="post" body='{
+        "name": "db",
+        "mid": "20",
+        "member": [
+            {
+                "type": "list",
+                "name": "q",
+                "request": "comgroup_agency_by_user",
+                "userid": "[##cms.query.userid##]",
+                "ownerid": "[##cms.cms.ownerid##]",
+                "dmnid": "[##cms.cms.domainid##]"
+            }
+        ]
+    } ' content-type="application/json" onProcessed="">
+</basis>
+
+<basis core="api" name="db.get_company_ownerid" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+    method="post" body='{
+    "name": "db",
+    "mid": "20",
+    "member":
+    [
+        {
+            "type":"list",
+            "name": "q",
+            "request":"get_company_ownerid"
+        }
+    ]
+}' content-type="application/json" onProcessed="">
+</basis>
+
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <basis core="call" file="book/taglist" lid="1"></basis>
+    <title>لیست اعضا</title>
+    <meta name="description" content="لیست اعضا">
+    <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/css" rel="stylesheet" />
+</head>
+
+<body class="panel-bg-zinc-50">
+    <!-- Header -->
+    <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <!-- main -->
+    <main>
+        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+            <div class="panel-flex-1">
+                <section class="panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
+                    <div class="panel-flex panel-items-stretch panel-justify-between panel-mb-6">
+                        <div class="panel-flex panel-flex-col panel-justify-between">
+                            <h1 class="panel-font-bold panel-text-zinc-900">لیست اعضا</h1>
+                            <p class="panel-text-xs panel-text-zinc-900">گروه کمیسیونی آلوینی آژانس بیسیس فلای</p>
+                        </div>
+                        <button
+                            class="userlist__modal-open panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-justify-center panel-w-44 panel-h-14 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-bg-primary-800 panel-text-xs panel-text-white panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                            <div class="panel-relative panel-z-10 panel-flex panel-items-center">
+                                <svg width="48" height="48">
+                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-plus-person"></use>
+                                </svg>
+                                <span>افزودن عضو جدید</span>
+                            </div>
+                            <span
+                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    <div
+        class="userlist__modal panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm">
+        <div
+            class="userlist__modal-content panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+            <div
+                class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-5 panel-mb-5">
+                <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">افزودن عضو جدید</h2>
+                <button
+                    class="userlist__modal-close panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                    aria-label="Close">
+                    <svg width="48" height="48">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                    </svg>
+                </button>
+            </div>
+            <h3 class="panel-text-zinc-900 panel-mb-6">مشخصات</h3>
+            <form class="userlist__trust-form panel-flex panel-items-center panel-gap-6" method="post" novalidate>
+                <input type="text" name="Username" data-name="@Field"
+                    class="userlist__trust-input panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                    placeholder="ایمیل یا شماره تماس" autocomplete="off" />
+
+                <input type="hidden" value="[##cms.cms.ownerid##]" name="Ownerid" />
+                <input type="hidden" value="[##cms.cms.domainid##]" name="Dmnid" />
+                <input type="hidden" value="[##cms.request.clientip##]" name="Ipaddress" />
+                <input type="hidden" value="1" name="Lid" />
+
+                <button type="submit"
+                    class="userlist__trust-submit panel-flex panel-shrink-0 panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
+                    ثبت
+                </button>
+            </form>
+
+            <div class="userlist__trust-message"></div>
+
+            <div class="userlist__trust-loading panel-hidden">
+                <!-- هر لودری که داری اینجا -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer-->
+    <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/javascript"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.querySelector('.userlist__modal')
+            const modalContent = document.querySelector('.userlist__modal-content')
+            const openBtn = document.querySelector('.userlist__modal-open')
+            const closeBtn = document.querySelector('.userlist__modal-close')
+
+            if (!modal || !openBtn || !closeBtn) return
+
+            function openModal() {
+                modal.classList.remove('panel-hidden')
+            }
+
+            function closeModal() {
+                modal.classList.add('panel-hidden')
+            }
+
+            openBtn.addEventListener('click', (e) => {
+                e.preventDefault()
+                openModal()
+            })
+
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault()
+                closeModal()
+            })
+
+            // کلیک روی بک‌دراپ (بیرون کانتنت) => بستن
+            modal.addEventListener('click', (e) => {
+                if (modalContent && modalContent.contains(e.target)) return
+                closeModal()
+            })
+
+            // ESC => بستن
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal()
+            })
+        })
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('.userlist__trust-form')
+            if (!form) return
+
+            const input = form.querySelector('.userlist__trust-input')
+            const btn = form.querySelector('.userlist__trust-submit')
+            const msgBox = document.querySelector('.userlist__trust-message')
+            const loader = document.querySelector('.userlist__trust-loading')
+
+            function setLoading(isLoading) {
+                if (loader) loader.classList.toggle('panel-hidden', !isLoading)
+                if (btn) btn.disabled = isLoading
+            }
+
+            function setMessage(html) {
+                if (!msgBox) return
+                msgBox.innerHTML = html || ''
+            }
+
+            function getFormBody(formEl) {
+                const fd = new FormData(formEl)
+                return new URLSearchParams(fd)
+            }
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault()
+
+                setMessage('')
+                setLoading(true)
+
+                const username = (input && input.value ? String(input.value).trim() : '')
+                if (!username) {
+                    setLoading(false)
+                    setMessage('<p class="Error">لطفاً ایمیل یا شماره تماس را وارد کنید.</p>')
+                    return
+                }
+
+                try {
+                    const res = await fetch('https://trust-login.com/api/authentication', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                        body: getFormBody(form),
+                    })
+
+                    const text = await res.text()
+
+                    let parsed
+                    try {
+                        parsed = JSON.parse(text)
+                    } catch {
+                        setLoading(false)
+                        setMessage('<p class="Error">پاسخ نامعتبر از سرویس دریافت شد.</p>')
+                        return
+                    }
+
+                    const first = Array.isArray(parsed) ? parsed[0] : parsed
+                    if (!first) {
+                        setLoading(false)
+                        setMessage('<p class="Error">پاسخ خالی از سرویس دریافت شد.</p>')
+                        return
+                    }
+
+                    const errorid = String(first.errorid ?? '')
+                    const activate = String(first.activate ?? '')
+                    const trustUserId = String(first.userid ?? '')
+
+                    if (errorid === '8') {
+                        setLoading(false)
+                        setMessage(`<p class="Error">${first.error ? String(first.error) : 'خطا در سرویس trust.'}</p>`)
+                        return
+                    }
+
+                    if (errorid === '6') {
+                        if (activate === '1') {
+                            // login by email -> call adduser.inc
+                            const url = `/adduser.inc?groupid&userid=${encodeURIComponent(trustUserId)}`
+
+                            const fd = new URLSearchParams()
+                            fd.set('email', username)
+                            fd.set('userid', '[##db.checkrkey.userid|(0)##]')
+
+                            const r2 = await fetch(url, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                                body: fd.toString(),
+                            })
+
+                            const html = await r2.text()
+
+                            setLoading(false)
+                            setMessage(html)
+
+                            setTimeout(() => {
+                                location.reload()
+                            }, 2000)
+
+                            return
+                        }
+
+                        if (activate === '0') {
+                            setLoading(false)
+                            setMessage('<p class="Error">این نام کاربری در trust login ثبت نشده است.</p>')
+                            return
+                        }
+
+                        setLoading(false)
+                        setMessage('<p class="Error">وضعیت فعال‌سازی نامشخص است.</p>')
+                        return
+                    }
+
+                    setLoading(false)
+                    setMessage('<p class="Error">خطای نامشخص رخ داد.</p>')
+                } catch (err) {
+                    setLoading(false)
+                    setMessage('<p class="Error">خطا در ارتباط با سرور.</p>')
+                    console.log(err)
+                }
+            })
+        })
+
+        async function onProcessedCompanyOwnerid(args) {
+            const responseJson = await args.response.json();
+            if (responseJson && responseJson !== 0) {
+                $bc.setSource("db.ownerid", [{
+                    "result": responseJson,
+                    "run": true,
+                }]);
+            }
+        }
+    </script>
+</body>
+
+</html>

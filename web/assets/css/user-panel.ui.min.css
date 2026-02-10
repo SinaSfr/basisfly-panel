@@ -206,6 +206,10 @@
   max-height: 15rem;
 }
 
+.panel-max-h-\[600px\] {
+  max-height: 600px;
+}
+
 .panel-w-0 {
   width: 0px;
 }
@@ -216,6 +220,10 @@
 
 .panel-w-1\/3 {
   width: 33.333333%;
+}
+
+.panel-w-1\/2 {
+  width: 50%;
 }
 
 .panel-w-1\/4 {
@@ -306,8 +314,16 @@
   flex: 1 1 0%;
 }
 
+.panel-flex-\[1\.4\] {
+  flex: 1.4;
+}
+
 .panel-flex-\[2\] {
   flex: 2;
+}
+
+.panel-shrink-0 {
+  flex-shrink: 0;
 }
 
 .panel-float-right {
@@ -432,6 +448,10 @@
 
 .panel-gap-8 {
   gap: 2rem;
+}
+
+.panel-gap-11 {
+  gap: 2.75rem;
 }
 
 .panel-gap-x-3 {
@@ -955,6 +975,11 @@
   color: rgb(185 28 28 / var(--tw-text-opacity, 1)) !important;
 }
 
+.\!panel-text-blue-600 {
+  --tw-text-opacity: 1 !important;
+  color: rgb(37 99 235 / var(--tw-text-opacity, 1)) !important;
+}
+
 .panel-text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
@@ -1366,6 +1391,10 @@ tr.passenger-row-expanded .panel-row-expander svg {
 
 .hover\:panel-border-primary-800:hover {
   border-color: var(--primary-800);
+}
+
+.hover\:panel-bg-primary-50:hover {
+  background-color: var(--primary-50);
 }
 
 .hover\:panel-bg-primary-800:hover {
