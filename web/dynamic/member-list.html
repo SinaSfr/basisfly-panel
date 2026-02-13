@@ -6,29 +6,45 @@
             "name": "q", 
             "type":"list",
             "request": "find_user_list"
-        }]} ' content-type="application/json" onProcessed="onProcessedCompanyOwnerid" triggers="db.ownerid"
-        if="{##db.ownerid.run|(false)##}">
+        }]} ' content-type="application/json" onProcessed="onProcessedFindUserList">
 </basis>
 
-<basis core="api" name="find_comgrouplist_by_userid" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+<basis core="api" name="commission_company_counters" run="atclient"
+    url="https://basisfly.com/panel/main/view/[##cms.cookie.rkey##]" method="post" body='{ 
+        "name": "db",
+        "mid": "20",
+        "member":[{ 
+            "name": "q", 
+            "type":"list",
+            "request": "commission_company_counters",
+            "id": "5c331ba9ef6e7f64cd514f42",
+            "groupid": "5b2e01f174a3d38a35482019"
+        }]} ' content-type="application/json" onProcessed="onProcessedCompanyCounters" triggers="db.refreshCounters">
+</basis>
+
+<basis core="api" name="usersinfo" run="atclient" url="https://api.trust-login.com/[##cms.cookie.rkey##]/fa/usersinfo"
     method="post" body='{
+        "users": [{##db.userID.users##}],
+        "type": "userid"
+    }' content-type="application/json" onProcessed="onProcessedUserInfo" triggers="db.userID">
+</basis>
+
+<basis core="api" name="find_comgrouplist_by_userid" run="atclient"
+    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "mid": "20",
         "member": [
             {
                 "type": "list",
                 "name": "q",
-                "request": "find_comgrouplist_by_userid",
-                "userid": "[##cms.query.userid##]",
-                "ownerid": "[##cms.cms.ownerid##]",
-                "dmnid": "[##cms.cms.domainid##]"
+                "request": "find_comgrouplist_by_userid"
             }
         ]
-    } ' content-type="application/json" onProcessed="onProcessed">
+    } ' content-type="application/json" onProcessed="onProcessedFindComgroup">
 </basis>
 
-<basis core="api" name="commission_counter_add" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
-    method="post" body='{
+<basis core="api" name="commission_counter_add" run="atclient"
+    url="https://basisfly.com/panel/main/update/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "mid": "20",
         "member": [
@@ -36,16 +52,17 @@
                 "type": "list",
                 "name": "q",
                 "request": "commission_counter_add",
+                "user": "{##db.trustUserId.result|()##}",
                 "commissonid": "5b2e01f174a3d38a35482019",
-                "companyid": "5c331ba9ef6e7f64cd514f42",
-                "user": ""
+                "companyid": "5c331ba9ef6e7f64cd514f42"
             }
         ]
-    } ' content-type="application/json" onProcessed="">
+    } ' content-type="application/json" triggers="db.trustUserId" if="{##db.trustUserId.run|(false)##}"
+    onProcessed="onProcessedCounterAdd">
 </basis>
 
-<basis core="api" name="comgroup_agency_by_user" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
-    method="post" body='{
+<basis core="api" name="comgroup_agency_by_user" run="atclient"
+    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "mid": "20",
         "member": [
@@ -58,23 +75,9 @@
                 "dmnid": "[##cms.cms.domainid##]"
             }
         ]
-    } ' content-type="application/json" onProcessed="">
+    } ' content-type="application/json">
 </basis>
 
-<basis core="api" name="db.get_company_ownerid" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
-    method="post" body='{
-    "name": "db",
-    "mid": "20",
-    "member":
-    [
-        {
-            "type":"list",
-            "name": "q",
-            "request":"get_company_ownerid"
-        }
-    ]
-}' content-type="application/json" onProcessed="">
-</basis>
 
 
 <!DOCTYPE html>
@@ -115,12 +118,16 @@
                                 class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
                         </button>
                     </div>
+                    <div class="panel_grid_style">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.list" options="UsersList">
+                        </basis>
+                    </div>
                 </section>
             </div>
         </div>
     </main>
     <div
-        class="userlist__modal panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm">
+        class="userlist__modal panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
         <div
             class="userlist__modal-content panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
             <div
@@ -151,14 +158,45 @@
                 </button>
             </form>
 
-            <div class="userlist__trust-message"></div>
+            <div class="userlist__trust-message panel-mt-6"></div>
 
-            <div class="userlist__trust-loading panel-hidden">
-                <!-- هر لودری که داری اینجا -->
+            <div class="userlist__trust-loading panel-flex panel-items-center panel-justify-center panel-hidden">
+                <div class="panel-loading__content"></div>
             </div>
         </div>
     </div>
+    <div id="removeUserModal"
+        class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-hidden">
+        <div class="panel-bg-white panel-rounded-2xl panel-w-96
+                panel-p-6 panel-shadow-xl">
 
+            <h3 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
+                حذف کاربر
+            </h3>
+
+            <p class="panel-text-sm panel-text-zinc-600 panel-mb-6">
+                آیا از حذف این کاربر مطمئن هستید؟
+            </p>
+
+            <!-- hidden برای ذخیره userid -->
+            <input type="hidden" id="removeUserId" />
+
+            <div class="panel-flex panel-justify-end panel-gap-3">
+                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
+                           panel-bg-zinc-200 panel-text-zinc-700
+                           hover:panel-bg-zinc-300" onclick="closeRemoveUserModal()">
+                    انصراف
+                </button>
+
+                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
+                           panel-bg-red-500 panel-text-white
+                           hover:panel-bg-red-700" onclick="confirmRemoveUser()">
+                    حذف
+                </button>
+            </div>
+
+        </div>
+    </div>
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
@@ -204,125 +242,84 @@
         })
     </script>
     <script>
+        let userListloader
+        let userListbtn
+        let userListmsgBox
+
+        function setLoading(isLoading) {
+            if (userListloader) userListloader.classList.toggle('panel-hidden', !isLoading)
+            if (userListbtn) userListbtn.disabled = isLoading
+        }
+
+        function setMessage(html) {
+            if (!userListmsgBox) return
+            userListmsgBox.innerHTML = html || ''
+        }
+
+        // --- DOMContentLoaded ---
         document.addEventListener('DOMContentLoaded', () => {
-            const form = document.querySelector('.userlist__trust-form')
-            if (!form) return
+            const userListForm = document.querySelector('.userlist__trust-form')
+            const userListinput = userListForm?.querySelector('.userlist__trust-input')
 
-            const input = form.querySelector('.userlist__trust-input')
-            const btn = form.querySelector('.userlist__trust-submit')
-            const msgBox = document.querySelector('.userlist__trust-message')
-            const loader = document.querySelector('.userlist__trust-loading')
+            // دسترسی global به loader, button و message box
+            userListloader = document.querySelector('.userlist__trust-loading')
+            userListbtn = userListForm?.querySelector('.userlist__trust-submit')
+            userListmsgBox = document.querySelector('.userlist__trust-message')
 
-            function setLoading(isLoading) {
-                if (loader) loader.classList.toggle('panel-hidden', !isLoading)
-                if (btn) btn.disabled = isLoading
-            }
-
-            function setMessage(html) {
-                if (!msgBox) return
-                msgBox.innerHTML = html || ''
-            }
-
-            function getFormBody(formEl) {
-                const fd = new FormData(formEl)
-                return new URLSearchParams(fd)
-            }
-
-            form.addEventListener('submit', async (event) => {
+            userListForm?.addEventListener('submit', (event) => {
                 event.preventDefault()
-
                 setMessage('')
                 setLoading(true)
 
-                const username = (input && input.value ? String(input.value).trim() : '')
+                const username = userListinput?.value?.trim() || ''
                 if (!username) {
                     setLoading(false)
-                    setMessage('<p class="Error">لطفاً ایمیل یا شماره تماس را وارد کنید.</p>')
+                    setMessage('<p class="Error panel-text-red-500">لطفاً ایمیل یا شماره تماس را وارد کنید.</p>')
                     return
                 }
 
                 try {
-                    const res = await fetch('https://trust-login.com/api/authentication', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-                        body: getFormBody(form),
-                    })
+                    $bc.setSource("db.trustUserId", [{
+                        result: username,
+                        run: true,
+                    }])
 
-                    const text = await res.text()
-
-                    let parsed
-                    try {
-                        parsed = JSON.parse(text)
-                    } catch {
-                        setLoading(false)
-                        setMessage('<p class="Error">پاسخ نامعتبر از سرویس دریافت شد.</p>')
-                        return
-                    }
-
-                    const first = Array.isArray(parsed) ? parsed[0] : parsed
-                    if (!first) {
-                        setLoading(false)
-                        setMessage('<p class="Error">پاسخ خالی از سرویس دریافت شد.</p>')
-                        return
-                    }
-
-                    const errorid = String(first.errorid ?? '')
-                    const activate = String(first.activate ?? '')
-                    const trustUserId = String(first.userid ?? '')
-
-                    if (errorid === '8') {
-                        setLoading(false)
-                        setMessage(`<p class="Error">${first.error ? String(first.error) : 'خطا در سرویس trust.'}</p>`)
-                        return
-                    }
-
-                    if (errorid === '6') {
-                        if (activate === '1') {
-                            // login by email -> call adduser.inc
-                            const url = `/adduser.inc?groupid&userid=${encodeURIComponent(trustUserId)}`
-
-                            const fd = new URLSearchParams()
-                            fd.set('email', username)
-                            fd.set('userid', '[##db.checkrkey.userid|(0)##]')
-
-                            const r2 = await fetch(url, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-                                body: fd.toString(),
-                            })
-
-                            const html = await r2.text()
-
-                            setLoading(false)
-                            setMessage(html)
-
-                            setTimeout(() => {
-                                location.reload()
-                            }, 2000)
-
-                            return
-                        }
-
-                        if (activate === '0') {
-                            setLoading(false)
-                            setMessage('<p class="Error">این نام کاربری در trust login ثبت نشده است.</p>')
-                            return
-                        }
-
-                        setLoading(false)
-                        setMessage('<p class="Error">وضعیت فعال‌سازی نامشخص است.</p>')
-                        return
-                    }
-
-                    setLoading(false)
-                    setMessage('<p class="Error">خطای نامشخص رخ داد.</p>')
                 } catch (err) {
                     setLoading(false)
-                    setMessage('<p class="Error">خطا در ارتباط با سرور.</p>')
-                    console.log(err)
+                    setMessage('<p class="Error panel-text-red-500">خطا در اجرای عملیات.</p>')
+                    console.error(err)
                 }
             })
         })
+
+        async function onProcessedUserInfo(args) {
+            try {
+                const responseJson = await args.response.json()
+
+                $bc.setSource("db.list",
+                    Array.isArray(responseJson) ? responseJson : []
+                )
+
+            } catch (err) {
+                console.log(err)
+                $bc.setSource("db.list", [])
+            }
+        }
+
+        async function onProcessedFindUserList(args) {
+            const responseJson = await args.response.json();
+
+            $bc.setSource("db.userProfile", [{
+                ...responseJson,
+                run: true,
+            }]);
+        }
+
+        async function onProcessedFindComgroup(args) {
+            const responseJson = await args.response.json();
+            console.log(responseJson)
+        }
+
 
         async function onProcessedCompanyOwnerid(args) {
             const responseJson = await args.response.json();
@@ -333,6 +330,233 @@
                 }]);
             }
         }
+
+        window.lastUsedForId = Number("{##db.refreshCounters.usedforid##}")
+        window.userAction = "{##db.refreshCounters.action##}"
+        async function onProcessedCompanyCounters(args) {
+            const responseJson = await args.response.json()
+
+            const users = responseJson?.sources?.[0]?.data?.map(id => Number(id)) || []
+
+            let newUsedforId = window.lastUsedForId
+            let newAction = window.userAction
+
+            if (newUsedforId) {
+                if (newAction === "remove") {
+                    console.log("remove", newUsedforId)
+                    // حذف
+                    const index = users.indexOf(newUsedforId)
+                    if (index > -1) {
+                        users.splice(index, 1)
+                    }
+                } else {
+                    console.log("add", newUsedforId)
+                    // اضافه
+                    if (!users.includes(newUsedforId)) {
+                        users.push(newUsedforId)
+                    }
+                }
+
+                window.lastUsedForId = null
+                window.userAction = null
+            }
+
+            $bc.setSource("db.userID", [{
+                users: users,
+                run: true,
+            }])
+        }
+        async function onProcessedCounterAdd(args) {
+            try {
+                const responseJson = await args.response.json()
+
+                setLoading(false)
+
+                const errorid = responseJson.errorid
+                let message = ''
+
+                switch (errorid) {
+                    case 5:
+                        message = '<p class="success panel-text-green-600">با موفقیت ثبت شد.</p>'
+                        lastUsedForId = Number(responseJson.usedforid)
+                        $bc.setSource("db.refreshCounters", [{
+                            usedforid: lastUsedForId,
+                            run: true,
+                        }])
+                        break
+                    case 31:
+                        message = '<p class="Error panel-text-red-500">این کاربر در Trustlogin ثبت نشده است.</p>'
+                        break
+                    case 9:
+                        message = `<p class="Error panel-text-red-500">${responseJson.description || responseJson.message || 'خطای نامشخص رخ داد.'}</p>`
+                        break
+                    case 8:
+                        message = `<p class="Error panel-text-red-500">${responseJson.message || 'خطا در سرویس trust.'}</p>`
+                        break
+                    default:
+                        if (errorid && errorid != 0) {
+                            message = `<p class="Error panel-text-red-500">${responseJson.message || 'خطای نامشخص رخ داد.'}</p>`
+                        } else {
+                            message = '<p class="success panel-text-green-600">با موفقیت ثبت شد.</p>'
+                        }
+                }
+
+                const messageEl = document.querySelector('.userlist__trust-message')
+                const inputEl = document.querySelector('.userlist__trust-input')
+
+                // نمایش پیام
+                messageEl.innerHTML = message
+
+                // بعد از 2.5 ثانیه پیام پاک و اینپوت خالی شود
+                setTimeout(() => {
+                    messageEl.innerHTML = ''
+                    if (inputEl) inputEl.value = ''
+                }, 2500)
+
+            } catch (err) {
+                console.error(err)
+                document.querySelector('.userlist__trust-message').innerHTML =
+                    '<p class="Error panel-text-red-500">خطا در پردازش پاسخ سرور.</p>'
+            }
+        }
+
+        function openRemoveUserModal(userid) {
+            selectedUserId = userid;
+            document.querySelector('#removeUserId').value = userid;
+
+            document.querySelector('#removeUserModal')?.classList.remove('panel-hidden');
+        }
+
+        function closeRemoveUserModal() {
+            selectedUserId = null;
+            document.querySelector('#removeUserModal')?.classList.add('panel-hidden');
+        }
+
+        function confirmRemoveUser() {
+            const removedId = (document.getElementById('removeUserId')?.value || '').trim();
+
+            if (!removedId) {
+                closeRemoveUserModal();
+                return;
+            }
+
+            $bc.setSource("db.refreshCounters", [{
+                usedforid: removedId,
+                action: "remove",
+                run: true,
+            }]);
+
+            closeRemoveUserModal();
+        }
+
+        var UsersList = {
+            columns: {
+
+                firstName: {
+                    title: "نام",
+                    filter: true,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p>${row.firstName ?? "-"}</p>`,
+                },
+
+                lastName: {
+                    title: "نام خانوادگی",
+                    filter: true,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p>${row.lastName ?? "-"}</p>`,
+                },
+
+                email: {
+                    title: "ایمیل",
+                    filter: true,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p class="panel-ltr">${row.email ?? "-"}</p>`,
+                },
+
+                mobile: {
+                    title: "موبایل",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const code = row.code ?? ""
+                        const mobile = row.mobile ?? ""
+                        return `<p class="panel-ltr">${code}${mobile}</p>`
+                    },
+                },
+
+                date: {
+                    title: "تاریخ عضویت",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p>${row.date ?? "-"}</p>`,
+                },
+                operation: {
+                    title: "حذف",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        return `
+        <div class="panel-flex panel-items-center panel-justify-center panel-gap-2">
+
+            <button
+                type="button"
+                class="panel-group panel-flex panel-items-center panel-justify-center
+                       panel-w-12 panel-h-12 panel-bg-red-100 panel-rounded-xl
+                       panel-transition-all panel-duration-200 hover:panel-bg-red-500"
+                onclick="openRemoveUserModal(${row.userid})"
+                title="حذف">
+
+                <svg width="24" height="24">
+                    <use class="panel-text-red-500 panel-transition-all panel-duration-200
+                            group-hover:panel-text-white"
+                        href="/userPanel/images/panel-sprite-icons.svg#icon-trash"></use>
+                </svg>
+            </button>
+
+        </div>
+        `;
+                    }
+                }
+            },
+
+            filter: 'row',
+            rowNumber: 'ردیف',
+            defaultSort: false,
+            direction: "rtl",
+            paging: 50,
+            information: true,
+            firstAndLastBtn: true,
+            culture: {
+                labels: {
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}"
+                }
+            },
+
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+            <div class="icon panel-flex panel-justify-center panel-mb-3">
+                <svg width="70" height="70">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-no-items"></use>
+                </svg>
+            </div>
+            <div class="text">
+                ${translate('no_items_found')}
+            </div>
+        </div>`
+            },
+
+            mode: "grid",
+            pageCount: false
+        }
+
     </script>
 </body>
 
