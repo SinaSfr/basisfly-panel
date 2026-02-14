@@ -1,4 +1,4 @@
-<basis core="api" name="find_user_list" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+<basis core="api" name="find_user_list" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
     method="post" body='{ 
         "name": "db",
         "mid": "20",
@@ -6,21 +6,9 @@
             "name": "q", 
             "type":"list",
             "request": "find_user_list"
-        }]} ' content-type="application/json" onProcessed="onProcessedFindUserList">
+        }]} ' content-type="application/json" onProcessed="onProcessedFindUserList" triggers="db.refreshCounters">
 </basis>
 
-<basis core="api" name="commission_company_counters" run="atclient"
-    url="https://basisfly.com/panel/main/view/[##cms.cookie.rkey##]" method="post" body='{ 
-        "name": "db",
-        "mid": "20",
-        "member":[{ 
-            "name": "q", 
-            "type":"list",
-            "request": "commission_company_counters",
-            "id": "5c331ba9ef6e7f64cd514f42",
-            "groupid": "5b2e01f174a3d38a35482019"
-        }]} ' content-type="application/json" onProcessed="onProcessedCompanyCounters" triggers="db.refreshCounters">
-</basis>
 
 <basis core="api" name="usersinfo" run="atclient" url="https://api.trust-login.com/[##cms.cookie.rkey##]/fa/usersinfo"
     method="post" body='{
@@ -29,22 +17,9 @@
     }' content-type="application/json" onProcessed="onProcessedUserInfo" triggers="db.userID">
 </basis>
 
-<basis core="api" name="find_comgrouplist_by_userid" run="atclient"
-    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
-        "name": "db",
-        "mid": "20",
-        "member": [
-            {
-                "type": "list",
-                "name": "q",
-                "request": "find_comgrouplist_by_userid"
-            }
-        ]
-    } ' content-type="application/json" onProcessed="onProcessedFindComgroup">
-</basis>
 
 <basis core="api" name="commission_counter_add" run="atclient"
-    url="https://basisfly.com/panel/main/update/[##cms.cookie.rkey##]" method="post" body='{
+    url="https://basisfly.com/panel/update/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "mid": "20",
         "member": [
@@ -52,30 +27,44 @@
                 "type": "list",
                 "name": "q",
                 "request": "commission_counter_add",
-                "user": "{##db.trustUserId.result|()##}",
-                "commissonid": "5b2e01f174a3d38a35482019",
-                "companyid": "5c331ba9ef6e7f64cd514f42"
+                "user": "{##db.trustUserId.result##}",
+                "commissonid": "{##db.userProfile.comgroupid##}",
+                "companyid": "{##db.userProfile.agencyid##}"
             }
         ]
     } ' content-type="application/json" triggers="db.trustUserId" if="{##db.trustUserId.run|(false)##}"
     onProcessed="onProcessedCounterAdd">
 </basis>
 
-<basis core="api" name="comgroup_agency_by_user" run="atclient"
-    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
+<basis core="api" name="agency_delete_user" run="atclient" url="https://basisfly.com/panel/new/[##cms.cookie.rkey##]"
+    method="post" body='{
+        "name": "db",
+        "mid": "20",
+        "member": [
+            {
+                "type": "scalar",
+                "name": "q",
+                "request": "agency_delete_user",
+                "agency_userid": "{##db.refreshCounters.userid##}",
+                "groupid": "{##db.userProfile.comgroupid##}"
+            }
+        ]
+    } ' content-type="application/json" onProcessed="onProcessedDeleteUser" triggers="db.refreshCounters"
+    if="{##db.refreshCounters.run|(false)##}">
+</basis>
+
+<basis core="api" name="comgroup_agency_by_user" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+    method="post" body='{
         "name": "db",
         "mid": "20",
         "member": [
             {
                 "type": "list",
                 "name": "q",
-                "request": "comgroup_agency_by_user",
-                "userid": "[##cms.query.userid##]",
-                "ownerid": "[##cms.cms.ownerid##]",
-                "dmnid": "[##cms.cms.domainid##]"
+                "request": "comgroup_agency_by_user"
             }
         ]
-    } ' content-type="application/json">
+    } ' content-type="application/json" onProcessed="onProcessedComgroupAgency">
 </basis>
 
 
@@ -100,11 +89,13 @@
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
             <div class="panel-flex-1">
-                <section class="panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
+                <section class="panel-memberlist__container panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
                     <div class="panel-flex panel-items-stretch panel-justify-between panel-mb-6">
                         <div class="panel-flex panel-flex-col panel-justify-between">
                             <h1 class="panel-font-bold panel-text-zinc-900">لیست اعضا</h1>
-                            <p class="panel-text-xs panel-text-zinc-900">گروه کمیسیونی آلوینی آژانس بیسیس فلای</p>
+                            <p id="comgroupAgencyText" class="panel-text-xs panel-text-zinc-900 panel-hidden">گروه
+                                کمیسیونی آلوینی
+                                آژانس بیسیس فلای</p>
                         </div>
                         <button
                             class="userlist__modal-open panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-justify-center panel-w-44 panel-h-14 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-bg-primary-800 panel-text-xs panel-text-white panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-primary-800">
@@ -178,7 +169,6 @@
                 آیا از حذف این کاربر مطمئن هستید؟
             </p>
 
-            <!-- hidden برای ذخیره userid -->
             <input type="hidden" id="removeUserId" />
 
             <div class="panel-flex panel-justify-end panel-gap-3">
@@ -195,6 +185,7 @@
                 </button>
             </div>
 
+            <div id="removeUserMsg" class="panel-hidden panel-text-sm panel-rounded-lg panel-p-2 panel-mt-3"></div>
         </div>
     </div>
     <!-- Footer-->
@@ -229,13 +220,11 @@
                 closeModal()
             })
 
-            // کلیک روی بک‌دراپ (بیرون کانتنت) => بستن
             modal.addEventListener('click', (e) => {
                 if (modalContent && modalContent.contains(e.target)) return
                 closeModal()
             })
 
-            // ESC => بستن
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') closeModal()
             })
@@ -261,7 +250,6 @@
             const userListForm = document.querySelector('.userlist__trust-form')
             const userListinput = userListForm?.querySelector('.userlist__trust-input')
 
-            // دسترسی global به loader, button و message box
             userListloader = document.querySelector('.userlist__trust-loading')
             userListbtn = userListForm?.querySelector('.userlist__trust-submit')
             userListmsgBox = document.querySelector('.userlist__trust-message')
@@ -306,63 +294,79 @@
             }
         }
 
+        async function onProcessedComgroupAgency(args) {
+            const responseJson = await args.response.json()
+
+            const item = Array.isArray(responseJson) ? responseJson[0] : responseJson
+            const title = (item?.title || '').trim()
+            const agencyName = (item?.agency?.name || '').trim()
+
+            const el = document.getElementById('comgroupAgencyText')
+            if (!el) return
+
+            if (!title && !agencyName) {
+                el.textContent = ''
+                el.classList.add('panel-hidden')
+                return
+            }
+
+            el.textContent = agencyName
+                ? `گروه کمیسیونی ${title} آژانس ${agencyName}`
+                : `گروه کمیسیونی ${title}`
+
+            el.classList.remove('panel-hidden')
+        }
+
+        window.usedForId = Number("{##db.refreshCounters.userid##}")
+        window.usedForAction = "{##db.refreshCounters.action##}"
+
         async function onProcessedFindUserList(args) {
-            const responseJson = await args.response.json();
+            const responseJson = await args.response.json()
+
+            const isEmpty =
+                !responseJson ||
+                (typeof responseJson === "object" && Object.keys(responseJson).length === 0) ||
+                !String(responseJson.userid || "").trim()
+
+            if (isEmpty) {
+                const container = document.querySelector(".panel-memberlist__container")
+                if (container) {
+                    container.innerHTML = `
+            <div class="panel-memberlist__error panel-text-red-600 panel-bg-red-100 panel-text-center panel-rounded-lg panel-p-3 panel-mb-3">
+                شما ادمین نیستید
+            </div>
+        `
+                }
+                return
+            }
 
             $bc.setSource("db.userProfile", [{
                 ...responseJson,
                 run: true,
-            }]);
-        }
+            }])
 
-        async function onProcessedFindComgroup(args) {
-            const responseJson = await args.response.json();
-            console.log(responseJson)
-        }
+            const baseUsersArr = String(responseJson.userid || "")
+                .split(",")
+                .map((x) => Number(String(x).trim()))
+                .filter((x) => Number.isFinite(x) && x !== 0)
 
+            const usersSet = new Set(baseUsersArr)
 
-        async function onProcessedCompanyOwnerid(args) {
-            const responseJson = await args.response.json();
-            if (responseJson && responseJson !== 0) {
-                $bc.setSource("db.ownerid", [{
-                    "result": responseJson,
-                    "run": true,
-                }]);
-            }
-        }
+            const id = Number(window.usedForId)
+            const action = String(window.usedForAction || "").toLowerCase()
 
-        window.lastUsedForId = Number("{##db.refreshCounters.usedforid##}")
-        window.userAction = "{##db.refreshCounters.action##}"
-        async function onProcessedCompanyCounters(args) {
-            const responseJson = await args.response.json()
-
-            const users = responseJson?.sources?.[0]?.data?.map(id => Number(id)) || []
-
-            let newUsedforId = window.lastUsedForId
-            let newAction = window.userAction
-
-            if (newUsedforId) {
-                if (newAction === "remove") {
-                    console.log("remove", newUsedforId)
-                    // حذف
-                    const index = users.indexOf(newUsedforId)
-                    if (index > -1) {
-                        users.splice(index, 1)
-                    }
-                } else {
-                    console.log("add", newUsedforId)
-                    // اضافه
-                    if (!users.includes(newUsedforId)) {
-                        users.push(newUsedforId)
-                    }
+            if (Number.isFinite(id) && id !== 0) {
+                if (action === "remove") {
+                    usersSet.delete(id)
+                } else if (action === "add") {
+                    usersSet.add(id)
                 }
-
-                window.lastUsedForId = null
-                window.userAction = null
+                window.usedForId = null
+                window.usedForAction = null
             }
 
             $bc.setSource("db.userID", [{
-                users: users,
+                users: Array.from(usersSet),
                 run: true,
             }])
         }
@@ -378,10 +382,11 @@
                 switch (errorid) {
                     case 5:
                         message = '<p class="success panel-text-green-600">با موفقیت ثبت شد.</p>'
-                        lastUsedForId = Number(responseJson.usedforid)
+                        addUsedForId = Number(responseJson.usedforid)
+                        window.usedForId = Number(addUsedForId)
+                        window.usedForAction = "add"
                         $bc.setSource("db.refreshCounters", [{
-                            usedforid: lastUsedForId,
-                            run: true,
+                            userid: addUsedForId
                         }])
                         break
                     case 31:
@@ -404,14 +409,12 @@
                 const messageEl = document.querySelector('.userlist__trust-message')
                 const inputEl = document.querySelector('.userlist__trust-input')
 
-                // نمایش پیام
                 messageEl.innerHTML = message
 
-                // بعد از 2.5 ثانیه پیام پاک و اینپوت خالی شود
                 setTimeout(() => {
                     messageEl.innerHTML = ''
                     if (inputEl) inputEl.value = ''
-                }, 2500)
+                }, 3500)
 
             } catch (err) {
                 console.error(err)
@@ -420,11 +423,32 @@
             }
         }
 
-        function openRemoveUserModal(userid) {
-            selectedUserId = userid;
-            document.querySelector('#removeUserId').value = userid;
+        function setRemoveUserMsg(text, isSuccess) {
+            const el = document.getElementById('removeUserMsg')
+            if (!el) return
 
-            document.querySelector('#removeUserModal')?.classList.remove('panel-hidden');
+            el.classList.remove('panel-hidden')
+            el.classList.toggle('panel-text-green-700', !!isSuccess)
+            el.classList.toggle('panel-bg-green-50', !!isSuccess)
+            el.classList.toggle('panel-text-red-700', !isSuccess)
+            el.classList.toggle('panel-bg-red-50', !isSuccess)
+
+            el.textContent = text
+        }
+
+        function clearRemoveUserMsg() {
+            const el = document.getElementById('removeUserMsg')
+            if (!el) return
+            el.textContent = ''
+            el.classList.add('panel-hidden')
+            el.classList.remove('panel-text-green-600', 'panel-bg-green-50', 'panel-text-red-600', 'panel-bg-red-50')
+        }
+
+        function openRemoveUserModal(userid) {
+            selectedUserId = userid
+            document.querySelector('#removeUserId').value = userid
+            clearRemoveUserMsg()
+            document.querySelector('#removeUserModal')?.classList.remove('panel-hidden')
         }
 
         function closeRemoveUserModal() {
@@ -433,20 +457,31 @@
         }
 
         function confirmRemoveUser() {
-            const removedId = (document.getElementById('removeUserId')?.value || '').trim();
-
+            const removedId = (document.getElementById('removeUserId')?.value || '').trim()
             if (!removedId) {
-                closeRemoveUserModal();
-                return;
+                closeRemoveUserModal()
+                return
             }
 
-            $bc.setSource("db.refreshCounters", [{
-                usedforid: removedId,
-                action: "remove",
-                run: true,
-            }]);
+            window.usedForId = Number(removedId)
+            window.usedForAction = "remove"
 
-            closeRemoveUserModal();
+            $bc.setSource("db.refreshCounters", [{
+                userid: removedId,
+                run: true,
+            }])
+        }
+
+        async function onProcessedDeleteUser(args) {
+            const res = await args.response.json()
+            const ok = Number(res?.errorid) === 1
+
+            if (ok) {
+                setRemoveUserMsg('حذف با موفقیت انجام شد', true)
+                setTimeout(() => closeRemoveUserModal(), 900)
+            } else {
+                setRemoveUserMsg(res?.message || 'حذف انجام نشد', false)
+            }
         }
 
         var UsersList = {
@@ -485,14 +520,6 @@
                         const mobile = row.mobile ?? ""
                         return `<p class="panel-ltr">${code}${mobile}</p>`
                     },
-                },
-
-                date: {
-                    title: "تاریخ عضویت",
-                    filter: false,
-                    sort: false,
-                    cellMaker: (row) =>
-                        `<p>${row.date ?? "-"}</p>`,
                 },
                 operation: {
                     title: "حذف",

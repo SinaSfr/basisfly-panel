@@ -517,7 +517,6 @@
         };
 
         async function setPage(args) {
-            console.log("click paging");
             main_perpage = args.source.rows[0].pageSize;
             var page_no = args.source.rows[0].pageNumber;
             if (page_no == 0) {
