@@ -1,0 +1,228 @@
+<basis core="external.fly.ws" source="cmsDbService2" name="db" procedurename="dbsource">
+    <member name="charging_view" method="cms" query='{ 
+    "name": "db",
+    "mid": "20",
+    "member":[{ 
+    "name": "q", 
+    "type":"list",
+    "request": "charging_view",
+    "supplierdmnid": "[##cms.form.supplierdmnid##]",
+    "reciverownerid":"[##cms.form.reciverownerid##]",
+    "perpage":"30",
+    "pageindex":"[##cms.query.page##]"
+    }]} ' />
+</basis>
+<basis core="group" name="DelayTwo">
+    <basis core="inlinesource" name="db">
+        <member name="charging-Tree" format="json">
+            {"root":[##db.charging_view.result##]}
+        </member>
+        <member name="accountid" format="json" preview=""
+            postsql="select cast(value as int) from [db.accountid] where field = 'accountid'">
+            {"root":[##db.charging_view.result##]}
+        </member>
+
+        <member name="ResultCount" format="json" preview=""
+            postsql="select value from [db.ResultCount] where field = 'ResultCount'">
+            {"root":[##db.charging_view.result##]}
+        </member>
+    </basis>
+
+    <basis core="group" name="Delay_3">
+        <basis core="external.fly.ws" source="cmsDbService2" name="db" procedurename="dbsource">
+            <member method="cms" name="Paging" query='{
+            "name": "db",
+            "mid": "20",
+            "member": 
+            [
+                {
+                    "name": "q",
+                    "type": "list",
+                    "request": "Panel_Paging",
+                    "link": "[##cms.request.rawurl##]",
+                    "pageindex":"[##cms.query.page|(1)##]",
+                    "perpage":"[##cms.query.perpage|(30)##]",
+                    "objectcount":"[##db.ResultCount.Value##]",
+                }
+            ]
+        }' />
+        </basis>
+
+
+        <basis core="group" name="Delay_4">
+            <basis core="inlinesource" name="list">
+                <member name="paging" format="json">{"root":[##db.Paging.result##]}</member>
+            </basis>
+            <div class="Panel_Box_title">
+                <span>لیست پرداخت شارژ آنلاین</span>
+                <span class="Panel_Excel_icon"><a class="DownLoadExcel" style="cursor:pointer"><i
+                            class="fa fa-file-excel"></i></a></span>
+            </div>
+            <div class="Panel_Box_Content">
+                <div class="Panel_invoice_List">
+                    <table cellspacing="1">
+                        <thead>
+                            <tr>
+                                <th>ردیف</th>
+                                <th>شماره سند</th>
+                                <th>نام پرداخت کننده</th>
+                                <th>مبلغ پرداختی(ریال)</th>
+                                <th>تاریخ</th>
+                                <th>ساعت</th>
+                                <th>نام بانک</th>
+                                <th>شماره کارت</th>
+                                <th>شماره پیگیری</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <basis core="tree" datamembername="db.charging-Tree" idcol="id" parentidcol="parentid"
+                                nullvalue="null">
+
+                                <face filter="ParentId in ('1')">@child</face>
+                                <face filter="Field in ('charging') and type in ('Object')">
+                                    <tr class="unRead">@child</tr>
+                                </face>
+                                <face filter="Field in ('index')">
+                                    <td class="row_number"></td>
+                                </face>
+                                <face filter="Field in ('docID')">
+                                    <td>@value</td>
+                                </face>
+                                <face filter="Field in ('accountid')">
+                                    <td class="accountid">
+                                        <input type="hidden" class="account_usr" value="@value">
+                                        <div class="account_name"></div>
+                                </face>
+                                <face filter="Field in ('accountname')">-@value</td>
+                                </face>
+                                <face filter="Field in ('price')">
+                                    <td><span class="Seprator">@value</span></td>
+                                </face>
+                                <face filter="Field in ('datetime')">@child</face>
+                                <face filter="Field in ('mstring')">
+                                    <td>@value
+                                </face>
+                                <face filter="Field in ('sstring')"><span class="sstring"
+                                        style="display: block;color: #848589;font-size: 11px;">(@value)</span></td>
+                                </face>
+                                <face filter="Field in ('hour')">
+                                    <td>@value</td>
+                                </face>
+                                <face filter="Field in ('bankname')">
+                                    <td>@value</td>
+                                </face>
+                                <face filter="Field in ('cardno')">
+                                    <td>@value</td>
+                                </face>
+                                <face filter="Field in ('refnumber')">
+                                    <td>@value</td>
+                                </face>
+                                <face filter="type in ('array','object')">@child</face>
+                            </basis>
+
+                        </tbody>
+                    </table>
+                    <div style="text-align:center;">
+                        <ul class="Panel_Paging" style="margin-top:20px; padding:0;">
+                            <basis core="tree" datamembername="list.paging" idcol="id" parentidcol="parentid"
+                                nullvalue="null">
+                                <face filter="Field in ('title') and value='[##cms.query.page##]'">
+                                    <li>
+                                        <a class="active_Page" data-href="/Panel_search_OnlineCharging.bc?page=@value"
+                                            onclick="paging(this)">@value</a>
+                                    </li>
+                                </face>
+
+                                <face filter="Field in ('title') and value not in ('0','prev','next')">
+                                    <li>
+                                        <a data-href="/Panel_search_OnlineCharging.bc?page=@value"
+                                            onclick="paging(this)">@value</a>
+                                    </li>
+                                </face>
+
+                                <face filter="Field in ('title') and value='prev'">
+                                    <li>
+                                        <a data-href="prev" onclick="paging(this)">قبلی</a>
+                                    </li>
+                                </face>
+
+                                <face filter="Field in ('title') and value='next'">
+                                    <li>
+                                        <a data-href="next" onclick="paging(this)">بعدی</a>
+                                    </li>
+                                </face>
+
+                                <face filter="type in ('array','object')"> @child </face>
+                            </basis>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/Panel-online-charching.XLS" method="post" class="ExcelForm">
+                <input type="hidden" name="Xsupplierdmnid" value='[##cms.form.supplierdmnid##]'>
+                <input type="hidden" name="Xreciverownerid" value='[##cms.form.reciverownerid##]'>
+
+            </form>
+
+            <script type="text/javascript">
+                function paging(x) {
+                    var page = '[##cms.query.page##]'
+                    $(".online_charging_list").hide()
+                    $(".ajax_loading").fadeIn()
+
+                    if ($(x).attr("data-href") == "prev") {
+                        page--
+                        var href = '/Panel_search_OnlineCharging.bc?page=' + page
+                    } else if ($(x).attr("data-href") == "next") {
+                        page++
+                        var href = '/Panel_search_OnlineCharging.bc?page=' + page
+                    } else
+                        var href = $(x).attr("data-href")
+
+                    $.ajax({
+                        url: href,
+                        type: "post",
+                        data: {
+                            supplierdmnid: '[##cms.form.supplierdmnid##]',
+                            reciverownerid: '[##cms.form.reciverownerid##]',
+                        },
+                        success: function (response) {
+                            $(".ajax_loading").fadeOut();
+                            $(".online_charging_list").empty().html(response);
+                            $(".online_charging_list").show()
+                        }
+                    });
+                }
+                $(".Seprator").each(function () {
+                    var d = $(this).text();
+                    var n = parseInt(d).toLocaleString();
+                    $(this).text(n);
+
+                })
+                $(function () {
+                    var cyrrentpage = [##cms.query.page##]
+                    if ([##cms.query.page##] == 1) {
+                        $(".row_number").each(function (index, element) {
+                            $(this).text($(this).closest("tr").index() + 1)
+                        });
+                    } else {
+                        $(".row_number").each(function (index, element) {
+                            if (index == 30) {
+                                $(this).text("[##cms.query.page##]0");
+                            } else {
+                                $(this).text(30 * (cyrrentpage - 1).toString() + +($(this).closest(
+                                    "tr").index() + 1)
+                                    .toString())
+
+                            }
+                        });
+                    }
+
+                });
+                $(".DownLoadExcel").click(function () { $(".ExcelForm").submit() });
+
+            </script>
+        </basis>
+    </basis>
+</basis>

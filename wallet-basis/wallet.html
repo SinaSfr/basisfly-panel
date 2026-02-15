@@ -1,0 +1,1801 @@
+<basis core="call" file="Client_CheckRkey.inc"></basis> <!-- updated login -->
+
+<basis core="group" name="0" if="[##db.checkrkey.userid|(0)##]=0">
+    <p style="text-align:center;font-family:tahoma">شما مجاز به دسترسی به این صفحه نمی باشید</p>
+</basis>
+
+<basis core="group" name="1" if="[##db.checkrkey.userid|(0)##]<>0">
+
+    <basis core="external.fly.ws" procedurename="dbsource" source="cmsDbService2" name="db">
+        <member name="get_unit_currency" method="cms" query='{
+            "name": "db",
+            "mid": "20",
+            "member": [
+                {
+                    "type": "list",
+                    "request": "get_unit_currency",
+                    "dmnid": "[##cms.cms.domainid##]",
+                    "name": "q",
+                    "lid": "1"
+                   
+                }
+            ]
+        }' preview="true" />
+    </basis>
+
+    <basis core="external.fly.ws" source="cmsDbService2" name="db" procedurename="dbsource">
+        <member method="cms" name="view_wallet" query='{
+            "name": "db",
+            "mid": "20",
+            "member": [
+                {
+                    "type": "list",
+                    "name": "view_wallet",
+                    "request": "view_wallet",
+                    "userid": "[##db.checkrkey.userid|(0)##]",
+                    "dmnid": "[##cms.cms.domainid##]"
+                }
+            ]
+        } ' />
+    </basis>
+
+    <basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient">
+        <member  
+        name="bank_items"
+        query='{ 
+            "name": "db", 
+            "method":"cms",
+            "mid": "20",
+            "member":[{ "type":"list",
+            "name": "q",
+            "request": "bank_list"}]}' preview=""/>
+    </basis>
+
+    <basis core="callback" run="atclient" triggers="cms.transfer" if="{##cms.transfer.run|(false)##}" method="callback_source_save"></basis>
+
+    <basis core="api" name="api.save" url="https://www.basisfly.com/panel/main/update/[##cms.cookie.rkey##]" method="post"
+        content-type="application/json" run="atclient" triggers="db.transfer" if="{##db.transfer.run|(false)##}" body='{ 
+            "name": "db", 
+            "mid": "20",
+            "member":
+            [ 
+                { 
+                    "type":"list",
+                    "name": "q", 
+                    "request": "invoice_refund_save", 
+                    "dmnid":"[##cms.cms.domainid##]",
+                    "factorid":"",
+                    "invoicetype":"",
+                    "userid": "[##db.checkrkey.userid|(0)##]",
+                    "username": "{##db.transfer.username##}",
+                    "query":{##db.transfer.query##}
+    
+                }
+            ]
+        }' onprocessed="onProcessed_save">
+    </basis>
+ 
+    <basis core="group" name="DelayTwo">
+        <basis core="inlinesource" name="db">
+            <member name='unit_title' format="json" preview="" postsql="select value from [db.unit_title] where field = 'title'">
+                {"root": [##db.get_unit_currency.result##]}
+            </member>
+        </basis>
+
+        <basis core="group" name="view_wallet1" if="'[##db.view_wallet.result##]' = '0'">
+            <p style="text-align:center;font-family:tahoma">شما مجاز به دسترسی به این صفحه نمی باشید</p>
+        </basis>
+
+        <basis core="group" name="view_wallet2" if="'[##db.view_wallet.result##]' = '1'">
+
+            <basis core="api" name="api.createpage" url="https://basisfly.com/accounting/credit_view/[##cms.cookie.rkey##]" method="post" body='{"userid":"[##db.checkrkey.userid|(0)##]"}' content-type="application/json" run="atclient" triggers="cms.form" ></basis>
+           
+            <basis core="api" name="api.doctype" url="https://basisfly.com/accounting/doctypename" method="post" body='{"lid":"1"}' content-type="application/json" run="atclient" triggers="db.autoRun"
+                if="{##db.autoRun.run|(false)##}" onprocessed="onProcessed_autoRun">
+            </basis>
+
+            <!doctype html>
+            <html>
+
+                <head>
+                    <title></title>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+                    <style type="text/css">
+                        <basis core="call" file="Panel_User_css.inc"/>
+                        <basis core="call" file="Panel-Basis_Calendar_css.inc"/>
+                    </style>
+                    <link rel="stylesheet" href="/css/Panel-master-css.css" type="text/css">
+                    <script src="[##cms.cms.cdn##]/_js/jquery-1.8.0.min.js"></script> 
+                    <script type="text/javascript">
+                        <basis core="call" file="Panel-Basis_Calendar_js.inc"/>
+                    </script>
+                </head>
+
+                 <div class="modals">
+                    <div id="withdrawFunds" class="modal" style="display: none;">
+                        <div class="modalBackground" onclick="hideModal_withdrawFunds('withdrawFunds');"></div>
+                        <div class="modalContent" data-sys-popup-body="">
+                            <div class="modalTitle">
+                                <span>درخواست انتقال موجودی به کارت </span>
+                                <span class="closeIcon" onclick="hideModal_withdrawFunds('withdrawFunds')">
+                                        <svg width="14" height="15" viewBox="0 0 14 15" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path data-sys-text="" opacity="0.8"
+                                                d="M8.05223 7.49989L13.3519 13.3409C13.6968 13.7208 13.6968 14.3351 13.3519 14.7151C13.0072 15.095 12.4498 15.095 12.1051 14.7151L6.80521 8.87405L1.50552 14.7151C1.16063 15.095 0.603404 15.095 0.258671 14.7151C-0.0862237 14.3351 -0.0862237 13.7208 0.258671 13.3409L5.55836 7.49989L0.258671 1.65889C-0.0862237 1.27896 -0.0862237 0.66466 0.258671 0.284728C0.430473 0.0952063 0.656366 0 0.882097 0C1.10783 0 1.33356 0.0952063 1.50552 0.284728L6.80521 6.12572L12.1051 0.284728C12.277 0.0952063 12.5028 0 12.7285 0C12.9542 0 13.18 0.0952063 13.3519 0.284728C13.6968 0.66466 13.6968 1.27896 13.3519 1.65889L8.05223 7.49989Z"
+                                                fill="black"></path>
+                                        </svg>
+                                </span>
+                            </div>
+                            <form  bc-triggers="submit" name="cms.transfer"  class="form-body-container" onsubmit="submit_form(this,event)">
+                                <input type="hidden" name="run" class="check-run" value="false" />
+                                <div class="modalBody">
+                                    <div class="withdrawFunds" >
+                                        <input type="hidden" name="_root.notetype" value="22"/>
+                                        <input type="hidden" name="username" class="username__content" value=""/>
+                                        <_textarea class="data-input" id="description" name="_root.description__0.desc" placeholder="شرح درخواست..." required></_textarea>
+                                        <div style="width: 100%;">
+                                            <input class="data-input is-separated seprator"  onkeyup="Seprator(this)" type="text" id="amount" name="_root.description__0.price" placeholder="مبلغ درخواست (تومان)" required>
+                                            <input class="data-input" type="text" id="cardNo" name="_root.description__0.cardNo" placeholder="شماره کارت مبدا (16 رقمی)" maxlength="16" pattern="\d{16}" required>
+                                        </div>
+                                        <div style="width: 100%;margin-bottom: 3%;">
+                                            <input class="data-input" type="text" id="shabaNo" name="_root.description__0.shabaNo" placeholder="شماره شبا (IR...)" maxlength="26" pattern="IR\d{24}" required>
+                                            <basis core="print" datamembername="db.bank_items" run="atclient">
+                                                <layout>
+                                                    <select name="_root.description__0.bankid" id="bank-name" class="data-select" >@child</select>
+                                                </layout>
+                                                <face>
+                                                    <script type="text/template">
+                                                        <option value="@id@">@name@</option>
+                                                    </script>
+                                                </face>
+                                            </basis>
+                                        </div>
+                                         
+                                        <button type="submit" class="refund_registration modalButton accept" onclick="validate_form()" data-sys-button=""
+                                            data-btn-createNewUser="" data-new-user="" data-new-user-save="ثبت در خواست">ثبت در خواست 
+                                        </button>
+                                    </div> 
+                                </div>
+                            </form>
+                        </div>
+                    </div> 
+
+                    <div id="addFunds" class="modal" style="display: none;">
+                        <div class="modalBackground" onclick="hideModal_addFunds('addFunds');"></div>
+                        <div class="modalContent" data-sys-popup-body="">
+                            <div class="modalTitle">
+                                <span>افزایش موجودی</span>
+                                <span class="closeIcon" onclick="hideModal_addFunds('addFunds')">
+                                        <svg width="14" height="15" viewBox="0 0 14 15" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path data-sys-text="" opacity="0.8"
+                                                d="M8.05223 7.49989L13.3519 13.3409C13.6968 13.7208 13.6968 14.3351 13.3519 14.7151C13.0072 15.095 12.4498 15.095 12.1051 14.7151L6.80521 8.87405L1.50552 14.7151C1.16063 15.095 0.603404 15.095 0.258671 14.7151C-0.0862237 14.3351 -0.0862237 13.7208 0.258671 13.3409L5.55836 7.49989L0.258671 1.65889C-0.0862237 1.27896 -0.0862237 0.66466 0.258671 0.284728C0.430473 0.0952063 0.656366 0 0.882097 0C1.10783 0 1.33356 0.0952063 1.50552 0.284728L6.80521 6.12572L12.1051 0.284728C12.277 0.0952063 12.5028 0 12.7285 0C12.9542 0 13.18 0.0952063 13.3519 0.284728C13.6968 0.66466 13.6968 1.27896 13.3519 1.65889L8.05223 7.49989Z"
+                                                fill="black"></path>
+                                        </svg>
+                                </span>
+                            </div>
+                            <form bc-triggers="submit" name="cms.new" class="form-body-container" onsubmit="">
+                                <div class="modalBody">
+                                    <div class="Panel_Box_Content" style="margin-bottom: 30px;">
+                                        <span>جهت افزایش موجودی مبلغ را وارد کنید</span>
+                                        <input class="cost_onlineCharging seprator" type="text" onkeyup="Seprator(this)"/>
+                                        <span>[##db.unit_title.Value##]</span>
+                                            <button class="pay_charging">پرداخت</button>
+                                    </div>
+        
+                                    <div class="Panel_invoice_View">
+                                        <div class="Panel_Box_title">لیست درگاه های پرداخت</div>
+                                        <basis core="external.fly.ws" source="cmsDbService2" name="db"
+                                            procedurename="dbsource">
+                                            <member name="webservice_list" method="cms" query='
+                                            { 
+                                                "name": "db",
+                                                "mid": "20",
+                                                "member":
+                                                [
+                                                    { 
+                                                        "name": "q", 
+                                                        "type":"list",
+                                                        "request": "webservice_list",
+                                                        "type": "5",
+                                                        "lid": "1"
+                                                    }
+                                                ] 
+                                            } ' preview="" />
+                                        </basis>
+                                        <basis core="group" name="info">
+                                            <basis core="inlinesource" name="db">
+                                                <member name="bank" format="json"
+                                                    postsql="select  Id , ParentId , case when trim(Field) is null  then  (select field from [db.bank] where id = m.parentid )else field end as field, value , type , path  from [db.bank] as m">
+                                                    {"root":[##db.webservice_list.result##]}</member>
+                                            </basis>
+                                            <basis core="tree" datamembername="db.bank" idcol="id" parentidcol="parentid"
+                                                nullvalue="null">
+                                                <face filter="ParentId in ('1')">
+                                                    <table class="invoice_tbl PaymentTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>درگاه پرداخت</th>
+                                                                <th>لینک پرداخت</th>
+                                                                <th>مبلغ قابل پرداخت</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="invoice_tbody">@child</tbody>
+                                                    </table>
+                                                </face>
+                                                <face filter="Field in ('bank') and type in ('Object')">
+                                                    <tr>@child</tr>
+                                                </face>
+                                                <face filter="Field in ('id')">
+                                                    <td>
+                                                        <input type="hidden" name="id" value="@value" class="bankId">
+                                                </face>
+                                                <face filter="Field in ('logo')"><span><img src="@value" width="45"></span>
+                                                    </td>
+                                                </face>
+                                                <face filter="Field in ('persianName')">
+                                                    <td><span class="button_payment" style="cursor: pointer;"
+                                                            onclick="button_payment(this)">جهت پرداخت آنلاین از طریق درگاه
+                                                            @value, اینجا را کلیک کنید</span></td>
+                                                </face>
+                                                <face filter="field = 'unit'">
+                                                    <td>
+                                                    <input type="hidden" value="@value" class="webservice-unit">
+                                                </face>
+                                                <face filter="field = 'moneytype'">
+                                                    <span class="Panel_Seprator"
+                                                    style="margin-left: 10px;"></span><span> @value </span></td>
+                                                </face>
+                                                <face filter="type in ('array','object')">@child</face>
+                                            </basis>
+                                        </basis>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+
+                <body>
+                    <div class="Panel_Container">
+                        <basis core="call" file="Panel-Menu.inc" />
+                        <div class="Panel_Wrraper_Box">
+                            <basis core="call" file="Panel-Dashboard-Header.inc" />
+                            <basis core="call" file="Panel-Icon.inc" />
+                            <div class="ScrollTop"></div>
+                            <div class="Panel_Box">
+                                <div class="Panel_Box_title">
+                                    <span>اعتبار</span>
+                                </div>
+                                <div class="Panel_Box_Content">
+                                    <div class="credit_box" style="justify-content: start;">
+                                       
+                                        <span>موجودی حساب</span>
+                                        <basis core="print" datamembername="db.reportdoc" run="atclient" OnRendered="set_currency">
+                                            <face>
+                                                <script type="text/template">
+                                                    {{
+                                                       
+                                                        if($data.Remaining_credit > 0){
+                                                            return `<p  style="direction: ltr;" class="cost_credit positive is-required is-separated data-input en-numbers">${Intl.NumberFormat().format(parseFloat($data.Remaining_credit))}</p>`
+
+                                                        }
+                                                        else{
+                                                            return `<p  style="direction: ltr;" class="cost_credit negative is-required is-separated data-input en-numbers">${Intl.NumberFormat().format(parseFloat($data.Remaining_credit))}</p>`
+
+
+                                                        }
+                                                    }}
+                                                    
+                                                </script>
+                                            </face>
+                                        </basis>
+                                        
+                                        <span>[##db.unit_title.Value##]</span>
+                                        
+                                        
+                                    </div>
+                                    <div class="credit_box" style="justify-content: end;">
+                                        <div class="action">
+                                            <button class="add-funds-btn" onclick="showModal_addFunds('addFunds')">
+                                                <i class="fas fa-plus"></i>
+                                                افزایش موجودی
+                                            </button>
+                                        </div>
+
+                                         <!-- <div class="action">
+                                            <button class="withdraw-funds-btn" onclick="showModal_withdrawFunds('withdrawFunds')">
+                                                <i class="fas fa-minus"></i> 
+                                                برداشت موجودی
+                                            </button>
+                                        </div>  -->
+                                    </div>
+                                    <div class="clr"></div>
+                                </div>
+                                <div class="clr"></div>
+                            </div>
+                            
+                            <div class="Panel_Box"> 
+                                <div class="section_load_data"></div>      
+                                <form  class="Panel_form_search" method="post">                   
+                                    <input type="hidden" value="[##cms.cms.domainid##]" name="dmnid"/>
+                                    <input type="hidden" value="[##cms.cms.ownerid##]" name="ownerid"/>
+                                    <div class="Panel_Box_title" style="position: relative">
+                                        <span>جستجو در تاریخچه تراکنش ها و درخواست ها</span>
+                                        <button class="Panel_Edit_icon search" type="submit" style="background:none;border:0;cursor:pointer;"></button>         
+                                        <div class="popup searchDate_Error"><span style="direction: rtl;">امکان جستجو  بازه بزرگتر از دو  ماه وجود ندارد</span></div>
+                                    </div>
+    
+                                    <div class="Panel_Box_Content">
+                                        <div class="penel_invoice_SearchBox">      
+                                                                  
+                                            <table class="Basis_Date_Box" style="padding-bottom:8px">
+                                                <colgroup>
+                                                    <col width="100%">
+                                                 
+                                                </colgroup>
+    
+    
+                                                <tr>
+   
+                                                    <td>
+                                                        <div class="date_box_inner">
+                                                        <span class="Panel_search_date_txt">از تاریخ :</span><input type="text" name="fromdate" class="Basis_Date start_date Panel_search_date  ValidDate" onclick="Basis_Calendar(this,'[##cms.cms.date##]', 0)" data-active="0" data-cache="0" onkeyup="ValidDate(event,this)" onblur="CheckFormat(this)" autocomplete="off" readonly="true">
+                                                        <span class="Error_date">تاریخ وارد شده نامعتبر است</span>
+                                                        </div> 
+                                                    </td>
+    
+                                                    <td>
+                                                        <div class="date_box_inner">
+                                                        <span class="Panel_search_date_txt">تا تاریخ :</span><input type="text" name="todate" class="Basis_Date end_date Panel_search_date ValidDate" onclick="Basis_Calendar(this,'[##cms.cms.date##]', 0)" data-active="0" data-cache="0" onkeyup="ValidDate(event,this)" onblur="CheckFormat(this)" autocomplete="off" readonly="true">
+                                                        <span class="Error_date">تاریخ وارد شده نامعتبر است</span> 
+                                                        </div> 
+                                                    </td>
+                                                </tr>
+                                            </table>
+    
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <ul>
+                                                            <li>
+                                                                <div class="Panel_search_title">شماره قرارداد :</div>
+                                                                <div class="Panel_search_content"><input autocomplete="off" type="text" name="factorid" class="factorid"></div>
+                                                                <div class="clr"></div>                  
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        <ul>
+                                                            <li>
+                                                                <div class="Panel_search_title"> عنوان سند :</div>
+                                                                <div class="Panel_search_content">
+                                                                    
+                                                                    
+                                                                        <div class="data-answer-container width_70 has-icon-drop-item">
+                                                                            <input type="text"
+                                                                                class="data-input doctypename" placeholder="-- انتخاب --" readonly
+                                                                                name=""
+                                                                                onclick="autoRun_search(event,this)" style="width: 200px;"/>
+                                                                            <input type="hidden" name="doctypeid" class="data-id doctypeid" />
+                                                                            <span class="data-loading unvisible"><i class="lni lni-reload"></i></span>
+                                                                            <ul class="drop-item"></ul>
+                                                                        </div>
+                                                                 
+                                                               
+
+                                                                    
+                                                                </div>
+                                                                <div class="clr"></div>                  
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            </table>                                    
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+    
+                            <div class="Panel_Box">
+                               
+                                <div class="penel_invoice_ResultBox">
+                                    <basis core="call" run="AtClient" file="wallet_list.inc" method="post" query="{##db.wallet.query|({'userid':[##db.checkrkey.userid##],'dmnid':[##cms.cms.domainid##],'ownerid':[##cms.cms.ownerid##]})##}" triggers="db.wallet"></basis>
+                                </div>
+                            </div>
+
+                            <basis core="call" file="Panel-Dashboard-Footer.inc" />
+                        </div>
+
+                        <div class="clr"></div>
+                    </div>
+                    <div class="form_payment"></div>
+                    <basis core="call" file="Panel-Basis_Calendar.inc"/>
+                    <script src="[##cms.cms.cdn##]/_js/User_Panel.js"></script>
+                    <script type="text/javascript">
+                        <basis core="call" file="Panel-Basis_Calendar_js.inc"/>
+                    </script>
+                    <style type="text/css">
+                        @font-face {
+                            font-family: 'IRANSansWeb';
+                            src: url('http://cdn.basiscore.net/_fonts/IRANSansWeb.eot');
+                            src: local('?'), url('http://cdn.basiscore.net/_fonts/IRANSansWeb.woff2') format("woff"), url('http://cdn.basiscore.net/_fonts/IRANSansWeb.ttf') format("truetype"), url('http://cdn.basiscore.net/_fonts/IRANSansWeb.otf') format("otf");
+                            font-weight: 400;
+                            font-style: normal
+                        }
+
+                        @font-face {
+                            font-family: 'FontAwesome';
+                            src: local('FontAwesome'), url('http://cdn.basiscore.net/_fonts/fontawesome-webfont.eot?#iefix');
+                            src: local('?'), url('http://cdn.basiscore.net/_fonts/fontawesome-webfont.woff') format("woff"), url('http://cdn.basiscore.net/_fonts/fontawesome-webfont.ttf') format("truetype"), url('http://cdn.basiscore.net/_fonts/fontawesome-webfont.otf') format("otf");
+                            font-weight: 400;
+                            font-style: normal
+                        }
+
+                        @font-face {
+                            font-family: 'IRANSansWeb';
+                            src: url('https://cdn.basiscore.net/_fonts/IRANSansWeb.eot');
+                            src: local('?'), url('https://cdn.basiscore.net/_fonts/IRANSansWeb.woff2') format("woff"), url('https://cdn.basiscore.net/_fonts/IRANSansWeb.ttf') format("truetype"), url('https://cdn.basiscore.net/_fonts/IRANSansWeb.otf') format("otf");
+                            font-weight: 400;
+                            font-style: normal
+                        }
+
+                        @font-face {
+                            font-family: 'FontAwesome';
+                            src: local('FontAwesome'), url('https://cdn.basiscore.net/_fonts/fontawesome-webfont.eot?#iefix');
+                            src: local('?'), url('https://cdn.basiscore.net/_fonts/fontawesome-webfont.woff') format("woff"), url('https://cdn.basiscore.net/_fonts/fontawesome-webfont.ttf') format("truetype"), url('https://cdn.basiscore.net/_fonts/fontawesome-webfont.otf') format("otf");
+                            font-weight: 400;
+                            font-style: normal
+                        }
+
+                      
+                        .get-bank-warning{font-size: 13px;color: red;margin: 1em 0;}
+
+                        .pay_charging ,.pay_btn{
+                            font-family: 'IRANSansWeb';
+                            font-size: 12px;
+                            cursor: pointer;
+                            border-radius: 5px;
+                            text-align: center;
+                            width: 75px;
+                            padding: 3px;
+                            margin: 3px;
+                            display: inline-block;
+                            box-sizing: border-box;
+                            border: 1px solid #C7D6DB;
+                        }
+
+                        .Panel_invoice_View {
+                            display: none;
+                        }
+                        .add-funds-btn {
+                            background-color: #f1f1f1;
+                            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+                            color:  #1c1b1b;; 
+                            padding: 5px 30px; 
+                            font-size: 14px; 
+                            font-family: IRANSansWeb;
+                            border: none; 
+                            border-radius: 5px; 
+                            cursor: pointer; 
+                            transition: background-color 0.3s ease;
+                        }
+
+                        .add-funds-btn:hover {
+                            background-color: #45a049; 
+                        }
+
+                        .withdraw-funds-btn {
+                            background-color: #f1f1f1;
+                            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+                            color:  #1c1b1b;; 
+                            padding: 5px 30px; 
+                            font-size: 14px; 
+                            font-family: IRANSansWeb;
+                            border: none; 
+                            border-radius: 5px; 
+                            cursor: pointer; 
+                            transition: background-color 0.3s ease; 
+                            display: inline-flex; 
+                            align-items: center; 
+                        }
+
+                        .withdraw-funds-btn:hover {
+                            background-color: #d32f2f; 
+                        }
+
+                        .withdraw-funds-btn i {
+                            margin-right: 10px; 
+                        }
+                        
+                        .credit_box{
+                            width: 50%;
+                            float:right;
+                            display: flex; 
+                            align-items: center; 
+                            margin: 20px auto; 
+                        
+                        }
+
+                        .credit_box span {
+                            font-size: 14px; 
+                            width: 20%;
+                            margin-right: 15px;
+                        }
+
+                        .cost_credit.positive{
+                            direction: ltr;
+                            font-weight: bold;
+                            margin: 16px 0;
+                            color: #28a745;
+                            font-size: 18px;
+                            text-align: center;
+                        }
+                        .cost_credit.negative{
+                            direction: ltr;
+                            font-weight: bold;
+                            margin: 16px 0;
+                            color: #af1717;
+                            font-size: 18px;
+                            text-align: center;
+                        }
+                      
+
+                        .action {
+                           margin-left: 10px;}
+
+        
+                        .fa-plus:before{content:'\f067 ';font-family: 'FontAwesome';padding: 5px 10px;}
+                        .fa-minus:before{content:"\f068";font-family: 'FontAwesome';padding: 5px 10px;}
+
+                        .searchDate_Error{
+                            top: 29px !important;
+                            left: 18px !important;
+                            text-align: right !important;
+                            position: absolute;
+                            width: 130px;
+                            height: 60px;
+                            direction: rtl;
+                            text-align: center;
+                            line-height: 15px;
+                            box-sizing: border-box;
+                            padding: 5px;
+                            padding-top: 5px;
+                            color: #fff;
+                            -moz-border-radius: 5px;
+                            -webkit-border-radius: 5px;
+                            border-radius: 5px;
+                            margin-bottom: 2em;
+                            z-index: 999;
+                            display: none;
+                            font-size: 11px;
+                            padding-top: 15px;
+                            background-color: #fF9000;
+                        }
+                        .Panel_search_content {
+                        width: 90%;
+                        float: left;
+                        }
+                        .Panel_search_title {
+                        width: 10%;
+                        float: right;
+                        }
+                        .unvisible{display: none;}
+                        .visible{display: block;}
+                        .drop-item{width: 200px;z-index: 9;opacity: 0;visibility: hidden;-webkit-transition:all 0.3s ease-in-out;-moz-transition:all 0.3s ease-in-out;-o-transition:all 0.3s ease-in-out;-ms-transition:all 0.3s ease-in-out;transition:all 0.3s ease-in-out;background: #fff;font-size: 12px;position: absolute; max-height: 150px; overflow: auto;border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);color: #383838;border: 1px solid #d7d7fb;}
+                        .drop-item li{cursor: pointer;text-align: right;padding: 0.5em;}
+                        .drop-item li:hover,.drop-item li:focus,.li-item.selected{color: #000;}
+                        .drop-item-toggle{margin-top: 0.5em;opacity: 1;visibility: visible;}
+                        .drop-item.en li{text-align: left;}
+
+                        /***** common styles for modals *****/
+    .modals * {
+        box-sizing: border-box;
+        direction: rtl;
+    }
+
+    .modal {
+        /* display: none; */
+        position: fixed;
+        z-index: 99999999;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal .modalBackground {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        cursor: default;
+        background-color: transparent;
+    }
+
+    .modal .modalContent {
+        position: relative;
+        background-color: #fbfdff;
+        margin: auto;
+        padding: 20px 30px;
+        border: 1px solid #888;
+        border-radius: 5px;
+        width: 1000px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -webkit-animation-name: animatetop;
+        -webkit-animation-duration: 0.5s;
+        animation-name: animatetop;
+        animation-duration: 0.5s;
+        min-height: 270px;
+    }
+
+    /* modalContent modalTitle */
+    .modalContent .modalTitle {
+        width: 100%;
+        /* background-color: #4d576e; */
+        /* color: #fff; */
+        display: -webkit-box;
+        /* OLD - iOS 6-, Safari 3.1-6 */
+        display: -moz-box;
+        /* OLD - Firefox 19- (buggy but mostly works) */
+        display: -ms-flexbox;
+        /* TWEENER - IE 10 */
+        display: -moz-flex;
+        display: -webkit-flex;
+        /* NEW - Chrome */
+        display: flex;
+        /* NEW, Spec - Opera 12.1, Firefox 20+ */
+        -webkit-flex-direction: row;
+        flex-direction: row;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-justify-content: space-between;
+        justify-content: space-between;
+        direction: rtl;
+        padding: 0px 0px 15px;
+        box-sizing: border-box;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        border-top-left-radius: 5px;
+        height: 40px;
+        border-bottom: 0.5px solid #D0D0D0;
+    }
+
+    .modalContent .modalTitle .title {
+        color: #030229;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .modalContent .modalTitle .closeIcon {
+        color: #222222;
+        /* opacity: 0.8; */
+        /* float: left; */
+        /* font-size: 28px; */
+        /* font-weight: bold; */
+    }
+
+    .modalContent .modalTitle .closeIcon:hover,
+    .modalContent .modalTitle .closeIcon:focus {
+        color: #bcbcbc;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modalContent .modalTitle .closeIcon svg {
+        vertical-align: middle;
+    }
+
+    /* modalBody */
+    .modalContent .modalBody {
+        padding: 15px 0;
+        text-align: right;
+        direction: rtl;
+    }
+
+    /* modalFooter */
+    .modalContent .modalFooter {
+        padding: 15px 0px 0px;
+        border-top: 0.5px solid #D0D0D0;
+    }
+
+    /* modalContentWarning */
+    .modal .modalContentWarning {
+        position: relative;
+        background-color: #fbfdff;
+        margin: auto;
+        padding: 20px 30px;
+        border: 1px solid #888;
+        border-radius: 5px;
+        width: 1000px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -webkit-animation-name: animatetop;
+        -webkit-animation-duration: 0.5s;
+        animation-name: animatetop;
+        animation-duration: 0.5s;
+    }
+
+    /* modalContentWarning modalTitle */
+    .modalContentWarning .modalTitle {
+        width: 100%;
+        /* background-color: #4d576e; */
+        /* color: #fff; */
+        display: -webkit-box;
+        /* OLD - iOS 6-, Safari 3.1-6 */
+        display: -moz-box;
+        /* OLD - Firefox 19- (buggy but mostly works) */
+        display: -ms-flexbox;
+        /* TWEENER - IE 10 */
+        display: -moz-flex;
+        display: -webkit-flex;
+        /* NEW - Chrome */
+        display: flex;
+        /* NEW, Spec - Opera 12.1, Firefox 20+ */
+        -webkit-flex-direction: row-reverse;
+        flex-direction: row-reverse;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-justify-content: space-between;
+        justify-content: space-between;
+        direction: rtl;
+        padding: 0px 0px 15px;
+        box-sizing: border-box;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        border-top-left-radius: 5px;
+        /* height: 40px; */
+        /* border-bottom: 0.5px solid #D0D0D0; */
+    }
+
+    .modalContentWarning .modalTitle .title {
+        color: #030229;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .modalContentWarning .modalTitle .closeIcon {
+        color: #222222;
+        /* opacity: 0.8; */
+        /* float: left; */
+        /* font-size: 28px; */
+        /* font-weight: bold; */
+    }
+
+    .modalContentWarning .modalTitle .closeIcon:hover,
+    .modalContentWarning .modalTitle .closeIcon:focus {
+        color: #bcbcbc;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modalContentWarning .modalTitle .closeIcon svg {
+        vertical-align: middle;
+    }
+
+    /* modalBody */
+    .modalContentWarning .modalBody {
+        padding: 0 0 15px 0;
+        text-align: right;
+        direction: rtl;
+    }
+
+    /* modalFooter */
+    .modalContentWarning .modalFooter {
+        padding: 15px 0px 0px;
+        /* border-top: 0.5px solid #D0D0D0; */
+    }
+
+    /* modalButtons */
+    .modalButtons {
+        width: 100%;
+    }
+
+    .modalButtons .modalButton {
+        display: inline-block;
+        font-size: 14px;
+        text-align: center;
+        /* -webkit-transition: opacity .1s ease, background-color .1s ease, color .1s ease, background .1s ease, -webkit-box-shadow .1s ease; */
+        /* transition: opacity .1s ease, background-color .1s ease, color .1s ease, background .1s ease, -webkit-box-shadow .1s ease; */
+        /* transition: opacity .1s ease, background-color .1s ease, color .1s ease, box-shadow .1s ease, background .1s ease; */
+        /* transition: opacity .1s ease, background-color .1s ease, color .1s ease, box-shadow .1s ease, background .1s ease, -webkit-box-shadow .1s ease; */
+        /* -webkit-tap-highlight-color: transparent; */
+        border: 0;
+        padding: 0;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 93px;
+        height: 40px;
+    }
+
+    .modalButtons .modalButton.accept {
+        background-color: #004B85;
+        /* border: 1px solid #004B85; */
+        color: #fff;
+    }
+    .modalButtons .modalButton.accept:hover{
+        background-color: #007BDB !important;
+    }
+
+    .modalButtons .modalButton.accept:focus{
+        /* background: #003965 !important; */
+    }
+
+    .modalButtons .modalButton.cancel {
+        background-color: #fff !important;
+        border:  1px solid rgba(0, 75, 133, 0.1);
+        color: #004B85 !important;
+    }
+
+    .modalButtons .modalButton.remove {
+        background-color: #B40020;
+        border: 1px solid #B40020;
+        color: #fff;
+    }
+
+    /* message */
+    .modalFooter .message {
+        float: left;
+        line-height: 44px;
+        font-size: 14px;
+    }
+
+    .modalFooter .message .messageError {
+        color: var(--red);
+    }
+
+    .modalFooter .message .messageSuccess {
+        color: var(--green);
+    }
+
+            /***** common styles for schema save button *****/
+
+    .modal-background {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        cursor: default;
+        background-color: transparent;
+    }
+
+    /* Modal Content */
+    .modal-content {
+        position: relative;
+        background-color: #fbfdff;
+        margin: auto;
+        padding: 0;
+        border: 1px solid #888;
+        border-radius: 6px;
+        width: 500px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -webkit-animation-name: animatetop;
+        -webkit-animation-duration: 0.4s;
+        animation-name: animatetop;
+        animation-duration: 0.4s;
+    }
+
+
+    /* modal-title */
+    .modal-title {
+        width: 100%;
+        background: #4d576e;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        direction: rtl;
+        padding: 10px;
+        box-sizing: border-box;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        border-top-left-radius: 5px;
+        height: 40px;
+        align-items: center;
+    }
+
+    .modal-title span {
+        color: #fff;
+    }
+
+    .modal-title .close {
+        color: white;
+        float: left;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .modal-title .close:hover,
+    .modal-title .close:focus {
+        color: #bcbcbc;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* modal-body */
+    .modal-body {
+        padding: 15px;
+        padding-bottom: 10px;
+    }
+
+    .modal-rtl {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .modal-buttons button {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        border-radius: 4px;
+        min-height: 1em;
+        -webkit-transition: opacity .1s ease, background-color .1s ease, color .1s ease, background .1s ease, -webkit-box-shadow .1s ease;
+        transition: opacity .1s ease, background-color .1s ease, color .1s ease, background .1s ease, -webkit-box-shadow .1s ease;
+        transition: opacity .1s ease, background-color .1s ease, color .1s ease, box-shadow .1s ease, background .1s ease;
+        transition: opacity .1s ease, background-color .1s ease, color .1s ease, box-shadow .1s ease, background .1s ease, -webkit-box-shadow .1s ease;
+        -webkit-tap-highlight-color: transparent;
+        border: 0;
+        background-image: none;
+    }
+
+    .modal-buttons {
+        width: 100%;
+        padding: 15px;
+        padding-top: 0;
+        float: none !important;
+        min-height: 43px !important;
+    }
+
+    .modal-buttons button {
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: bold;
+        text-shadow: none;
+    }
+
+    .modal-buttons button.remove .btn_icon {
+        border-left: 1px solid #e67266;
+    }
+
+    .modal-buttons button.remove .btn_title {
+        border-right: 1px solid #e67266 !important;
+    }
+
+    .modal-buttons button.remove {
+        background-color: #e74c3c !important;
+    }
+    /* inputs class */
+
+    .form-group {
+        position: relative;
+        margin-bottom: 20px;
+        direction: rtl; /* اضافه کردن راست‌چین */
+        text-align: right; /* اضافه کردن راست‌چین به متن‌ها */
+        padding-left: 10px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding-top: 10px;
+        padding-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        text-align: right; /* متن ورودی‌ها هم راست‌چین بشه */
+        height: 50px;
+    }
+
+    .form-input:focus {
+        border-color: #007bff;
+    }
+
+    .form-label {
+        position: absolute;
+        top: 12px;
+        right: 15px; 
+        transition: all 0.3s ease;
+        pointer-events: none;
+        font-size: 14px;
+        color: #aaa;
+    }
+
+    .form-input:focus + .form-label,
+    .form-input:not(:placeholder-shown) + .form-label {
+        top: 5px;
+        right: 11px;
+        font-size: 10px;
+        color: #333;
+    }  
+
+    .form-select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        color: #aaa;
+        border-radius: 5px;
+        font-size: 14px;
+        text-align: right;
+        appearance: none; 
+        -webkit-appearance: none; 
+        -moz-appearance: none;
+        background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="none" stroke="%23000" d="M0 0l2 2 2-2"/></svg>') no-repeat 10px center; /* تغییر فلش به سمت چپ */
+        background-size: 12px; 
+        height: 50px;
+    }
+
+  
+
+    .dropdown-container {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 300px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+    }
+
+    .dropdown-select {
+        width: 30%;
+        padding: 10px;
+        margin-right: 5px;
+        font-size: 16px; /* کمی بزرگتر برای خوانایی بیشتر */
+        font-family: 'IRANSans', 'Yekan', sans-serif; /* استفاده از یک فونت فارسی مناسب */
+        font-weight: 500; /* وزن مناسب برای خوانایی */
+        border: 1px solid #ccc; /* مرز برای زیبایی */
+        border-radius: 5px; /* گوشه‌های گرد */
+        background-color: #f8f8f8; /* رنگ پس‌زمینه ملایم */
+        color: #333; /* رنگ متن */
+    }
+.cost_onlineCharging{
+display: inline-block;
+  width: 120px;
+  color: #5b5959;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: 'IRANSansWeb';
+  font-size: 12px;
+  border: 1px solid #C7D6DB;
+  background: #f7f9fb;
+  border-radius: 4px;
+  padding: 2px;
+  margin: 2px;
+    margin-right: 2px;
+  margin-right: 0px;}
+
+    .submit-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background-color: #0056b3;
+    }
+
+    .date-toggle {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .date-toggle label {
+        margin-right: 10px;
+    }
+
+    .pay_charging ,.pay_btn{
+                        font-family: 'IRANSansWeb';
+                        font-size: 12px;
+                        cursor: pointer;
+                        border-radius: 5px;
+                        text-align: center;
+                        width: 75px;
+                        padding: 3px;
+                        margin: 3px;
+                        display: inline-block;
+                        box-sizing: border-box;
+                        border: 1px solid #C7D6DB;
+                    }
+
+                    .Panel_invoice_View {
+                        display: none;
+                    }
+
+                    @media only screen and (max-width:480px){
+                        .credit_box {
+                        width: 100%;
+                        display: block;
+
+                        }
+                        .credit_box span {
+                        width: 100% !important;
+                        text-align: center;
+                        margin-right: 0 !important;
+
+                        }
+                        .credit_box p {
+                        width: 100% !important;
+                        text-align: center;
+                        }
+
+                        .Panel_Box_Content{
+                            width: 100%;
+                            display: block;
+
+                        }
+                        .Panel_Box_Content button {
+                        width: 100% !important;
+                      
+                        }
+                        .cost_onlineCharging {
+                        width: 100% !important;
+                      
+                        }
+                        .modal .modalContent{
+                            width: 100% !important;
+                        }
+                        .Panel_search_title, .Panel_search_content { width: 100% !important;}
+                        .Basis_Date_Box tr:last-child td:first-child {margin-bottom: 10px;}
+                        .Panel_Edit_icon{
+                            top: -5px;
+                        }
+                        .doctypename,.factorid{width: 100% !important;}
+                        
+                       
+                    }
+                    @media only screen and (max-width: 1100px) {
+                        .credit_box {
+                        width: 100%;
+                        display: block;
+
+                        }
+                        .credit_box span {
+                        width: 100% !important;
+                        text-align: center;
+                        margin-right: 0 !important;
+                        }
+                        .credit_box p {
+                        width: 100% !important;
+                        text-align: center;
+                        }
+                        .Panel_Box_Content{
+                            width: 100%;
+                            display: block;
+
+                        }
+                        .Panel_Box_Content button {
+                        width: 100% !important;
+                      
+                        }
+                        .cost_onlineCharging {
+                        width: 100% !important;
+                      
+                        }
+                        .modal .modalContent{
+                            width: 100% !important;
+                        }
+                       
+                        .Panel_search_title, .Panel_search_content { width: 100% !important;}
+                    .Basis_Date_Box tr:last-child td:first-child {margin-bottom: 10px;}
+                    .Panel_Edit_icon{
+                        top: -5px;
+                    }
+                    .doctypename,.factorid{width: 100% !important;}
+                    }
+                    .withdrawFunds _textarea,.withdrawFunds input{
+                        display: inline-block;
+                        width: 49%;
+                        float: right;
+                        color: #5b5959;
+                        -webkit-box-sizing: border-box;
+                        -moz-box-sizing: border-box;
+                        box-sizing: border-box;
+                        font-family: 'IRANSansWeb';
+                        font-size: 12px;
+                        border: 1px solid #C7D6DB;
+                        background: #f7f9fb;
+                        border-radius: 4px;
+                        padding: 2px;
+                        margin: 2px;
+                      
+                        height: 35px;
+                    }
+                    .withdrawFunds _textarea{width: 98%;}
+                    .withdrawFunds  select{
+                        height: 35px;
+                        border-radius: 5px;
+                        background-color: #f8f8ff;
+                        border: 1px solid #d7d7fb;
+                        color: #212121;
+                        padding: 0.1em 0.4em;
+                        transition: border 0.3s linear 0s;
+                        margin: 2px;
+                        width: 49%;
+
+                    }
+                    .refund_registration{
+                        font-family: 'IRANSansWeb';
+                        font-size: 12px;
+                        cursor: pointer;
+                        border-radius: 5px;
+                        text-align: center;
+                        width: 100px;
+                        padding: 3px;
+                        margin-right: 16px;
+                        display: inline-block;
+                        box-sizing: border-box;
+                        border: 1px solid #C7D6DB;
+                        float: left;
+                    }
+                    </style>
+                    <script>
+                        function ValidDate(evt,input)
+                        {
+                            var charCode = (evt.which) ? evt.which : event.keyCode
+    
+                            if (!(charCode >= 48 && charCode <= 57) && !(charCode >= 96 && charCode <= 105) && charCode!=8)
+                            { 
+                                $(input).val($(input).val().substring(0,$(input).val().length-1))
+                                return
+                            }
+    
+                            if (($(input).val().length==4 || $(input).val().length==7) && charCode == 8)   
+                                $(input).val($(input).val().substring(0,$(input).val().length-1))
+                           
+                            if($(input).val().length==4 || $(input).val().length==7)
+                                $(input).val($(input).val()+"-")
+                        }
+                        function CheckFormat(input) 
+                        {
+                            var regex = /(1397|1398|1399|14\d\d)-((0|1)\d|(1|0)(1|2))-((0|1|2)\d|(3)(1|0))/
+                            
+                            if ($(input).val().length != 0  && !regex.test($(input).val()))
+                            {
+                                $(input).closest("td").find(".Error_date").show()
+                            }
+                            else
+                                $(input).closest("td").find(".Error_date").hide()
+                        }
+                           
+                        
+                        onsubmit_form()
+                        function onsubmit_form(){
+                            var main_json={
+                                        'dmnid':[##cms.cms.domainid##],
+                                        'ownerid':[##cms.cms.ownerid##],
+                                        'userid':[##db.checkrkey.userid##],
+                                        'factorid':"",
+                                        'doctype':"",
+                                        'fromdate':"",
+                                        'todate':"",
+                                    }
+                           
+                               
+                            $bc.setSource("db.wallet", [{
+                                "query": JSON.stringify(main_json),
+                                "run": true
+                            }]);
+
+                        }
+    
+                        $(function() 
+                        {
+                            $(".Panel_form_search").on("submit", function(event) 
+                            {
+                                
+
+                                var start_date=0
+                                var end_date=0
+                                if(document.querySelector(".start_date").getAttribute("data-cache")){
+
+                                    start_date=document.querySelector(".start_date").getAttribute("data-cache").split("_")[3]
+                                  
+                                    
+
+                                }
+                                if(document.querySelector(".end_date").getAttribute("data-cache")){
+                                    end_date=document.querySelector(".end_date").getAttribute("data-cache").split("_")[3]
+        
+                                   
+
+                                }
+
+                               
+
+                                var error = 0
+                                var input = document.getElementsByClassName("ValidDate");
+                                var regex = /(1397|1398|1399|14\d\d)-((0|1)\d|(1|0)(1|2))-((0|1|2)\d|(3)(1|0))/
+    
+                                for (var i = 0; i < input.length; i++) 
+                                {
+                                    if (input[i].value.length!=0 && !regex.test(input[i].value)) 
+                                        error++;
+                                }
+                               
+                                if (error)
+                                    return false 
+                                else
+                                {
+                                    $(window).scrollTop($('.ScrollTop').offset().top)
+                                  
+                                    event.preventDefault();
+                                    
+                                    var main_json={
+                                        'dmnid':[##cms.cms.domainid##],
+                                        'ownerid':[##cms.cms.ownerid##],
+                                        'userid':[##db.checkrkey.userid##],
+                                        'factorid':document.querySelector(".factorid").value,
+                                        'doctype':document.querySelector(".doctypeid").value,
+                                        'fromdate':start_date,
+                                        'todate':end_date,
+                                    }
+                                    
+                                  
+                                   
+                                    $bc.setSource("db.wallet", [{
+                                        "query": JSON.stringify(main_json),
+                                        "run": true
+                                    }]);
+                                 
+                                }     
+                            });
+                        });
+
+                    
+
+                        function autoRun_search(event, element) {
+                            element.value = '';
+                            element.closest(".data-answer-container").querySelector(".doctypeid").value = "";
+
+                            reset_drop_item();
+                            
+                            element.closest(".data-answer-container").querySelector(".drop-item").innerHTML = "";
+                            
+                            element.closest(".data-answer-container").classList.add("is-ready");
+                            $bc.setSource(`db.autoRun`, [{
+                                "run": true
+                            }]);
+                        };
+
+                        async function set_currency(){
+                           document.querySelectorAll(".is-separated").forEach(e => {
+                                if (e.value == '') {
+                                    e.value = e.value;
+                                } else {
+                                    e.value = new Intl.NumberFormat().format(parseFloat(e.value));
+                                }
+
+                            });
+                            document.querySelectorAll(".is-separated").forEach(e => {
+                                e.addEventListener('keyup', function (event) {
+                                    if (event.which >= 37 && event.which <= 40) return;
+                                    e.value = e.value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                });
+                            });
+                        }
+
+
+                        function reset_drop_item() {
+                            document.querySelectorAll(".drop-item").forEach(e => e.classList.remove("drop-item-toggle"));
+                        };
+
+
+                        
+
+                        async function onProcessed_autoRun(args) {
+                            stop_running_autoRun();
+                            const response = args.response;
+                            if (response.status == 200) {
+                                if (document.querySelector(".is-ready")) {
+                                    document.querySelector(".is-ready").querySelector(".data-loading").classList.add("unvisible");
+                                };
+                                
+                                const responseJson = await response.json();
+                              
+                                if (responseJson.msg || responseJson.error) {
+                                    console.log('no-data')
+                                } else {
+                                    let output = "";
+                                    for (const element of responseJson) {
+                                        
+                                        output +=
+                                            `<li onclick="select_item(this)" class="li-item" data-id="${element.doctypeid}"  data-value="${element.doctypename}">${element.doctypename}</li>`
+
+                                    
+                                    };
+                                 
+                                    if (document.querySelector(".is-ready")) {
+                                        document.querySelector(".is-ready").querySelector(".drop-item").innerHTML =
+                                            `<li class="data-inner-search"><input type="text" class="data-input" oninput="autoComplete_innerSearch(event,this)"></li>${output}`;
+                                        document.querySelector(".is-ready").querySelector(".drop-item").classList.toggle(
+                                            "drop-item-toggle");
+                                        document.querySelector(".is-ready").classList.remove("is-ready");
+                                    };
+
+
+                                };
+
+                            }
+                        };
+
+                        async function stop_running_autoRun() {
+                            $bc.setSource("db.autoRun", [{
+                            "run": false
+                        },])};
+
+
+                       
+
+                        function autoComplete_innerSearch(event, element, type) {
+                            element.closest(".drop-item").querySelectorAll(".li-item").forEach(e => {
+                                if (e.innerText.toUpperCase().includes(event.target.value.toUpperCase())) {
+                                    e.classList.remove("unvisible");
+                                } else {
+                                    e.classList.add("unvisible");
+                                }
+                            });
+
+                        };
+
+
+                        function select_item(element, request) {
+                            element.closest(".data-answer-container").querySelector(".doctypename").value = element.getAttribute(
+                                "data-value");
+                            element.closest(".data-answer-container").querySelector(".doctypeid").value = element.getAttribute("data-id");
+                            element.closest(".data-answer-container").querySelector(".drop-item").classList.remove("drop-item-toggle");
+                           
+                        };
+
+                        function hideModal_withdrawFunds(id) {
+                            document.querySelector(".modals").querySelector('.modal#withdrawFunds').style = 'display: none;'
+                        }
+
+                        function showModal_withdrawFunds(id){
+                            let credit = document.querySelector(".cost_credit").innerText
+                            document.querySelector("#amount").value = credit
+                            let number = parseFloat(credit.replace(/,/g, ''));
+
+                            if (number <0) {
+                                document.querySelector(".modals").querySelector('.modal#withdrawFunds').querySelector('.modalBody').innerText ='برداشت از موجودی امکان‌پذیر نیست زیرا اعتبار شما کافی نمی‌باشد. لطفاً موجودی خود را بررسی و مجدداً تلاش کنید.'
+                            } 
+                            document.querySelector(".modals").querySelector('.modal#withdrawFunds').removeAttribute('style');
+                            
+                            
+                        }
+
+                        function checkProfileComplete() {
+                        const status = document.body.getAttribute("data-profile-complete");
+                        return status
+                        
+                        }
+
+    
+
+                        function hideModal_addFunds(id) {
+                            document.querySelector(".modals").querySelector('.modal#addFunds').style = 'display: none;'
+                            document.querySelector(".modals").querySelector('.modal#addFunds').querySelector(".cost_onlineCharging").value="0"
+                            document.querySelector(".modals").querySelector('.modal#addFunds').querySelector(".Panel_invoice_View").style = 'display: none;'
+                        }
+
+                        function showModal_addFunds(id){
+                            console.log("**************")
+                            console.log(id)
+                            var status=checkProfileComplete();
+                            console.log(status)
+                            if (status==1){
+                                document.querySelector(".modals").querySelector('.modal#addFunds').removeAttribute('style');
+
+                            }
+                            else{
+                                        alert("لطفا ابتدا پروفایل (نام و نام خانوادگی) خود را تکمیل کنید ");
+
+                            }
+                           
+                            
+                            
+                        }
+
+
+                        $(".cost_credit").each(function () {
+                            var d = $(this).val();
+                            var n = parseInt(d).toLocaleString();
+                            $(this).val(n);
+                        })
+
+                        function Seprator(a) {
+                            $(a).keyup(function (event) {
+                                if (event.which >= 37 && event.which <= 40) return;
+                                $(this).val(function (index, value) {
+                                    return value
+                                        .replace(/\D/g, "")
+                                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                });
+                            });
+                        }
+
+                  
+                
+
+                        $(".pay_charging").click(function () {
+
+                            $(this).closest(".Panel_Box_Content").next(".Panel_invoice_View").find(
+                                ".Panel_Seprator").
+                            text($(this).siblings(".cost_onlineCharging").val())
+                            if (($(this).siblings(".cost_onlineCharging").val() != "0") && ($(this).siblings(
+                                    ".cost_onlineCharging").val() != "")) {
+                                $(".Panel_invoice_View").css("display", "block")
+                            }
+
+                        })
+
+                        $(".button_payment").each(function () {
+                            var bank_id = $(this).closest("tr").find(".bankId").val()
+                            if(bank_id == 98){
+                                $(this).closest("tr").css("opacity","0.3");
+                                $(this).css("cursor","unset")
+                                $(this).removeAttr('onclick');  
+                            }
+                        })
+
+
+                        function button_payment(a) {
+                            var phonenumber = $(".user-mobile-info").val();
+                            var bankId = $(a).closest('tr').find(".bankId").val()
+                            var x = $(".cost_onlineCharging").val();
+                            var y = x.split(",");
+                            var z = "";
+                            for (var i = 0; i < y.length; i++) {
+                                z += y[i]
+                            };
+                            if(bankId == 97){
+                                $(".Panel_invoice_View").append(`
+                                <form action="/Panel_wallet_Connecting_Bank.bc" method="post">
+                                <p>کاربر گرامی, جهت استفاده از درگاه سیبانک لطفا تلفن همراه و کد ملی خود را وارد نمایید.</p>
+                                <p class="get-bank-warning"> لازم به ذکر است که تلفن همراه وارد شده باید متعلق به کد ملی ذکر شده باشد</p>
+                                <input type="text" required=""  class="pay_input" name="mobileSiBank" onkeyup="this.value=this.value.replace(/[^0-9.]/g, '')" placeholder="تلفن همراه"/>
+                                <input type="text" required="" class="pay_input" name="nationalCodeSiBank" onkeyup="this.value=this.value.replace(/[^0-9.]/g, '')" placeholder="کد ملی"/>
+                                <input type="hidden" name="bank_id" value="${bankId}"/>
+                                <input type="hidden" name="price_charging" value="${z}">
+                                <input type="hidden" name="phonenumber" value="${phonenumber}"/>
+                                <input type="hidden" name="reciverownerid" value="[##db.checkrkey.userid|(0)##]"/>
+                                <input type="hidden" name="userid" value="[##db.checkrkey.userid|(0)##]"/>
+                                <button class="pay_btn" type="submit">پرداخت</button>
+                                </form>`)
+
+
+                            }else{
+                                var form =
+                                '<form action="/Panel_wallet_Connecting_Bank.bc" method="post"><input type="hidden" name="bank_id" value="' +
+                                bankId + '" /><input type="hidden" name="price_charging" value="' + z +
+                                '" /><input type="hidden" name="phonenumber" value="' + phonenumber +
+                                '" /><input type="hidden" name="reciverownerid" value="[##db.checkrkey.userid##]"><input type="hidden" name="userid" value="[##db.checkrkey.userid|(0)##]"></form>'
+                            $(".form_payment").html(form)
+                            $(".form_payment").find("form").submit()
+                            }
+
+                            
+                        }
+
+                        async function callback_source_save(source) {
+                            console.log(source)
+                            for (const element of source.source.rows) {
+
+                                if (element._root.description.price) {
+                                    element._root.description.price = element._root.description.price.replace(/,/g, '');
+                                };
+
+
+                                // var json_input = {
+                                //     description: element.description,
+                                //     price: element.price,
+                                //     cardNo: element.cardNo,
+                                //     shabaNo: element.shabaNo,
+                                //     bankid: element.bankid
+                                // }
+
+                                
+                                $bc.setSource("db.transfer", [{
+                                    "query": JSON.stringify(element._root),
+                                    "username":element.username,
+                                    "run": true
+                                }]);
+                            }
+                        };
+
+                        async function onProcessed_save(args) {
+                            const response = args.response;
+                            if (response.status === 200) {
+                                const responseJson = await response.json();
+                                const errorId = parseInt(responseJson.errorid);
+                                await showMessage(errorId);
+                            } else {
+                                await showMessage(0);
+                            }
+
+                            $bc.setSource("db.transfer", [{
+                                "run": false
+                            }]);
+location.reload();
+
+                        }
+
+                        async function showMessage(errorid) {
+                            // ایجاد یک عنصر div برای نمایش پیام
+                            const messageDiv = document.createElement('div');
+                            messageDiv.style.position = 'fixed';
+                            messageDiv.style.top = '20px';
+                            messageDiv.style.right = '20px';
+                            messageDiv.style.padding = '10px 20px';
+                            messageDiv.style.borderRadius = '5px';
+                            messageDiv.style.zIndex = '1000'; // برای اطمینان از اینکه پیام بالای سایر عناصر نمایش داده می‌شود
+
+                            // تعیین متن و رنگ پیام بر اساس errorid
+                            if (errorid === 5) { // فرض می‌کنیم ۰ نشان دهنده موفقیت است
+                                messageDiv.innerText = "عملیات موفقیت آمیز بود";
+                                messageDiv.style.backgroundColor = 'green';
+                                messageDiv.style.color = 'white';
+                            } else {
+                               
+                                messageDiv.innerText = "عملیات با خطا مواجه شد";
+                                
+                                messageDiv.style.backgroundColor = 'red';
+                                messageDiv.style.color = 'white';
+                            }
+
+                            // اضافه کردن پیام به body
+                            document.body.appendChild(messageDiv);
+
+                           
+                            // حذف پیام پس از ۵ ثانیه
+                            setTimeout(() => {
+                                messageDiv.remove();
+                                // location.reload();
+
+                            }, 5000);
+                        }
+
+
+
+                        function validate_form(){
+
+                            
+                            let isValid = true;
+                            document.querySelectorAll('.error').forEach(error => error.textContent = '');
+
+                            // گرفتن اطلاعات از فرم
+                            const description = document.querySelector('#description').value.trim();
+                            const amount = document.querySelector('#amount').value;
+                            const cardNumber = document.querySelector('#cardNo').value.trim();
+                            const shabaNumber = document.querySelector('#shabaNo').value.trim();
+                            const bankName = document.querySelector('#bank-name').value;
+
+                            let desc = document.querySelector('#description')
+                            if (description === "") {
+                              
+                                show_error(desc, " شرح درخواست نمی‌تواند خالی باشد.");
+                            }
+                            else{
+                                remove_error(desc); 
+                            }
+
+                            let price = document.querySelector('#amount')
+                            if (amount === "" || amount <= 0) {
+                                show_error(price, "مبلغ باید عددی بزرگتر از صفر باشد.");
+                            }
+                            else{
+                                remove_error(price); 
+                            }
+                            
+                            let card_Number=document.querySelector('#cardNo')
+                            if (!/^\d{16}$/.test(cardNumber)) {
+                               
+                                show_error(card_Number, "شماره کارت باید 16 رقم باشد.");
+                                
+                            }
+                            else{
+                                remove_error(card_Number); 
+                            }
+                            
+                            let shaba_Number=document.getElementById('shabaNo')
+                            if (!/^IR\d{24}$/.test(shabaNumber)) {
+                                show_error(shaba_Number, "شماره شبا باید با IR شروع شود و 24 رقم باشد.");
+                                
+                            }
+                            else{
+                                remove_error(shaba_Number); 
+                            }
+
+                            let bank_name=document.getElementById('bank-name')
+                            if (bankName === "") {
+                                show_error(bank_name, "لطفا یک بانک را انتخاب کنید.");
+                            }
+                            else{
+                                remove_error(bank_name);
+                            }
+
+                        }
+
+
+                        function show_error(element, msg=null){
+                            // if (msg && msg != null){
+                            //     alert(msg);
+                            // }
+                            element.classList.add('invalid-input');
+                        }
+
+                        function remove_error(element){
+                            element.classList.remove('invalid-input');
+
+                        }
+
+                        function submit_form(element, event) {
+                            event.preventDefault();
+                            let isValid = true;
+
+                            if (element.querySelector('.invalid-input')){
+                                isValid = false;
+                            }
+                            if (element.querySelectorAll(".is-separated")[0]) {
+                                element.querySelectorAll(".is-separated").forEach(e => {
+                                    e.value = e.value.replace(/,/g, '');
+                                });
+                            };
+
+                            if (isValid) {
+                                if (element.querySelector(".modalButtons")) {
+                                    // element.querySelector(".modalButton").classList.add("button--loading");
+                                    element.querySelector(".modalButtons").innerHTML += '<span class="button--loading"></span>';
+
+                                };
+                                element.classList.add("form-isSubmited");
+
+                                element.querySelector(".check-run").value = "true";
+
+                                element.requestSubmit();
+                            } else {
+                                event.preventDefault();
+                            }
+                        };
+
+                        
+
+                    </script>
+        
+                </body>
+
+            </html>
+        </basis>
+    </basis>
+</basis>
+
+

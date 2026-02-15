@@ -1,0 +1,314 @@
+<basis core="callback" run="atclient" triggers="db.excel" if="{##db.excel.run|(false)##}" method="callback_source_get_excel">
+</basis>
+
+<basis core="api" name="api.createpage" url="https://basisfly.com/accounting/get_report-wallet/[##cms.cookie.rkey##]" method="post" body='{##db.getExcel.query|("{"dmnid":[##cms.cms.domainid##],"ownerid":[##cms.cms.ownerid##]}")##}' content-type="application/json" run="atclient" triggers="db.getExcel" if="{##db.getExcel.run|(false)##}" onProcessed="onProcessed_excel"></basis>
+
+<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form.run|(false)##}" method="callback_source">
+</basis>
+
+<basis core="api" name="api.createpage" url="https://basisfly.com/accounting/get_report-wallet/[##cms.cookie.rkey##]" method="post" body='[##cms.form.query##]' content-type="application/json" run="atclient" triggers="db.search cms.form"></basis>
+
+
+
+<basis core="group" name="Delay_1">
+    
+
+    <div class="Panel_Box_title"><span>لیست تراکنش ها</span>
+        
+        
+        <span class="Panel_Excel_icon"><a class="DownLoadExcel_new_api" style="cursor:pointer">
+            <i class="fa fa-file-excel" style="color:red"></i></a>
+        </span>
+    </div>
+
+    <div class="Panel_Box_Content">
+        <div class="Panel_invoice_List">
+        
+        <input type="hidden" name="_root.lid" value='[##cms.query.lid##]'/>
+        <input type="hidden" class="fdate-string" name="_root.fromdate" />
+        <input type="hidden" class="tdate-string" name="_root.todate" />
+        <input type="hidden" name="_root.ownerid" value='[##cms.cms.ownerid##]'/>
+        <input type="hidden" name="_root.dmnid" value='[##cms.cms.domainid##]'/>
+        
+        <basis core="component.grid.grid" run="atclient" dataMemberName="db.report" options="reportItems"></basis>
+        </div>
+    </div>
+
+    
+    <script>
+
+        async function callback_source(source) {
+        
+            for (const element of source.source.rows) {
+                element._root.fromdate = formatDate(element._root.fromdate);
+                element._root.todate = formatDate(element._root.todate);
+
+                if (!element._root.accid){
+                    element._root.accid = '';
+                }
+                $bc.setSource('db.search', [{
+                    "query": JSON.stringify(element._root),
+                    "run": true
+                }, ])
+            }
+        };
+
+        function formatDate(dateStr){
+            const parts = dateStr.split('/');
+            const year = parts[0];
+            const month = parts[1].padStart(2, '0');
+            const day = parts[2].padStart(2, '0');
+            const date = year+'-'+ month+'-'+day
+            return date
+         
+
+        }
+
+
+
+        $(".DownLoadExcel_new_api").click(function () { 
+            var name = 'report_wallet_document';
+            var excel_type = 'accounting';
+            var db = "db.excel";
+
+            // var filters = {
+            //         "docID" : "docID",
+            //         'factorid': 'factorid',
+            //         'debtor': 'debtor',
+            //         'creditor': 'creditor',
+            //         'description.desc': 'description',
+            //         'description.bankname': 'bankname',
+            //         'description.refnumber': 'refnumber',
+            //         'date': 'date',
+            //         'hour': 'time',
+            //         'weekday': 'weekday'
+            //     }
+
+            var filters = [
+                
+                {
+                   "docID" : "شماره سند",
+                   'factorid': 'شماره قرارداد',
+                   'debtor': 'مبلغ بدهکاری',
+                   'creditor': 'مبلغ بستانکاری',
+                   'description.desc': 'توضیحات',
+                   'description.bankname': 'نام بانک',
+                   'description.refnumber': 'رفرنس',
+                   'date': 'تاریخ',
+                   'hour': 'ساعت',
+                   'weekday': 'روز'
+                },
+                {
+                   
+                   'Remaining_credit': 'اعتبار',
+                  
+                }
+            ] 
+
+        
+            $bc.setSource(db, [{
+                "excel": name,
+                "filters": filters,
+                "excel_type":excel_type,
+                "run": true
+            }]);
+        })
+
+        async function onProcessed_excel(args){
+            try{
+                const response = args.response;
+                const responseJson = await response.json();
+                console.log(responseJson)
+                var link = document.createElement("a");
+                document.body.appendChild(link);
+                link.setAttribute("type", "hidden");
+                link.href = "data:" + responseJson.mime + ";base64," + responseJson.payload;
+                link.download = responseJson.name;
+                link.click();
+                document.body.removeChild(link);
+            } 
+            catch(e){
+                console.log(e);
+            }
+           
+            $bc.setSource('db.getExcel', [{
+                "run": false
+            }, ])
+        }
+
+        async function callback_source_get_excel(source){
+            var elements = document.querySelectorAll(`[name*="_root."]`);
+            var main_json = [##cms.form.query##]
+
+            for (const element of source.source.rows) {
+                main_json['multi_excel'] = element.excel;
+                main_json['filters'] = element.filters;
+                main_json['excel_type'] = element.excel_type;
+                
+                console.log( JSON.stringify(main_json))
+                $bc.setSource("db.getExcel", [{
+                    "query": JSON.stringify(main_json),
+                    "run": true
+                }]);
+            }
+        }
+
+       
+        if (typeof reportItems === "undefined") {
+        var reportItems = {
+            columns: {
+               
+
+                docID: {
+                    title: "شماره سند",
+                    sort: true,
+                    filter: true
+                },
+               
+                debtor: {
+                    title: "مبلغ",
+                    filter: true,
+                    sort: true,
+
+                
+                    cellMaker: (row, data, td) => {
+                        let description=``
+                        
+                        if (row.debtor!= 0){
+                            return  `<p class="is-separated" style="color:red;direction: ltr"> - ${Intl.NumberFormat().format(parseFloat(row.debtor))} </p>`
+                        }
+                        else{
+                            return  `<p class="is-separated" style="color:green;direction: ltr"> + ${Intl.NumberFormat().format(parseFloat(row.creditor))} </p>`
+                      
+                        }
+
+                    }
+
+                },
+
+             
+                doctype: {
+                    title: "عنوان سند",
+                    filter: true,
+                    sort: false,
+                    cellMaker: (row, data, td) =>
+                        `<p>${row.doctype} </p><input type="hidden" class="doctypeid" name="doctypeid" value=${row.doctypeID} />`
+
+                },
+                description: {
+                    title: "توضیحات",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row, data, td) => {
+                        let description=``
+                        
+                        if (row.description.desc !== null && row.description.desc !=""){
+                            description += `<span>${row.description.desc} </span>`
+                        }
+                        if (row.description.bankname !== null && row.description.bankname !=""){
+                            description += `<span>/${row.description.bankname} </span>`
+                        }
+                        if (row.description.refnumber !== null && row.description.refnumber!=""){
+                            description += `<span>/${row.description.refnumber} </span>`
+                        }
+                        if (row.factorid !== null && row.factorid!=""){
+                            description +=` / <span>شماره قرارداد :</span>` + `<span>${row.factorid} </span>`
+                        }
+                        return description;
+                    }
+    
+
+                },
+                date: {
+                    title: "تاریخ",
+                    filter: true,
+                    sort: true,
+                        cellMaker: (row, data, td) =>
+                        `<p>${row.date} </p><p style="font-size: 12px;">(${row.weekday}) </p>`
+
+                },
+                hour: {
+                    title: "ساعت",
+                    filter: true,
+                    sort: true,
+               
+                   
+                },
+              
+          
+            },
+            filter: 'row',
+            rowNumber: 'ردیف',
+            defaultSort: false,
+            direction: "rtl",
+            paging: 50,
+            information: true,
+            firstAndLastBtn: true,
+            culture: {
+                labels: {
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}"
+                }
+            },
+
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+    <div class="icon">
+        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M45 70C45 67.2386 47.2386 65 50 65C52.7614 65 55 67.2386 55 70C55 72.7614 52.7614 75 50 75C47.2386 75 45 72.7614 45 70ZM45 30C45 27.2386 47.2386 25 50 25C52.7614 25 55 27.2386 55 30V50C55 52.7614 52.7614 55 50 55C47.2386 55 45 52.7614 45 50V30ZM49.95 0C22.35 0 0 22.4 0 50C0 77.6 22.35 100 49.95 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 49.95 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z"
+                fill="#D0D0D0">
+            </path>
+        </svg>
+    </div>
+    <div class="text">
+        هیچ موردی یافت نشد. </div></div>`
+            },
+            mode: "grid",
+            pageCount: false
+        };
+    }
+        
+    </script>
+    <style>
+        [data-bc-grid="d1"] table[data-bc-table] {
+           
+            margin-bottom: 40px;
+            }
+
+        [data-bc-grid="d1"] table[data-bc-table] thead td {text-align: center;}
+        .Panel_invoice_List table:nth-child(1) td {
+  background: yellow;
+}   .widget-title {
+            background: rgba(118, 118, 118, 0.1);
+                background-color: rgba(118, 118, 118, 0.1);
+            background-color: rgba(118, 118, 118, 0.1);
+            border: 1px solid #E8E8E8;
+            border-radius: 10px;
+            color: #767676;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .noData {
+            height: 500px;
+            align-content: center;
+        }
+        
+        [data-bc-grid="d1"] table[data-bc-table] {
+            margin-bottom: 40px;
+        }
+
+        [data-bc-grid="d1"] table[data-bc-table] thead td {
+            text-align: center !important;
+            height: 50px !important;
+        }
+        
+        .Panel_invoice_List table:nth-child(1) td {
+            background: yellow;
+        }
+    </style>

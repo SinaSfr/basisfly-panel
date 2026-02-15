@@ -1,0 +1,27 @@
+<basis core="external.fly.ws" source="cmsDbService2" procedurename="dbsource" name="db">
+    <member name="save_inputs_api" method="cms" query='{
+            "name": "db",
+            "mid": "20",
+            "member": [
+                {
+                    "request": "save_inputs",
+                    "id": "[##cms.form.paymentid##]",
+                    "trackingid": "[##cms.cookie.trackingid##]",
+                    "rkey": "[##cms.cookie.rkey##]",
+                    "factorid": "[##cms.form.factorid##]",
+                    "agencyid": "[##cms.form.agencyid##]",
+                    "paytype": "[##cms.form.paytype##]",
+                    "totalfinal": "[##cms.form.totalfinal##]",
+                    "currency": "[##cms.form.currency##]",
+                    "supplier": "[##cms.form.supplier##]",
+                    "bank_id": "[##cms.form.bank_id##]",
+                    "bankid": "[##cms.form.bankid##]",
+                    "session": "[##cms.form.session##]",
+                    "orderid": "[##cms.form.orderid##]",
+                    "supplierdmnid": "[##cms.cms.domainid##]",
+                    "reciverownerid": "[##cms.form.reciverownerid##]",
+                    "supplierownerid": "[##cms.cms.ownerid##]"
+                }
+            ]
+        }' preview="" />
+</basis>

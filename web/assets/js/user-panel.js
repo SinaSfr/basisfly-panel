@@ -25,7 +25,13 @@ const translate = (text) =>
     panelWalletAmount.dataset.amount || panelWalletAmount.textContent.trim()
   panelWalletAmount.dataset.amount = original
 
-  const masked = original.replace(/\d/g, '*')
+  function maskAll(str) {
+    return Array.from(str)
+      .map((ch) => (ch === ' ' ? ' ' : '*'))
+      .join('')
+  }
+
+  const masked = maskAll(original)
 
   let hidden = false
 
@@ -33,14 +39,15 @@ const translate = (text) =>
     panelWalletAmount.textContent = hidden ? masked : original
     visibilityAmountBtn.setAttribute('aria-pressed', String(hidden))
 
-    visibilityAmountBtn
-      .querySelector('use')
-      .setAttribute(
+    const useEl = visibilityAmountBtn.querySelector('use')
+    if (useEl) {
+      useEl.setAttribute(
         'href',
         hidden
-          ? '../assets/images/panel-sprite-icons.svg#icon-eye-slash'
-          : '../assets/images/panel-sprite-icons.svg#icon-eye',
+          ? '/userPanel/images/panel-sprite-icons.svg#icon-eye-slash'
+          : '/userPanel/images/panel-sprite-icons.svg#icon-eye',
       )
+    }
   }
 
   visibilityAmountBtn.addEventListener('click', () => {

@@ -1,0 +1,187 @@
+<basis core="call" file="Panel_Loading_Css.inc" />
+<basis core="call" file="Client_BasisCore_Script.inc"></basis>
+<div id="alert-Loadding-box"></div>
+<div id="alert-Loadding">
+    <div class="sectionInfo">
+        <div id="circularG">
+            <div id="circularG_1" class="circularG"></div>
+            <div id="circularG_2" class="circularG"></div>
+            <div id="circularG_3" class="circularG"></div>
+            <div id="circularG_4" class="circularG"></div>
+            <div id="circularG_5" class="circularG"></div>
+            <div id="circularG_6" class="circularG"></div>
+            <div id="circularG_7" class="circularG"></div>
+            <div id="circularG_8" class="circularG"></div>
+        </div>
+    </div>
+
+    <basis core="dbsource" source="hosting" name="site">
+        <member name="address" type="list" request="siteaddress" />
+    </basis>
+
+    <basis core="external.fly.ws" source="cmsDbService2" name="db" procedurename="dbsource">
+        <member name="webservice_detail" method="cms" query='{ 
+            "name": "db",
+            "mid": "20",
+            "member":
+            [
+                { 
+                    "name": "q", 
+                    "type":"list",
+                    "request": "webservice_Detail",
+                    "id": "[##cms.form.bank_id##]",
+                    "lid":"1"
+                }
+            ] 
+        } ' />
+    </basis>
+
+    <basis core="group" name="FirstDelay">
+        <basis core="inlinesource" name="db">
+            <member name="bankid" format="json" postsql="select value from [db.bankid] where field = 'bankid'">
+                {"root":[##db.webservice_detail.result##]} </member>
+            <member name="unit" format="json" postsql="select value from [db.unit] where field = 'unit'">
+                {"root":[##db.webservice_detail.result##]} </member>
+        </basis>
+
+        <basis core="group" name="SecondDelay">
+
+            <basis core="external.fly.ws" source="cmsDbService2" name="db" procedurename="dbsource">
+                <member name="Currency_Conversion" method="cms" query='{
+                    "name": "db",
+                    "mid": "20",
+                    "member": [
+                        {
+                            "type": "list",
+                            "name": "q",
+                            "request": "Currency_Conversion",
+                            "dmnid": [##cms.cms.domainid##],
+                            "price": "[##cms.form.price_charging##]",
+                            "unit": "[##db.unit.Value##]"
+                        }
+                    ]
+                }
+                ' />
+            </basis>
+
+            <basis core="group" name="ThirdDelay">
+
+                <basis core="inlinesource" name="db">
+                    <member name='price' format="json" preview=""
+                        postsql="select value from [db.price] where field = 'price'">
+                        {"root": [##db.Currency_Conversion.result##]}
+                    </member>
+                </basis>
+
+                <basis core="group" name="Paymentdelay">
+
+                    <basis core="dbsource" source="accounting" name="db" bankid="[##db.bankid.Value##]"
+                        factorid="[##cms.form.factorid|(0)##]" price="[##db.price.Value##]" unit="[##db.unit.Value##]"
+                        eid="1">
+                        <member name="paymentid" type="scalar" request="paymentid" preview="" />
+                    </basis>
+
+                    <basis core="external.fly.ws" source="cmsDbService2" name="db" procedurename="dbsource">
+                        <member name="onlineCharging_save" method="cms" query='{
+                            "name": "db",
+                            "mid": "20",
+                            "member": [
+                            {
+                                "name": "q",
+                                "type": "list",
+                                "request": "create_onlineCharging",
+                                "supplierdmnid": "[##cms.cms.domainid##]",
+                                "supplierownerid": "[##cms.cms.ownerid##]",
+                                "paymentid": "[##db.paymentid.Column1##]",
+                                "price": "[##cms.form.price_charging##]",
+                                "userid": "[##cms.form.userid##]",
+                                "reciverownerid": "[##cms.form.reciverownerid##]"
+                            }
+                            ]
+                        }
+                        ' />
+                    </basis>
+                    <basis core="api" name="api.token" run="AtClient"
+                        url='https://basisfly.com/pay/Token/[##cms.cookie.rkey##]' method="post" body='{
+                                "bankid": [##db.bankid.Value##],
+                                "doc_type": "7",
+                                "factorid": [##cms.form.factorid|(0)##],
+                                "site_url": "[##site.address.domain##]",
+                                "callback_url": "Panel_Charging_CallBack.bc?iN=[##db.paymentid.Column1##]",
+                                "mobile": "[##cms.form.phonenumber##]",
+                                "email": "[##cms.form.email##]",
+                                "amount": "[##db.price.Value##]",
+                                "currency": "[##db.unit.Value##]",
+                                "description": "online charging",
+                                "tax_amount": "0",
+                                "discount_amount": "0",
+                                "cart_items": {
+                                    "title": "online charging",
+                                    "source": "",
+                                    "destination": "",
+                                    "service_type": "",
+                                    "travel_type": ""
+                                }
+                            }'>
+                    </basis>
+                    <basis core="callback" run="atclient" triggers="api.token" method="manipulation"></basis>
+                    <script type="text/javascript">
+                        const manipulation = async (args) => {
+                            try {
+                                const source = args.source?.rows;
+                                if (source[0].url_gateway) {
+                                    fetch("/Panel_Charging_Get_Token.bc?lid=1", {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/x-www-form-urlencoded",
+                                        },
+                                        body: new URLSearchParams({
+                                            paymentid: "[##db.paymentid.Column1##]",
+                                            bankid: "[##db.bankid.Value##]",
+                                            bank_id: "[##cms.form.bank_id##]",
+                                            supplier: "[##cms.form.supplier##]",
+                                            totalfinal: "[##db.price.Value##]",
+                                            paytype: "[##cms.form.paytype##]",
+                                            agencyid: "[##cms.form.agencyid|(0)##]",
+                                            factorid: "[##cms.form.factorid|(0)##]",
+                                            supplierdmnid: "[##cms.cms.domainid##]",
+                                            reciverownerid: "[##cms.form.reciverownerid##]",
+                                            supplierownerid: "[##cms.cms.ownerid##]",
+                                            currency: "[##db.unit.Value##]",
+                                            session: source[0].session,
+                                            orderid: source[0].orderid,
+
+                                        })
+                                    })
+                                        .then(response => response.text())
+                                        .then(result => {
+                                            if (source[0].method == 'POST') {
+                                                const tempDiv = document.createElement('div');
+                                                tempDiv.innerHTML = source[0].form;
+                                                const form = tempDiv.querySelector('form');
+                                                document.querySelector(".sectionInfo").appendChild(form);
+                                                form.submit();
+                                            } else {
+                                                window.location = source[0].url_gateway
+                                            }
+                                        })
+                                        .catch(error => console.error("Error:", error));
+
+                                } else {
+                                    const div = document.createElement('div');
+                                    div.id = 'text-loading';
+                                    div.textContent = 'امکان اتصال به درگاه پرداخت الکترونیک وجود ندارد.';
+                                    document.querySelector(".sectionInfo").appendChild(div);
+
+
+                                }
+                            } catch (err) {
+                                console.error('manipulation=' + err.lineNumber + ',' + err.message);
+                            }
+                        };
+                    </script>
+                </basis>
+            </basis>
+        </basis>
+    </basis>
+</div>

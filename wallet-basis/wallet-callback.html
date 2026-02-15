@@ -1,0 +1,200 @@
+<basis core="call" file="Client_BasisCore_Script.inc"></basis>
+<basis core="external.fly.ws" source="cmsDbService2" procedurename="dbsource" name="db">
+    <member name="get_inputs" method="cms" query='{
+        "name": "db",
+        "mid": "20",
+        "member": [
+            {
+                "request": "get_inputs",
+                "id": "[##cms.query.iN##]"
+            }
+        ]
+    }' preview="" />
+</basis>
+
+<basis core="group" name="Delay_2">
+    <basis core="inlinesource" name="db">
+        <member name="id" format="json" postsql="select  value  from [db.id] as a where Field = 'id'" preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="rkey" format="json" postsql="select  value  from [db.rkey] as a where Field = 'rkey'" preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="factorid" format="json" postsql="select  value  from [db.factorid] as a where Field = 'factorid'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="agencyid" format="json" postsql="select  value  from [db.agencyid] as a where Field = 'agencyid'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="paytype" format="json" postsql="select  value  from [db.paytype] as a where Field = 'paytype'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="totalfinal" format="json"
+            postsql="select  value  from [db.totalfinal] as a where Field = 'totalfinal'" preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="supplier" format="json" postsql="select  value  from [db.supplier] as a where Field = 'supplier'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="bankIdentifier" format="json"
+            postsql="select  value  from [db.bankIdentifier] as a where Field = 'bank_id'" preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="bankid" format="json" postsql="select  value  from [db.bankid] as a where Field = 'bankid'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="session" format="json" postsql="select  value  from [db.session] as a where Field = 'session'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="orderid" format="json" postsql="select  value  from [db.orderid] as a where Field = 'orderid'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="supplierdmnid" format="json"
+            postsql="select  value  from [db.supplierdmnid] as a where Field = 'supplierdmnid'" preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="reciverownerid" format="json"
+            postsql="select  value  from [db.reciverownerid] as a where Field = 'reciverownerid'" preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="supplierownerid" format="json"
+            postsql="select  value  from [db.supplierownerid] as a where Field = 'supplierownerid'" preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+        <member name="currency" format="json" postsql="select  value  from [db.currency] as a where Field = 'currency'"
+            preview="">
+            {"root":[##db.get_inputs.result##]}</member>
+    </basis>
+
+    <basis core="dbsource" source="hosting" name="site">
+        <member name="address" type="list" request="siteaddress" />
+    </basis>
+
+    <!-- updated login -->
+    <basis core="dbsource" name="db" source="trustloginapi" rkey="[##db.rkey.Value##]" request="checkrkey">
+        <member name="checkrkey" type="view" />
+    </basis>
+
+    <basis core="external.fly.ws" source="cmsDbService2" name="db" procedurename="dbsource">
+        <member name="webservice_detail" method="cms" query='
+            { 
+                "name": "db",
+                "mid": "20",
+                "member":
+                [
+                    { 
+                        "name": "q", 
+                        "type":"list",
+                        "request": "webservice_Detail",
+                        "id": "[##db.bankIdentifier.Value##]"
+                    }
+                ] 
+            } ' preview="" />
+    </basis>
+
+    <html>
+
+    <head>
+        <meta name="description" content="Waiting" />
+        <meta name="author" content="BasisCore">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <title>Waiting</title>
+        <basis core="call" file="Panel_Loading_Css.inc" />
+    </head>
+
+    <body>
+        <div id="alert-Loadding-box"></div>
+        <div id="alert-Loadding">
+            <div class="sectionInfo">
+                <div id="circularG">
+                    <div id="circularG_1" class="circularG"></div>
+                    <div id="circularG_2" class="circularG"></div>
+                    <div id="circularG_3" class="circularG"></div>
+                    <div id="circularG_4" class="circularG"></div>
+                    <div id="circularG_5" class="circularG"></div>
+                    <div id="circularG_6" class="circularG"></div>
+                    <div id="circularG_7" class="circularG"></div>
+                    <div id="circularG_8" class="circularG"></div>
+                </div>
+            </div>
+            <basis core="api" name="api.verify" run="AtClient" if="{##cms.params##}" triggers="cms.params"
+                url='https://basisfly.com/pay/Verify/[##db.rkey.Value##]' method="post" body='{
+                                "bankid": [##db.bankid.Value##],
+                                "factorid": [##db.factorid.Value##],
+                                "amount": [##db.totalfinal.Value##],
+                                "currency": [##db.currency.Value##],
+                                "orderid": [##db.id.Value##],
+                                "params": {##cms.params.params##},
+                                "cardno": "[##cms.form.CardMaskPan##]",
+                                "doctypeid": "7",
+                                "mid": 24
+                            }'>
+            </basis>
+            <basis core="callback" run="atclient" triggers="api.verify" method="manipulation"></basis>
+            <div class="status-payment"></div>
+            <form method="post" action="/Panel_wallet_Charging_Final_Payment.bc" name="formbank" class="formbank">
+                <input type="hidden" value='' name="token" />
+                <input type="hidden" value="[##db.checkrkey.userid|(0)##]" name="userid" />
+                <input type="hidden" value="[##cms.cms.domainid##]" name="dmnid" />
+                <input type="hidden" value="[##db.supplierdmnid.value##]" name="supplierdmnid" />
+                <input type="hidden" value="[##db.supplierownerid.value##]" name="supplierownerid" />
+                <input type="hidden" value="[##db.reciverownerid.value##]" name="reciverownerid" />
+                <input type="hidden" value="[##db.factorid.Value##]" name="factorid" />
+                <input type="hidden" value="[##db.agencyid.Value##]" name="agencyid" />
+                <input type="hidden" value="[##db.supplier.Value##]" name="supplier" />
+                <input type="hidden" value="[##db.paytype.Value##]" name="paytype" />
+                <input type="hidden" value="[##db.bankIdentifier.Value##]" name="bank_id" />
+                <input type="hidden" value="[##db.id.Value##]" name="paymentid" />
+                <input type="hidden" value="[##db.bankid.Value##]" name="bankid" />
+                <input type="hidden" value="" name="bankName" />
+            </form>
+            <script type="text/javascript"><basis core="call" file="book/callback/script" lid="1"></basis></script>
+            <script type="text/javascript">
+                const manipulation = async (args) => {
+                    try {
+                        const source = args.source?.rows;
+                        if (source[0].status == 1) {
+                            document.querySelector(".status-payment").innerHTML = ` <div class="alert-Txt">...در حال بارگیری اطلاعات لطفا صبر کنید</div>`;
+                            document.querySelector(".formbank").querySelector("input[name=token]").value = source[0].status;
+                            const url = "/Panel_wallet_Charging_Final_Payment.bc";
+                            const formElement = document.querySelector(".formbank");
+                            if (formElement) {
+                                const formData = new URLSearchParams(new FormData(formElement));
+                                fetch(url, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded",
+                                    },
+                                    body: formData.toString(),
+                                })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`HTTP error! status: ${response.status}`);
+                                        }
+                                        return response.text();
+                                    })
+                                    .then(html => {
+                                        const sectionInfo = document.querySelector(".sectionInfo");
+                                        if (sectionInfo) {
+                                            sectionInfo.innerHTML = html;
+                                        }
+
+                                    })
+                                    .catch(error => {
+                                        console.error("Error during fetch:", error);
+                                    });
+                            }
+
+                        } else {
+                            document.querySelector(".status-payment").innerHTML = `<div class="alert-Txt">پرداخت ناموفق است</div>
+                                          <div class="alert-Txt">...در حال بارگیری اطلاعات لطفا صبر کنید</div>`;
+                            document.querySelector(".sectionInfo").innerHTML = "";
+                        }
+                        window.location.href = "[##site.address.domain##]/Panel-wallet.bc?rK=[##db.rkey.Value##]";
+                    } catch (err) {
+                        console.error('manipulation=' + err.lineNumber + ',' + err.message);
+                    }
+                };
+
+            </script>
+
+
+        </div>
+    </body>
+
+    </html>
+</basis>
