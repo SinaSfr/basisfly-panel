@@ -196,7 +196,7 @@
                                         <div
                                             class="panel-grid panel-grid-cols-2 panel-gap-3 panel-border-l panel-border-zinc-300 panel-ml-5 panel-pl-5">
 
-                                            <div class="panel-relative" data-dd-key="origin_city">
+                                            <div class="panel-relative panel-cursor-pointer" data-dd-key="origin_city">
                                                 <input data-dd-input id="advSearchOriginCity"
                                                     name="_root.route.start.city_name" type="text" readonly
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
@@ -211,7 +211,7 @@
                                                 </svg>
                                             </div>
 
-                                            <div class="panel-relative" data-dd-key="destination_city">
+                                            <div class="panel-relative panel-cursor-pointer" data-dd-key="destination_city">
                                                 <input data-dd-input id="advSearchDestinationCity"
                                                     name="_root.route.end.city_name" data-field="destination_city"
                                                     type="text" readonly
@@ -227,7 +227,7 @@
                                                 </svg>
                                             </div>
 
-                                            <div class="panel-relative" data-dd-key="hotel">
+                                            <div class="panel-relative panel-cursor-pointer" data-dd-key="hotel">
                                                 <input data-dd-input id="advSearchHotel" name="_root.route.hotelname"
                                                     data-field="hotel" type="text" readonly
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
@@ -241,7 +241,7 @@
                                                 </svg>
                                             </div>
 
-                                            <div class="panel-relative" data-dd-key="rail_company">
+                                            <div class="panel-relative panel-cursor-pointer" data-dd-key="rail_company">
                                                 <input data-dd-input id="advSearchRailCompany"
                                                     name="_root.trainscompany" data-field="rail_company" type="text"
                                                     readonly
@@ -255,7 +255,7 @@
                                                 </svg>
                                             </div>
 
-                                            <div class="panel-relative" data-dd-key="airline">
+                                            <div class="panel-relative panel-cursor-pointer" data-dd-key="airline">
                                                 <input data-dd-input id="advSearchAirline" name="_root.route.airline1"
                                                     data-field="airline" type="text" readonly
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
@@ -269,7 +269,7 @@
                                                 </svg>
                                             </div>
 
-                                            <div class="panel-relative" data-dd-key="route_code">
+                                            <div class="panel-relative panel-cursor-pointer" data-dd-key="route_code">
                                                 <input data-dd-input id="advSearchRouteCode"
                                                     name="_root.route.routecode" data-field="route_code" type="text"
                                                     readonly
@@ -286,7 +286,7 @@
 
                                         <div class="panel-flex panel-flex-col panel-gap-3">
                                             <div class="panel-grid panel-grid-cols-2 panel-gap-3">
-                                                <div class="panel-relative" data-dd-key="status">
+                                                <div class="panel-relative panel-cursor-pointer" data-dd-key="status">
                                                     <input data-dd-input id="advSearchStatus" name="_root.open"
                                                         data-field="status" type="text" readonly
                                                         class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
@@ -299,7 +299,7 @@
                                                     </svg>
                                                 </div>
 
-                                                <div class="panel-relative" data-dd-key="tag">
+                                                <div class="panel-relative panel-cursor-pointer" data-dd-key="tag">
                                                     <input data-dd-input id="advSearchTag"
                                                         name="_root.status.invoicestatus" data-field="tag" type="text"
                                                         readonly
@@ -313,7 +313,7 @@
                                                     </svg>
                                                 </div>
                                             </div>
-                                            <div class="panel-relative panel-col-span-2" data-dd-key="services">
+                                            <div class="panel-relative panel-cursor-pointer panel-col-span-2" data-dd-key="services">
                                                 <input data-dd-input id="advSearchServices" name="_root.type"
                                                     data-field="services" type="text" readonly
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
@@ -473,7 +473,7 @@
                 type: "click",
                 // rangeDatesSeparated: true,
                 mode: "desktop",
-                style: "[##cms.cms.cdn##]/asset/css/datepicker-style.css",
+                style: "[##cms.cms.cdn##]/booking/css/datepicker.ui.min.css",
             }
         };
         function submit_form_invoice(element, event) {

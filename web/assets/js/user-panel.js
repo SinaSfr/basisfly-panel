@@ -1018,17 +1018,31 @@ window.sharedDDStore =
    2) API handler
 ======================= */
 async function onProcessedSearch_item(args) {
-  const store = window.sharedDDStore
-  store.startRequest()
+  const store = window.sharedDDStore;
+  store.startRequest();
 
   try {
-    const res = args?.response
-    if (!res) throw new Error('no response')
+    const res = args?.response;
+    if (!res) throw new Error('no response');
 
-    const json = await (res.clone ? res.clone().json() : res.json())
-    store.set(json)
+    const json = await (res.clone ? res.clone().json() : res.json());
+
+    if (json?.sources) {
+      const refundSearchSource = json.sources.find(source => source.options.tableName === 'db.invoice_refund_view');
+      
+      if (refundSearchSource && refundSearchSource.data) {
+        json.refund_search = refundSearchSource.data.map(item => ({
+          id: item.code,   // تبدیل code به id
+          name: item.title  // تبدیل title به name
+        }));
+      }
+    }
+
+
+    store.set(json);
+
   } catch (e) {
-    store.fail(e)
+    store.fail(e);
   }
 }
 
@@ -1052,6 +1066,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hotel: 'hotel',
     rail_company: 'train',
     services: 'type',
+    refund_search: 'refund_search',
   })
 
   const ddConfigs = {
@@ -1113,6 +1128,11 @@ document.addEventListener('DOMContentLoaded', () => {
       dynamic: true,
       hiddenSelector: 'input[name="_root.type"]',
     },
+    refund_search: {
+      ph: translate('search_refund_list'), 
+      dynamic: true,
+      hiddenSelector: 'input[name="_root.notetype"]',
+    },
   }
 
   const mapCity = (arr) =>
@@ -1142,25 +1162,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const renderList = (items) => {
-    if (!items?.length) return renderEmpty(translate('no_items_found'))
+    if (!items?.length) return renderEmpty(translate('no_items_found'));
 
-    list.innerHTML = ''
-    const frag = document.createDocumentFragment()
+    list.innerHTML = '';
+    const frag = document.createDocumentFragment();
 
     items.forEach((item) => {
-      const btn = document.createElement('button')
-      btn.type = 'button'
-      btn.className =
-        'panel-w-full panel-text-right panel-px-3 panel-py-2 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200'
-      btn.setAttribute('role', 'option')
-      btn.dataset.value = toStr(item.value)
-      btn.dataset.label = toStr(item.label)
-      btn.textContent = toStr(item.label)
-      frag.appendChild(btn)
-    })
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'panel-w-full panel-text-right panel-px-3 panel-py-2 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200';
+        btn.setAttribute('role', 'option');
+        btn.dataset.value = toStr(item.value);
+        btn.dataset.label = toStr(item.label);
+        btn.textContent = toStr(item.label);
+        frag.appendChild(btn);
+    });
 
-    list.appendChild(frag)
-  }
+    list.appendChild(frag);
+};
 
   const filterItems = (items, q) => {
     const query = (q || '').trim().toLowerCase()
@@ -1319,9 +1338,22 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('sharedDropdown:dataUpdated', () => {
-    if (!activeKey || !isOpen()) return
-    renderList(filterItems(getItems(activeKey), search.value))
-  })
+    if (!activeKey || !isOpen()) return;
+
+    const data = store.get();
+
+    if (activeKey === 'refund_search') {
+        const refundItems = data?.refund_search || [];
+
+        if (!refundItems.length) {
+            renderEmpty(translate('no_items_found'));  // اگر داده‌ای نبود
+        } else {
+            renderList(filterItems(refundItems, search.value));  // فیلتر کردن و نمایش داده‌ها
+        }
+    } else {
+        renderList(filterItems(getItems(activeKey), search.value));
+    }
+});
 })
 
 /**

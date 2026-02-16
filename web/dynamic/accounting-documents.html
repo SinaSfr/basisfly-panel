@@ -13,6 +13,23 @@
 }' content-type="application/json" onProcessed="onProcessedCompanyOwnerid">
 </basis>
 
+<basis core="api" name="api.get_report-document"
+    url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]" method="post" body='{
+"lid": 1,
+"factorid": "{##cms.form.factorid##}",
+"accnumber": "{##cms.form.accnumber##}",
+"fromdate": "{##cms.form.start_date##}",
+"todate": "{##cms.form.end_date##}"
+}' content-type="application/json" run="atclient" triggers="db.search cms.form" onProcessed="onProcessedReportDoc">
+</basis>
+
+<basis core="api" name="report-excel" url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]"
+    method="post" body='{##db.reportExcel.query##}' content-type="application/json" run="atclient"
+    triggers="db.reportExcel" if="{##db.reportExcel.run|(false)##}" OnProcessed="onProcessed_excel"></basis>
+
+<basis core="api" name="credit-excel" url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]"
+    method="post" body='{##db.creditExcel.query##}' content-type="application/json" run="atclient"
+    triggers="db.creditExcel" if="{##db.creditExcel.run|(false)##}" OnProcessed="onProcessed_excel"></basis>
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -32,19 +49,6 @@
     <main>
         <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
-
-            <basis core="api" name="api.get_report-document"
-                url="https://basisfly.com/accounting/get_report-document/[##cms.cms.rkey##]" method="post" body='{
-              "lid": 1,
-              "dmnid": [##cms.cms.domainid##],
-              "ownerid": [##cms.cms.ownerid##],
-              "userid": 2301014 [##db.ownerid.result##],
-              "factorid": "{##cms.form.factorid|()##}",
-              "accnumber": "{##cms.form.accnumber|()##}",
-              "fromdate": "{##cms.form.start_date|()##}",
-              "todate": "{##cms.form.end_date|()##}"
-            }' content-type="application/json" run="atclient" triggers="db.search cms.form"
-                onProcessed="onProcessedReportDoc"></basis>
 
             <div class="panel-flex-1">
                 <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6">
@@ -221,7 +225,7 @@
 
                     <div class="panel_grid_style" data-panel="report" data-run="1">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.report"
-                            options="reportItems"></basis>
+                            options="reportItems" onRendered="onRenderedSetExcelClick"></basis>
                     </div>
                 </section>
             </div>
@@ -598,12 +602,133 @@
                         <use href="/userPanel/images/panel-sprite-icons.svg#icon-no-items"></use>
                     </svg>
                 </div>
-    <div class="text">
-       ${translate('no_items_found')} </div></div>`
+                <div class="text">
+                ${translate('no_items_found')}
+                 </div>
+                </div>`
             },
+            export: [
+                {
+                    type: "excel",
+                    tooltip: "دانلود اکسل"
+                }
+            ],
             mode: "grid",
             pageCount: false
         };
+
+
+    </script>
+    <script>
+        async function onRenderedSetExcelClick(args) {
+            setExcel('div[data-bc-export-container]', 'div[data-bc-export-item]', 'report');
+            setExcel('div[data-bc-export-container-f]', 'div[data-bc-export-item]', 'credit');
+        }
+
+        async function setExcel(containerSelector = 'div[data-bc-export-container]', buttonSelector = 'div[data-bc-export-item]', excelType = 'default') {
+            var container = document.querySelector(containerSelector);
+
+            if (container) {
+                var excel_btn = container.querySelector(buttonSelector);
+                if (excel_btn) {
+                    excel_btn.setAttribute('onClick', `downloadExcel("${excelType}")`);
+                }
+            }
+        }
+        async function onProcessed_excel(args) {
+            try {
+                const response = args.response;
+                const responseJson = await response.json();
+                console.log(responseJson)
+                var link = document.createElement("a");
+                document.body.appendChild(link);
+                link.setAttribute("type", "hidden");
+                link.href = "data:" + responseJson.mime + ";base64," + responseJson.payload;
+                link.download = responseJson.name;
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        function getFilters(type) {
+        if (type === "credit") {
+            return {
+                "AccountNo": "کد تفضیلی",
+                "docID": "شماره سند",
+                'accountname': 'نام حساب',
+                'factorid': 'شماره قرارداد',
+                'description.desc': 'توضیحات',
+                'description.bankname': 'نام بانک',
+                'description.refnumber': 'رفرنس',
+                'date': 'تاریخ',
+                'hour': 'ساعت',
+                'debtor': 'مبلغ بدهکاری',
+                'creditor': 'مبلغ بستانکاری'
+            };
+        } else if (type === "report") {
+            return [
+                {
+                    '#1': 'A',
+                    '#2': 'B',
+                    '#3': 'C',
+                    '#4': 'D',
+                    '#5': 'E',
+                    '#6': 'F',
+                    '#7': 'G',
+                    '#8': 'H',
+                    '#9': 'I',
+                    "total_debtor_to_date": "بدهکاری",
+                    "total_creditor_to_date": "بستانکاری",
+                    'remained': 'مانده از قبل',
+                },
+                {
+                    "AccountNo": "کد تضیلی",
+                    "docID": "شماره سند",
+                    'accountname': 'نام حساب',
+                    'factorid': 'شماره قرارداد',
+                    'description.desc': 'توضیحات',
+                    'description.bankname': 'نام بانک',
+                    'description.refnumber': 'رفرنس',
+                    'date': 'تاریخ',
+                    'hour': 'ساعت',
+                    'debtor': 'مبلغ بدهکاری',
+                    'creditor': 'مبلغ بستانکاری',
+                    'remaining': 'مانده'
+                },
+            ];
+        }
+    }
+
+    async function downloadExcel(type = 'default') {
+
+        let name, excel_type, db;
+
+        if (type === "credit") {
+            name = 'report_credit_List';
+            excel_type = 'accounting_credit';
+            db = "db.excel";
+        } else if (type === "report") {
+            name = 'report_document_List';
+            excel_type = 'accounting_document';
+            db = "db.reportExcel";
+        }
+
+        const filters = getFilters(type);
+
+        const main_json = {
+            'multi_excel': name,
+            'filters': filters,
+            'excel_type': excel_type
+        };
+
+        $bc.setSource(db, [{
+            "query": JSON.stringify(main_json),
+            "run": true
+        }]);
+
+    }
 
     </script>
 </body>
