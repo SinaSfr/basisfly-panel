@@ -16,20 +16,23 @@
 <basis core="api" name="api.get_report-document"
     url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]" method="post" body='{
 "lid": 1,
-"factorid": "{##cms.form.factorid##}",
-"accnumber": "{##cms.form.accnumber##}",
-"fromdate": "{##cms.form.start_date##}",
-"todate": "{##cms.form.end_date##}"
-}' content-type="application/json" run="atclient" triggers="db.search cms.form" onProcessed="onProcessedReportDoc">
+"factorid": "{##cms.search.factorid##}",
+"accnumber": "{##cms.search.accnumber##}",
+"fromdate": "{##cms.search.fromdate##}",
+"todate": "{##cms.search.todate##}"
+}' content-type="application/json" run="atclient" triggers="cms.search" onProcessed="onProcessedReportDoc">
+</basis>
+
+<basis core="callback" run="atclient" triggers="cms.form" method="callbackDocumentSearch">
 </basis>
 
 <basis core="api" name="report-excel" url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]"
     method="post" body='{##db.reportExcel.query##}' content-type="application/json" run="atclient"
-    triggers="db.reportExcel" if="{##db.reportExcel.run|(false)##}" OnProcessed="onProcessed_excel"></basis>
+    triggers="db.reportExcel" if="{##db.reportExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
 
 <basis core="api" name="credit-excel" url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]"
     method="post" body='{##db.creditExcel.query##}' content-type="application/json" run="atclient"
-    triggers="db.creditExcel" if="{##db.creditExcel.run|(false)##}" OnProcessed="onProcessed_excel"></basis>
+    triggers="db.creditExcel" if="{##db.creditExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -54,12 +57,13 @@
                 <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6">
                     <h2 class="panel-text-zinc-900 panel-font-medium">جستجوی تراکنش
                     </h2>
-                    <div class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
-                        <input type="text" name="" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                    <form id="searchAccountingDocument" bc-triggers="submit" name="cms.form"
+                        class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
+                        <input id="accountingFactoridInput" type="text" name="factorid" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                    focus:panel-shadow-md
                                    panel-transition panel-duration-300" placeholder="شماره قرارداد:">
                         <div class="panel-relative">
-                            <input type="text" name="" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                            <input type="text" name="_root.doctype" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                 focus:panel-shadow-md
                                 panel-transition panel-duration-300" placeholder="عنوان سند:">
                             <svg width="48" height="48"
@@ -67,19 +71,13 @@
                                 <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
                             </svg>
                         </div>
-                        <div class="panel-relative">
-                            <input type="text" name="" id="" class="panel-w-40 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300" placeholder="از تاریخ:">
-                            <svg width="48" height="48"
-                                class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
-                            </svg>
-                        </div>
-                        <div class="panel-relative">
-                            <input type="text" name="" id="" class="panel-w-40 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
-                                   focus:panel-shadow-md
-                                   panel-transition panel-duration-300" placeholder="تا تاریخ:">
+                        <div class="panel-relative panel-flex panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                        focus:panel-shadow-md
+                        panel-transition panel-duration-300 panel-cursor-pointer">
+                            <input type="hidden" class="fdate-string" name="_root.date.begindate">
+                            <input type="hidden" class="tdate-string" name="_root.date.enddate">
+                            <basis core="component.calendar.datepicker" name="datepicker" run="atclient"
+                                options="datepickerHasRangesSetting" OnRendered="OnRenderedStorage"></basis>
                             <svg width="48" height="48"
                                 class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
                                 <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
@@ -92,7 +90,7 @@
                                 <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
                             </svg>
                         </button>
-                    </div>
+                    </form>
                 </section>
                 <section
                     class="panel-flex panel-flex-col panel-gap-2 panel-bg-primary-50 panel-rounded-xl panel-p-3 panel-mt-3">
@@ -218,12 +216,12 @@
                         </section>
                     </div>
 
-                    <div class="panel_grid_style panel-hidden" data-panel="credit" data-run="0">
+                    <div class="panel_grid_style panel-credit__excel panel-hidden" data-panel="credit" data-run="0">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.credit"
                             options="creditItems"></basis>
                     </div>
 
-                    <div class="panel_grid_style" data-panel="report" data-run="1">
+                    <div class="panel_grid_style panel-report__excel" data-panel="report" data-run="1">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.report"
                             options="reportItems" onRendered="onRenderedSetExcelClick"></basis>
                     </div>
@@ -265,6 +263,22 @@
         })
     </script>
     <script>
+        if (typeof datepickerHasRangesSetting === "undefined") {
+            var datepickerHasRangesSetting = {
+                dateProvider: "basisCalendar",
+                displayNote: false,
+                culture: "fa",
+                secondCulture: "en",
+                lid: 1,
+                todayButton: true,
+                rangeDates: true,
+                type: "click",
+                // rangeDatesSeparated: true,
+                mode: "desktop",
+                style: "[##cms.cms.cdn##]/booking/css/datepicker.ui.min.css",
+            }
+        };
+
         async function onProcessedReportDoc(args) {
             try {
                 const responseJson = await args.response.json();
@@ -306,7 +320,6 @@
                     }
                 };
 
-                console.log(totalView);
 
                 $bc.setSource("db.total", totalView);
 
@@ -326,6 +339,65 @@
                 }]);
             }
         }
+
+
+        async function OnRenderedStorage() {
+            const datePickerInput = document.querySelector(".date-picker-input");
+            if (datePickerInput) {
+                datePickerInput.setAttribute("placeholder", "تاریخ را انتخاب کنید");
+            }
+        }
+
+        async function callbackDocumentSearch() {
+
+            // Helper function to get element by selector
+            function getEl(selector) {
+                return document.querySelector(selector);
+            }
+
+            // Safely get value from a hidden or regular input field
+            function getValue(selector) {
+                const el = getEl(selector);
+                return el ? el.value : '';
+            }
+
+            // Convert date format from `/` to `-`
+            function convertDateFormat(dateString) {
+                return dateString.replace(/\//g, '-');
+            }
+
+            // Get the calendar date values directly from hidden inputs
+            const fdateInput = getEl(".fdate-string");
+            const tdateInput = getEl(".tdate-string");
+
+            // Ensure that date fields are synced with hidden inputs (no need for data-cache here)
+            if (fdateInput && getEl(".date-picker-input")) {
+                fdateInput.value = getEl(".date-picker-input").getAttribute("data-datepicker-sstring") || "";
+            }
+            if (tdateInput && getEl(".date-picker-input")) {
+                tdateInput.value = getEl(".date-picker-input").getAttribute("data-datepicker-to-sstring") || "";
+            }
+
+            // Convert date formats from `/` to `-`
+            const start_date = convertDateFormat(fdateInput.value);
+            const end_date = convertDateFormat(tdateInput.value);
+
+            // Process the form submission and construct the payload
+            const main_json = {
+                lid: 1,
+                factorid: getValue("#accountingFactoridInput"),
+                accnumber: getValue(".accnumber") || '',
+                fromdate: start_date,  
+                todate: end_date,    
+            };
+
+            console.log(main_json);  // Log the generated payload
+
+            // Send the payload via $bc.setSource
+            $bc.setSource("cms.search", main_json);
+        }
+
+
 
         var creditItems = {
             columns: {
@@ -458,6 +530,12 @@
     <div class="text">
        ${translate('no_items_found')} </div></div>`
             },
+            export: [
+                {
+                    type: "excel",
+                    tooltip: "دانلود اکسل"
+                }
+            ],
             mode: "grid"
         };
 
@@ -619,118 +697,7 @@
 
 
     </script>
-    <script>
-        async function onRenderedSetExcelClick(args) {
-            setExcel('div[data-bc-export-container]', 'div[data-bc-export-item]', 'report');
-            setExcel('div[data-bc-export-container-f]', 'div[data-bc-export-item]', 'credit');
-        }
 
-        async function setExcel(containerSelector = 'div[data-bc-export-container]', buttonSelector = 'div[data-bc-export-item]', excelType = 'default') {
-            var container = document.querySelector(containerSelector);
-
-            if (container) {
-                var excel_btn = container.querySelector(buttonSelector);
-                if (excel_btn) {
-                    excel_btn.setAttribute('onClick', `downloadExcel("${excelType}")`);
-                }
-            }
-        }
-        async function onProcessed_excel(args) {
-            try {
-                const response = args.response;
-                const responseJson = await response.json();
-                console.log(responseJson)
-                var link = document.createElement("a");
-                document.body.appendChild(link);
-                link.setAttribute("type", "hidden");
-                link.href = "data:" + responseJson.mime + ";base64," + responseJson.payload;
-                link.download = responseJson.name;
-                link.click();
-                document.body.removeChild(link);
-            } catch (e) {
-                console.log(e);
-            }
-        }
-
-        function getFilters(type) {
-        if (type === "credit") {
-            return {
-                "AccountNo": "کد تفضیلی",
-                "docID": "شماره سند",
-                'accountname': 'نام حساب',
-                'factorid': 'شماره قرارداد',
-                'description.desc': 'توضیحات',
-                'description.bankname': 'نام بانک',
-                'description.refnumber': 'رفرنس',
-                'date': 'تاریخ',
-                'hour': 'ساعت',
-                'debtor': 'مبلغ بدهکاری',
-                'creditor': 'مبلغ بستانکاری'
-            };
-        } else if (type === "report") {
-            return [
-                {
-                    '#1': 'A',
-                    '#2': 'B',
-                    '#3': 'C',
-                    '#4': 'D',
-                    '#5': 'E',
-                    '#6': 'F',
-                    '#7': 'G',
-                    '#8': 'H',
-                    '#9': 'I',
-                    "total_debtor_to_date": "بدهکاری",
-                    "total_creditor_to_date": "بستانکاری",
-                    'remained': 'مانده از قبل',
-                },
-                {
-                    "AccountNo": "کد تضیلی",
-                    "docID": "شماره سند",
-                    'accountname': 'نام حساب',
-                    'factorid': 'شماره قرارداد',
-                    'description.desc': 'توضیحات',
-                    'description.bankname': 'نام بانک',
-                    'description.refnumber': 'رفرنس',
-                    'date': 'تاریخ',
-                    'hour': 'ساعت',
-                    'debtor': 'مبلغ بدهکاری',
-                    'creditor': 'مبلغ بستانکاری',
-                    'remaining': 'مانده'
-                },
-            ];
-        }
-    }
-
-    async function downloadExcel(type = 'default') {
-
-        let name, excel_type, db;
-
-        if (type === "credit") {
-            name = 'report_credit_List';
-            excel_type = 'accounting_credit';
-            db = "db.excel";
-        } else if (type === "report") {
-            name = 'report_document_List';
-            excel_type = 'accounting_document';
-            db = "db.reportExcel";
-        }
-
-        const filters = getFilters(type);
-
-        const main_json = {
-            'multi_excel': name,
-            'filters': filters,
-            'excel_type': excel_type
-        };
-
-        $bc.setSource(db, [{
-            "query": JSON.stringify(main_json),
-            "run": true
-        }]);
-
-    }
-
-    </script>
 </body>
 
 </html>

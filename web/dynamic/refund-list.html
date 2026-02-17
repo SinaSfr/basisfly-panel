@@ -1,3 +1,20 @@
+<basis core="api" name="invoice_refund_list"
+url="https://basisfly.com/panel/main/list/[##cms.cookie.rkey##]" method="post" body='{
+"member" : [
+    {
+        "search" : {
+            "lid": 1,
+            "user_id": 1006946
+        },
+        "pageindex" : "{##db.paging.pageno|(1)##}",
+        "perpage" : "{##db.paging.perpage|(1000)##}",
+        "request" : "invoice_refund_list",
+        "lid" : "1"
+    }
+]
+}' content-type="application/json" run="atclient" triggers="db.refundlist db.paging"
+onProcessed="onProcessedRefundList"></basis>
+
 <basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient" triggers="db.edit"
     if="{##db.edit.run|(false)##}">
     <member name="invoice_refund_request_view" method="panel" query='{ 
@@ -50,25 +67,6 @@
     <main>
         <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
-
-            <basis core="api" name="invoice_refund_list"
-                url="https://basisfly.com/panel/main/list/[##cms.cookie.rkey##]" method="post" body='{
-                "member" : [
-                    {
-                        "search" : {
-                            "dmnid": [##cms.cms.domainid##],
-                            "lid": 1,
-                            "ownerid": [##cms.cms.ownerid##],
-                            "user_id": 1006946
-                        },
-                        "pageindex" : "{##db.paging.pageno|(1)##}",
-                        "perpage" : "{##db.paging.perpage|(1000)##}",
-                        "request" : "invoice_refund_list",
-                        "lid" : "1"
-                    }
-                ]
-            }' content-type="application/json" run="atclient" triggers="db.refundlist db.paging"
-                onProcessed="onProcessedRefundList"></basis>
 
             <div class="panel-flex-1">
                 <section class="panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
@@ -312,10 +310,10 @@
             const container = document.querySelector(".panel_grid_style");
             if (container) {
                 if (passengerList.length > 0) {
-                    container.classList.remove("unvisible");
+                    container.classList.remove("panel-hidden");
                     $bc.setSource("refresh.RefundItemForm", passengerList);
                 } else {
-                    container.classList.add("unvisible");
+                    container.classList.add("panel-hidden");
                 }
             }
         }
@@ -379,7 +377,7 @@
 
         function hideActionButtons() {
             const btns = qs(document, '.refund-search__actions')
-            if (btns) btns.classList.add('unvisible')
+            if (btns) btns.classList.add('panel-hidden')
         }
 
         function clearOldAlert() {

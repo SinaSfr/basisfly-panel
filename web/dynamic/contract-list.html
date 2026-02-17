@@ -58,6 +58,32 @@
                 }' content-type="application/json" triggers="cms.search cms.paging"
                 onProcessed="onProcessedInvoice_list">
             </basis>
+            <basis core="api" name="api.excelBooking" run="atclient"
+                url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post"
+                body='{
+                    "name": "db",
+                    "mid": "20",
+                    "excel": "{##db.excel.excel|()##}",
+                    "filters": {##cms.bookingExcel.filters|([])##},
+                    "member": [
+                        {
+                            "name": "q",
+                            "type": "list",
+                            "request": "factor_list",
+                            "open": "0",
+                            "productid": "",
+                            "couponCode": "",
+                            "hotelid": "",
+                            "search":{##cms.search.search|("")##},
+                            "deleted": "0",
+                            "pageindex": "{##cms.paging.pageno|(1)##}",
+                            "perpage": "20"
+                        }
+                    ]
+                }' content-type="application/json" triggers="cms.search cms.paging cms.bookingExcel"
+                if="{##cms.bookingExcel.run|(false)##}" onprocessed="onProcessedGetExcel">
+            </basis>
+
 
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
                 <div class="panel-flex panel-items-end panel-justify-between">
@@ -211,7 +237,8 @@
                                                 </svg>
                                             </div>
 
-                                            <div class="panel-relative panel-cursor-pointer" data-dd-key="destination_city">
+                                            <div class="panel-relative panel-cursor-pointer"
+                                                data-dd-key="destination_city">
                                                 <input data-dd-input id="advSearchDestinationCity"
                                                     name="_root.route.end.city_name" data-field="destination_city"
                                                     type="text" readonly
@@ -313,7 +340,8 @@
                                                     </svg>
                                                 </div>
                                             </div>
-                                            <div class="panel-relative panel-cursor-pointer panel-col-span-2" data-dd-key="services">
+                                            <div class="panel-relative panel-cursor-pointer panel-col-span-2"
+                                                data-dd-key="services">
                                                 <input data-dd-input id="advSearchServices" name="_root.type"
                                                     data-field="services" type="text" readonly
                                                     class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300 panel-cursor-pointer"
@@ -375,9 +403,9 @@
                         <p class="panel-text-zinc-900 panel-text-xs">جمع کل قرارداد ها <span
                                 class="panel-all__invoice">(0)</span></p>
                     </div>
-                    <div class="panel_grid_style">
+                    <div class="panel_grid_style panel-invoiceList__excel">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
-                            options="InvoiceListItems">
+                            options="InvoiceListItems" onRendered="onRenderedSetExcelClick">
                         </basis>
                     </div>
                 </section>
@@ -491,6 +519,11 @@
         };
 
         async function OnRenderedStorage() {
+            const datePickerInput = document.querySelector(".date-picker-input");
+            if (datePickerInput) {
+                datePickerInput.setAttribute("placeholder", "تاریخ را انتخاب کنید");
+            }
+
             const dataStorage = localStorage.getItem('invoiceSearch');
             if (dataStorage) {
                 const jsonDataStorage = JSON.parse(dataStorage);
@@ -549,103 +582,186 @@
             }
             return value;
         }
+        function splitArrayIntoPairs(arr, n = 2) {
+            try {
+                const list = Array.isArray(arr) ? arr.filter(Boolean) : [];
+                const size = Number.isFinite(Number(n)) && Number(n) > 0 ? Number(n) : 2;
+
+                if (!list.length) return [];
+                if (list.length <= size) {
+                    return [`<div class="d-grid-${size}">${list.join('')}</div>`];
+                }
+
+                const result = [];
+                for (let i = 0; i < list.length; i += size) {
+                    const chunk = list.slice(i, i + size);
+                    result.push(`<div class="d-grid-${size}">${chunk.join('')}</div>`);
+                }
+                return result;
+            } catch {
+                return [];
+            }
+        }
         function return_services(data) {
-            var valid_sids = ['6', '4', '3', '13', '11']
-            var services = data.services;
+            const status_code = {
+                "1": "در دست اقدام",
+                "2": "تایید شد",
+                "3": "تایید نشد",
+                "33": "تایید شد",
+                "4": "Available",
+            };
 
-            var status_p = [];
+            const valid_sids = new Set(["6", "4", "3", "13", "11"]);
+            const services = data?.services || {};
+            const status_p = [];
 
-            if (services.sid && valid_sids.includes(services.sid)) {
-                for (var this_poduct of ['hotel', 'visa', 'cip', 'service', 'transfer']) {
-                    if (services.hasOwnProperty(`${this_poduct}status`)) {
-                        for (var this_service of services[`${this_poduct}status`]) {
-                            var details = this_service[`${this_poduct}status`].Details;
-                            var p_class = 'clear';
-                            if (details) {
-                                if (this_product == 'hotel') {
-                                    var status = status_code[details.H_status];
+            const mapStatus = (code) => status_code[String(code)] || String(code || "");
+            const safeTranslate = (x) => {
+                try { return typeof translate === "function" ? translate(x) : String(x); }
+                catch { return String(x); }
+            };
 
-                                    var desc = `${translate('country_name')}: ${details.H_countryname} |
-                    ${translate('city_name')}: ${details.H_cityname} |
-                    ${translate('hotel_name')}: ${details.HotelName} |
-                    ${translate('status')}: ${translate(status)}`
+            const pushIcon = (p_class, desc, status_text) => {
+                const tooltip = String(desc || "").replace(/"/g, "&quot;");
+                status_p.push(
+                    `<div class="InvoiceStatus">
+        <p class="${p_class} servicesStatus-invoice-list hover-service" data-widget-header-btn-tooltip="${tooltip}" data-sys-tooltip="">${status_text}</p>
+      </div>`
+                );
+            };
 
-                                    // check cancellation
-                                    if (this_service.cancellation_policies?.length > 0) {
-                                        refund_status = this_service.hotelstatus.cancellation_policies[0];
-                                        var refund = cancel_info[refund_status.refundable];
-                                        var cancel_date = refund_status.cancellation_policies[0].fromDate;
-                                        var penalty = refund_status.cancellation_policies[0].amount;
-                                        cancel_desc = ` | ${refund} | ${cancel_date}: ${penalty}`;
-                                        desc += cancel_date;
-                                    }
+            const buildHotelDesc = (details, statusText) => {
+                let desc = `${safeTranslate("country_name")}: ${details?.H_countryname || ""} | ` +
+                    `${safeTranslate("city_name")}: ${details?.H_cityname || ""} | ` +
+                    `${safeTranslate("hotel_name")}: ${details?.HotelName || ""} | ` +
+                    `${safeTranslate("status")}: ${safeTranslate(statusText)}`;
 
-                                    var status_text = 'A';
-                                    if (status != 'Available') {  // ⚠️ بهتره status_code هم کلید ثابت داشته باشه
-                                        status_text = 'H'
-                                    }
+                try {
+                    const policies =
+                        details?.cancellation_policies ||
+                        details?.CancellationPolicies ||
+                        null;
 
-                                    if (details.H_status == '1') {
-                                        p_class = 'confirm'
-                                    } else if (details.H_status == '3') {
-                                        p_class = 'nclear'
-                                    }
-                                }
-                                if (this_product == 'visa') {
-                                    var status = status_code[parseInt(details.v_status).toString()];
+                    const fromService =
+                        Array.isArray(policies) ? policies :
+                            Array.isArray(details?.cancellationPolicies) ? details.cancellationPolicies :
+                                null;
 
-                                    if (details.v_status == '3') {
-                                        status = status_code['2'];
-                                    }
+                    if (fromService && fromService.length) {
+                        const p0 = fromService[0] || {};
+                        const refundable = p0?.refundable;
+                        const fromDate = p0?.fromDate || p0?.FromDate || "";
+                        const amount = p0?.amount ?? p0?.Amount ?? "";
 
-                                    if (details.v_countryname && details.visaName) {
-                                        var desc = `${translate('country_name')}: ${details.v_countryname} |
-                    ${translate('visa_name')}: ${details.visaName} |
-                    ${translate('status')}: ${translate(status)}`
-                                    } else {
-                                        var desc = `${translate('status')}: ${translate(status)}`
-                                    }
-                                    var status_text = 'V';
+                        const refundText =
+                            (typeof cancel_info === "object" && cancel_info && refundable in cancel_info)
+                                ? cancel_info[refundable]
+                                : refundable !== undefined
+                                    ? String(refundable)
+                                    : "";
 
-                                    if (parseInt(details.v_status).toString() == '1') {
-                                        p_class = 'confirm'
-                                    }
-                                }
+                        const extra = [refundText, fromDate ? `${fromDate}: ${amount}` : ""].filter(Boolean).join(" | ");
+                        if (extra) desc += ` | ${extra}`;
+                    }
+                } catch { /* ignore */ }
 
-                                if (this_product == 'cip') {
-                                    var status = status_code[parseInt(details.c_status).toString()];
-                                    var desc = `${translate('status')}: ${translate(status)}`
-                                    var status_text = 'C';
-                                }
+                return desc;
+            };
 
-                                if (this_product == 'service' || this_product == 'transfer') {
-                                    var desc = '';
-                                    if (details.s_status) {
-                                        var status = status_code[parseInt(details.s_status).toString()];
-                                        desc += `${translate('status')}: ${translate(status)} |`
-                                        var status_text = 'S';
-                                    }
-                                    if (details.service_name) {
-                                        desc += `${translate('service')}: ${details.service_name} |`
-                                        var status_text = 'S';
-                                    }
-                                }
-                                status_p.push(`<div class="InvoiceStatus">
-                                            <p class="${p_class} servicesStatus-invoice-list hover-service" data-widget-header-btn-tooltip="${desc}" data-sys-tooltip="">${status_text}</p>
-                                        </div>`)
+            if (services?.sid && valid_sids.has(String(services.sid))) {
+                const products = ["hotel", "visa", "cip", "service", "transfer"];
+
+                for (const this_product of products) {
+                    const key = `${this_product}status`;
+                    const list = services?.[key];
+
+                    if (!Array.isArray(list) || !list.length) continue;
+
+                    for (const item of list) {
+                        const container = item?.[key] || {};
+                        const details = container?.Details;
+                        if (!details) continue;
+
+                        let p_class = "clear";
+                        let desc = "";
+                        let status_text = "";
+
+                        if (this_product === "hotel") {
+                            const statusText = mapStatus(details?.H_status);
+                            desc = buildHotelDesc(details, statusText);
+
+                            // Available => A, otherwise H
+                            status_text = statusText === "Available" ? "A" : "H";
+
+                            if (String(details?.H_status) === "1") p_class = "confirm";
+                            else if (String(details?.H_status) === "3") p_class = "nclear";
+
+                            pushIcon(p_class, desc, status_text);
+                            continue;
+                        }
+
+                        if (this_product === "visa") {
+                            let code = String(parseInt(details?.v_status, 10));
+                            if (code === "NaN") code = String(details?.v_status || "");
+                            // قانون خاص قبلی: v_status == 3 => تایید شد
+                            if (String(details?.v_status) === "3") code = "2";
+
+                            const statusText = mapStatus(code);
+                            status_text = "V";
+
+                            if (details?.v_countryname && details?.visaName) {
+                                desc = `${safeTranslate("country_name")}: ${details.v_countryname} | ` +
+                                    `${safeTranslate("visa_name")}: ${details.visaName} | ` +
+                                    `${safeTranslate("status")}: ${safeTranslate(statusText)}`;
+                            } else {
+                                desc = `${safeTranslate("status")}: ${safeTranslate(statusText)}`;
                             }
+
+                            if (String(parseInt(details?.v_status, 10)) === "1") p_class = "confirm";
+
+                            pushIcon(p_class, desc, status_text);
+                            continue;
+                        }
+
+                        if (this_product === "cip") {
+                            const code = String(parseInt(details?.c_status, 10));
+                            const statusText = mapStatus(code === "NaN" ? details?.c_status : code);
+
+                            status_text = "C";
+                            desc = `${safeTranslate("status")}: ${safeTranslate(statusText)}`;
+
+                            pushIcon(p_class, desc, status_text);
+                            continue;
+                        }
+
+                        // service / transfer
+                        if (this_product === "service" || this_product === "transfer") {
+                            status_text = "S";
+
+                            const parts = [];
+                            if (details?.s_status !== undefined && details?.s_status !== null && String(details.s_status).trim() !== "") {
+                                const code = String(parseInt(details.s_status, 10));
+                                const statusText = mapStatus(code === "NaN" ? details.s_status : code);
+                                parts.push(`${safeTranslate("status")}: ${safeTranslate(statusText)}`);
+                            }
+                            if (details?.service_name) {
+                                parts.push(`${safeTranslate("service")}: ${details.service_name}`);
+                            }
+                            desc = parts.join(" | ");
+
+                            pushIcon(p_class, desc, status_text);
+                            continue;
                         }
                     }
-
                 }
             }
-            if (status_p.length) {
-                status_p = splitArrayIntoPairs(status_p, 2);
-            }
-            return `<div class="icons${data.read == 0 ? " unread-invoice" : ""}">
-                    <div class="">${services.service}</div>
-                </div>`
 
+            const statusHtml = status_p.length ? splitArrayIntoPairs(status_p, 2).join("") : "";
+
+            return `<div class="icons${data?.read == 0 ? " unread-invoice" : ""}">
+            <div class="">${services?.service || ""}</div>
+            <div class="services-icons">${statusHtml}</div>
+          </div>`;
         }
 
         var InvoiceListItems = {

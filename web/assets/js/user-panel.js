@@ -1018,31 +1018,31 @@ window.sharedDDStore =
    2) API handler
 ======================= */
 async function onProcessedSearch_item(args) {
-  const store = window.sharedDDStore;
-  store.startRequest();
+  const store = window.sharedDDStore
+  store.startRequest()
 
   try {
-    const res = args?.response;
-    if (!res) throw new Error('no response');
+    const res = args?.response
+    if (!res) throw new Error('no response')
 
-    const json = await (res.clone ? res.clone().json() : res.json());
+    const json = await (res.clone ? res.clone().json() : res.json())
 
     if (json?.sources) {
-      const refundSearchSource = json.sources.find(source => source.options.tableName === 'db.invoice_refund_view');
-      
+      const refundSearchSource = json.sources.find(
+        (source) => source.options.tableName === 'db.invoice_refund_view',
+      )
+
       if (refundSearchSource && refundSearchSource.data) {
-        json.refund_search = refundSearchSource.data.map(item => ({
-          id: item.code,   // تبدیل code به id
-          name: item.title  // تبدیل title به name
-        }));
+        json.refund_search = refundSearchSource.data.map((item) => ({
+          id: item.code, // تبدیل code به id
+          name: item.title, // تبدیل title به name
+        }))
       }
     }
 
-
-    store.set(json);
-
+    store.set(json)
   } catch (e) {
-    store.fail(e);
+    store.fail(e)
   }
 }
 
@@ -1129,7 +1129,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hiddenSelector: 'input[name="_root.type"]',
     },
     refund_search: {
-      ph: translate('search_refund_list'), 
+      ph: translate('search_refund_list'),
       dynamic: true,
       hiddenSelector: 'input[name="_root.notetype"]',
     },
@@ -1162,24 +1162,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const renderList = (items) => {
-    if (!items?.length) return renderEmpty(translate('no_items_found'));
+    if (!items?.length) return renderEmpty(translate('no_items_found'))
 
-    list.innerHTML = '';
-    const frag = document.createDocumentFragment();
+    list.innerHTML = ''
+    const frag = document.createDocumentFragment()
 
     items.forEach((item) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'panel-w-full panel-text-right panel-px-3 panel-py-2 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200';
-        btn.setAttribute('role', 'option');
-        btn.dataset.value = toStr(item.value);
-        btn.dataset.label = toStr(item.label);
-        btn.textContent = toStr(item.label);
-        frag.appendChild(btn);
-    });
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className =
+        'panel-w-full panel-text-right panel-px-3 panel-py-2 panel-rounded-lg panel-text-sm hover:panel-bg-zinc-100 panel-transition panel-duration-200'
+      btn.setAttribute('role', 'option')
+      btn.dataset.value = toStr(item.value)
+      btn.dataset.label = toStr(item.label)
+      btn.textContent = toStr(item.label)
+      frag.appendChild(btn)
+    })
 
-    list.appendChild(frag);
-};
+    list.appendChild(frag)
+  }
 
   const filterItems = (items, q) => {
     const query = (q || '').trim().toLowerCase()
@@ -1338,22 +1339,22 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.addEventListener('sharedDropdown:dataUpdated', () => {
-    if (!activeKey || !isOpen()) return;
+    if (!activeKey || !isOpen()) return
 
-    const data = store.get();
+    const data = store.get()
 
     if (activeKey === 'refund_search') {
-        const refundItems = data?.refund_search || [];
+      const refundItems = data?.refund_search || []
 
-        if (!refundItems.length) {
-            renderEmpty(translate('no_items_found'));  // اگر داده‌ای نبود
-        } else {
-            renderList(filterItems(refundItems, search.value));  // فیلتر کردن و نمایش داده‌ها
-        }
+      if (!refundItems.length) {
+        renderEmpty(translate('no_items_found')) // اگر داده‌ای نبود
+      } else {
+        renderList(filterItems(refundItems, search.value)) // فیلتر کردن و نمایش داده‌ها
+      }
     } else {
-        renderList(filterItems(getItems(activeKey), search.value));
+      renderList(filterItems(getItems(activeKey), search.value))
     }
-});
+  })
 })
 
 /**
@@ -1562,4 +1563,149 @@ const onProcessededitUserSchema = async (args) => {
 
     console.error('onProcessededitUserSchema error:', err)
   }
+}
+
+async function onRenderedSetExcelClick(args) {
+  setExcel('.panel-report__excel', 'div[data-bc-export-item]', 'report')
+  setExcel('.panel-credit__excel', 'div[data-bc-export-item]', 'credit')
+  setExcel('.panel-invoiceList__excel', 'div[data-bc-export-item]', 'invoiceList')
+}
+
+async function setExcel(
+  containerSelector,
+  buttonSelector,
+  excelType,
+) {
+  let container = document.querySelector(containerSelector)
+
+  if (container) {
+    console.log("ok");
+    let excel_btn = container.querySelector(buttonSelector)
+    console.log(excel_btn);
+    if (excel_btn) {
+      excel_btn.setAttribute('onClick', `downloadExcel("${excelType}")`)
+    }
+  }
+}
+async function onProcessedGetExcel(args) {
+  try {
+    const response = args.response
+    const responseJson = await response.json()
+    console.log(responseJson)
+    var link = document.createElement('a')
+    document.body.appendChild(link)
+    link.setAttribute('type', 'hidden')
+    link.href = 'data:' + responseJson.mime + ';base64,' + responseJson.payload
+    link.download = responseJson.name
+    link.click()
+    document.body.removeChild(link)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+function getFilters(type) {
+  if (type === 'credit') {
+    return {
+      AccountNo: 'کد تفضیلی',
+      docID: 'شماره سند',
+      accountname: 'نام حساب',
+      factorid: 'شماره قرارداد',
+      'description.desc': 'توضیحات',
+      'description.bankname': 'نام بانک',
+      'description.refnumber': 'رفرنس',
+      date: 'تاریخ',
+      hour: 'ساعت',
+      debtor: 'مبلغ بدهکاری',
+      creditor: 'مبلغ بستانکاری',
+    }
+  } else if (type === 'report') {
+    return [
+      {
+        '#1': 'A',
+        '#2': 'B',
+        '#3': 'C',
+        '#4': 'D',
+        '#5': 'E',
+        '#6': 'F',
+        '#7': 'G',
+        '#8': 'H',
+        '#9': 'I',
+        total_debtor_to_date: 'بدهکاری',
+        total_creditor_to_date: 'بستانکاری',
+        remained: 'مانده از قبل',
+      },
+      {
+        AccountNo: 'کد تضیلی',
+        docID: 'شماره سند',
+        accountname: 'نام حساب',
+        factorid: 'شماره قرارداد',
+        'description.desc': 'توضیحات',
+        'description.bankname': 'نام بانک',
+        'description.refnumber': 'رفرنس',
+        date: 'تاریخ',
+        hour: 'ساعت',
+        debtor: 'مبلغ بدهکاری',
+        creditor: 'مبلغ بستانکاری',
+        remaining: 'مانده',
+      },
+    ]
+  } else if(type === "invoiceList"){
+    return {
+      'id.id': 'شماره قرارداد',
+      'account.accountName': 'طرف قرارداد',
+      'account.namecounter': 'کانتر خرید کننده',
+      'counterName': 'کانتر اقدام کننده',
+      'city.cityName': 'مبدا - مقصد',
+      'travelDate.begindate.mstring': 'تاریخ رفت',
+      'travelDate.enddate.mstring': 'تاریخ برگشت',
+      'costinfo.totalwithcommision': 'قیمت',
+      'costinfo.priceunit': 'واحد',
+      'createdate.mstring': 'تاریخ قرارداد',
+      'services.service': 'خدمات قرارداد',
+      'passengernames.passenger': 'نام مسافران',
+      'passengers.adult': 'تعداد بزرگسال',
+      'passengers.child': 'تعداد کودک',
+      'passengers.infant': 'تعداد نوزاد',
+      'label.labels.label': 'برچسب',
+
+      // از filters بزرگ (برای “مبلغ خرید”)
+      'detailsCost.total.buy.cost': 'مبلغ خرید',
+      'detailsCost.total.buy.unit': 'واحد مبلغ خرید',
+    }
+  }
+}
+
+async function downloadExcel(type) {
+  let name, excel_type, db
+
+  if (type === 'credit') {
+    name = 'report_credit_List'
+    excel_type = 'accounting_credit'
+    db = 'db.creditExcel'
+  } else if (type === 'report') {
+    name = 'report_document_List'
+    excel_type = 'accounting_document'
+    db = 'db.reportExcel'
+  } else if(type === "invoiceList") {
+    name = 'report_invoice_List'
+    excel_type = 'accounting_invoiceList'
+    db = 'cms.bookingExcel'
+  }
+
+  console.log(type);
+  const filters = getFilters(type)
+
+  const main_json = {
+    multi_excel: name,
+    filters: filters,
+    excel_type: excel_type,
+  }
+
+  $bc.setSource(db, [
+    {
+      query: JSON.stringify(main_json),
+      run: true,
+    },
+  ])
 }

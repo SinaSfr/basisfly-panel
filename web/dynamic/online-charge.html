@@ -1,10 +1,41 @@
+<basis core="api" name="allow_online_charging" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+    method="post" body='{ 
+        "name": "db",
+        "mid": "20",
+        "member":[{ 
+        "name": "q", 
+        "type":"list",
+        "request": "allow_online_charging",
+        }]} ' content-type="application/json" onProcessed="onProcessedAllowOnlineCharging">
+</basis>
+
+<basis core="api" name="webservice_list" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+    method="post" body='
+    { 
+        "name": "db",
+        "mid": "20",
+        "member":
+        [
+            { 
+                "name": "q", 
+                "type":"list",
+                "request": "webservice_list",
+                "type": "5",
+                "lid": "1"
+            }
+        ] 
+    } ' content-type="application/json" onProcessed="onProcessedWebserviceList">
+</basis>
+
+
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
 <head>
     <basis core="call" file="book/taglist" lid="1"></basis>
-    <title>لیست اعضا</title>
-    <meta name="description" content="لیست اعضا">
+    <title>شارژ آنلاین</title>
+    <meta name="description" content="شارژ آنلاین">
     <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/css" rel="stylesheet" />
 </head>
@@ -23,7 +54,8 @@
                         alt="pattern" width="597" height="180" loading="lazy">
                     <section class="panel-relative panel-z-10">
                         <div class="panel-flex panel-items-center panel-gap-3">
-                            <span class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg">
+                            <span
+                                class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg">
                                 <svg width="32" height="32" class="panel-text-zinc-900">
                                     <use href="/userPanel/images/panel-sprite-icons.svg#icon-online-charge"></use>
                                 </svg>
