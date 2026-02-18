@@ -1358,18 +1358,12 @@ tr.passenger-row-expanded .panel-row-expander svg {
   border-radius: 0.75rem;
   outline: none;
   transition: all 300ms;
+  cursor: pointer;
 }
 
 .date-picker-input::placeholder {
   color: #a1a1aa;
 }
-
-.date-picker-input:focus {
-  border-color: var(--primary-800);
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
 
 .hover\:panel-scale-90:hover {
   --tw-scale-x: .9;

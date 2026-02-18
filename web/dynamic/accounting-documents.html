@@ -348,54 +348,125 @@
             }
         }
 
+        // 1️⃣ صفرگذاری ماه و روز (1404/1/5 → 1404/01/05)
+        function padJalaliDate(dateString) {
+            if (!dateString) return '';
+
+            const parts = dateString.split('/');
+            if (parts.length !== 3) return dateString;
+
+            let [y, m, d] = parts;
+
+            m = String(parseInt(m)).padStart(2, '0');
+            d = String(parseInt(d)).padStart(2, '0');
+
+            return `${y}/${m}/${d}`;
+        }
+
+
+        // 2️⃣ تبدیل / به -
+        function replaceSlashWithDash(dateString) {
+            if (!dateString) return '';
+            return dateString.replace(/\//g, '-');
+        }
+
+
+        // 3️⃣ تبدیل شمسی به میلادی (ورودی باید yyyy/mm/dd باشه)
+        function jalaliToGregorian(dateString) {
+            if (!dateString) return '';
+
+            const parts = dateString.split('/');
+            if (parts.length !== 3) return '';
+
+            let jy = parseInt(parts[0]);
+            let jm = parseInt(parts[1]);
+            let jd = parseInt(parts[2]);
+
+            jy += 1595;
+            let days = -355668 + (365 * jy) +
+                Math.floor(jy / 33) * 8 +
+                Math.floor(((jy % 33) + 3) / 4) +
+                jd +
+                (jm < 7 ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+
+            let gy = 400 * Math.floor(days / 146097);
+            days %= 146097;
+
+            if (days > 36524) {
+                gy += 100 * Math.floor(--days / 36524);
+                days %= 36524;
+                if (days >= 365) days++;
+            }
+
+            gy += 4 * Math.floor(days / 1461);
+            days %= 1461;
+
+            if (days > 365) {
+                gy += Math.floor((days - 1) / 365);
+                days = (days - 1) % 365;
+            }
+
+            let gd = days + 1;
+
+            const months = [
+                0, 31,
+                (gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0 ? 29 : 28,
+                31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+            ];
+
+            let gm;
+            for (gm = 1; gm <= 12 && gd > months[gm]; gm++) {
+                gd -= months[gm];
+            }
+
+            return `${gy}-${String(gm).padStart(2, '0')}-${String(gd).padStart(2, '0')}`;
+        }
+
+
         async function callbackDocumentSearch() {
 
-            // Helper function to get element by selector
             function getEl(selector) {
                 return document.querySelector(selector);
             }
 
-            // Safely get value from a hidden or regular input field
             function getValue(selector) {
                 const el = getEl(selector);
                 return el ? el.value : '';
             }
 
-            // Convert date format from `/` to `-`
-            function convertDateFormat(dateString) {
-                return dateString.replace(/\//g, '-');
-            }
-
-            // Get the calendar date values directly from hidden inputs
             const fdateInput = getEl(".fdate-string");
             const tdateInput = getEl(".tdate-string");
+            const datePicker = getEl(".date-picker-input");
 
-            // Ensure that date fields are synced with hidden inputs (no need for data-cache here)
-            if (fdateInput && getEl(".date-picker-input")) {
-                fdateInput.value = getEl(".date-picker-input").getAttribute("data-datepicker-sstring") || "";
-            }
-            if (tdateInput && getEl(".date-picker-input")) {
-                tdateInput.value = getEl(".date-picker-input").getAttribute("data-datepicker-to-sstring") || "";
+            if (fdateInput && datePicker) {
+                fdateInput.value = datePicker.getAttribute("data-datepicker-sstring") || "";
             }
 
-            // Convert date formats from `/` to `-`
-            const start_date = convertDateFormat(fdateInput.value);
-            const end_date = convertDateFormat(tdateInput.value);
+            if (tdateInput && datePicker) {
+                tdateInput.value = datePicker.getAttribute("data-datepicker-to-sstring") || "";
+            }
 
-            // Process the form submission and construct the payload
+            // ✅ مرحله 1: صفرگذاری
+            const paddedStart = padJalaliDate(fdateInput?.value);
+            const paddedEnd = padJalaliDate(tdateInput?.value);
+
+            // ✅ مرحله 2: تبدیل به میلادی
+            const start_date = jalaliToGregorian(paddedStart);
+            const end_date = jalaliToGregorian(paddedEnd);
+
             const main_json = {
                 lid: 1,
                 factorid: getValue("#accountingFactoridInput"),
                 accnumber: getValue(".accnumber") || '',
-                fromdate: start_date,  
-                todate: end_date,    
+                fromdate: start_date,
+                todate: end_date,
             };
 
-            console.log(main_json);  // Log the generated payload
+            console.log(main_json);
 
-            // Send the payload via $bc.setSource
             $bc.setSource("cms.search", main_json);
         }
+
 
 
 

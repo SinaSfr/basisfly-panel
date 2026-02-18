@@ -1568,20 +1568,18 @@ const onProcessededitUserSchema = async (args) => {
 async function onRenderedSetExcelClick(args) {
   setExcel('.panel-report__excel', 'div[data-bc-export-item]', 'report')
   setExcel('.panel-credit__excel', 'div[data-bc-export-item]', 'credit')
-  setExcel('.panel-invoiceList__excel', 'div[data-bc-export-item]', 'invoiceList')
+  setExcel(
+    '.panel-invoiceList__excel',
+    'div[data-bc-export-item]',
+    'invoiceList',
+  )
 }
 
-async function setExcel(
-  containerSelector,
-  buttonSelector,
-  excelType,
-) {
+async function setExcel(containerSelector, buttonSelector, excelType) {
   let container = document.querySelector(containerSelector)
 
   if (container) {
-    console.log("ok");
     let excel_btn = container.querySelector(buttonSelector)
-    console.log(excel_btn);
     if (excel_btn) {
       excel_btn.setAttribute('onClick', `downloadExcel("${excelType}")`)
     }
@@ -1591,7 +1589,6 @@ async function onProcessedGetExcel(args) {
   try {
     const response = args.response
     const responseJson = await response.json()
-    console.log(responseJson)
     var link = document.createElement('a')
     document.body.appendChild(link)
     link.setAttribute('type', 'hidden')
@@ -1650,12 +1647,12 @@ function getFilters(type) {
         remaining: 'مانده',
       },
     ]
-  } else if(type === "invoiceList"){
+  } else if (type === 'invoiceList') {
     return {
       'id.id': 'شماره قرارداد',
       'account.accountName': 'طرف قرارداد',
       'account.namecounter': 'کانتر خرید کننده',
-      'counterName': 'کانتر اقدام کننده',
+      counterName: 'کانتر اقدام کننده',
       'city.cityName': 'مبدا - مقصد',
       'travelDate.begindate.mstring': 'تاریخ رفت',
       'travelDate.enddate.mstring': 'تاریخ برگشت',
@@ -1676,31 +1673,103 @@ function getFilters(type) {
   }
 }
 
-async function downloadExcel(type) {
-  let name, excel_type, db
+const generateDynamicFields = (type) => {
+  const dynamicFields = {}
+
+  function getEl(selector) {
+    return document.querySelector(selector)
+  }
+
+  function getValue(selector) {
+    const el = getEl(selector)
+    return el ? el.value : ''
+  }
+
+  function credit() {
+    const fdateEl = getEl('.fdate-string')
+    const tdateEl = getEl('.tdate-string')
+    return {
+      accnumber: getValue('.accnumber') || '',
+      factorid: getValue('#accountingFactoridInput'),
+      fromdate: jalaliToGregorian(fdateEl?.value),
+      todate: jalaliToGregorian(tdateEl?.value),
+      multi_excel: 'report_credit_List',
+      excel_type: 'accounting_credit',
+      filters: getFilters(type),
+      db: 'db.creditExcel',
+    }
+  }
+
+  function invoiceList() {
+    return {
+      name: 'db',
+      mid: '20',
+      excel: 'Invoices_List',
+      filters: getFilters(type),
+      db: 'cms.bookingExcel',
+      member: [
+        {
+          name: 'q',
+          type: 'list',
+          request: 'factor_list',
+          open: '0',
+          productid: '',
+          couponCode: '',
+          hotelid: '',
+          search: {
+            date: {
+              basedate: getValue('input[name="_root.date.basedate"]'),
+              begindate: getValue('.fdate-string'), 
+              enddate: getValue('.tdate-string'), 
+            },
+            factorid: getValue('input[name="_root.factorid"]'),
+            refnumber: getValue('input[name="_root.refnumber"]'), 
+          },
+          deleted: '0',
+          pageindex: '1',
+          perpage: '20',
+        },
+      ],
+    }
+  }
+
+  function report() {
+    const fdateEl = getEl('.fdate-string')
+    const tdateEl = getEl('.tdate-string')
+
+    return {
+      factorid: getValue('#accountingFactoridInput'),
+      fromdate: jalaliToGregorian(fdateEl?.value),
+      todate: jalaliToGregorian(tdateEl?.value),
+      accnumber: getValue('.status') || '',
+      multi_excel: 'report_document_List',
+      excel_type: 'accounting_document',
+      filters: getFilters(type),
+      db: 'db.reportExcel',
+    }
+  }
 
   if (type === 'credit') {
-    name = 'report_credit_List'
-    excel_type = 'accounting_credit'
-    db = 'db.creditExcel'
+    return credit()
+  } else if (type === 'invoiceList') {
+    return invoiceList()
   } else if (type === 'report') {
-    name = 'report_document_List'
-    excel_type = 'accounting_document'
-    db = 'db.reportExcel'
-  } else if(type === "invoiceList") {
-    name = 'report_invoice_List'
-    excel_type = 'accounting_invoiceList'
-    db = 'cms.bookingExcel'
+    return report()
   }
 
-  console.log(type);
-  const filters = getFilters(type)
+  return dynamicFields
+}
+
+async function downloadExcel(type) {
+  const dynamicFields = generateDynamicFields(type)
+
+  console.log(dynamicFields)
 
   const main_json = {
-    multi_excel: name,
-    filters: filters,
-    excel_type: excel_type,
+    ...dynamicFields,
   }
+
+  const db = dynamicFields.db
 
   $bc.setSource(db, [
     {

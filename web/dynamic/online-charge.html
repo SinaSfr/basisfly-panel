@@ -1,15 +1,32 @@
-<basis core="api" name="allow_online_charging" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
-    method="post" body='{ 
+<basis core="api" name="charging_view" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+    method="post" body='{
+        "name": "db",
+        "mid": "20",
+        "member":[{
+        "name": "q",
+        "type":"list",
+        "request": "charging_view",
+        "supplierdmnid": "[##cms.cms.domainid##]",
+        "reciverownerid":"{##db.ownerid.reciverownerid##}",
+        "perpage":"30",
+        "pageindex":"1"
+        }]} ' content-type="application/json" onProcessed="onProcessedAllowChargingView" triggers="db.ownerid"
+    if="{##db.ownerid.run|(false)##}">
+</basis>
+
+
+<basis core="api" name="allow_online_charging" run="atclient"
+    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{ 
         "name": "db",
         "mid": "20",
         "member":[{ 
         "name": "q", 
         "type":"list",
-        "request": "allow_online_charging",
+        "request": "allow_online_charging"
         }]} ' content-type="application/json" onProcessed="onProcessedAllowOnlineCharging">
 </basis>
 
-<basis core="api" name="webservice_list" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+<basis core="api" name="webservice_type_list" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
     method="post" body='
     { 
         "name": "db",
@@ -19,12 +36,12 @@
             { 
                 "name": "q", 
                 "type":"list",
-                "request": "webservice_list",
+                "request": "webservice_type_list",
                 "type": "5",
                 "lid": "1"
             }
         ] 
-    } ' content-type="application/json" onProcessed="onProcessedWebserviceList">
+    } ' content-type="application/json">
 </basis>
 
 
@@ -82,6 +99,81 @@
                                 </svg>
                             </button>
                         </div>
+                        <basis core="print" datamembername="db.credit" run="atclient">
+                            <layout>
+                                <script type="text/template">
+                                <div
+                                    class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                    <span
+                                        class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                        <svg width="31" height="31">
+                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-star"></use>
+                                        </svg>
+                                    </span>
+                                    <div class="panel-flex panel-flex-col panel-justify-between">
+                                        <span class="panel-text-xs panel-text-zinc-900">بدهکاری (ریال)</span>
+                                        @child
+                                    </div>
+                                </div>
+                            </script>
+                            </layout>
+                            <face>
+                                <script type="text/template">
+                                    <span class="panel-text-red-500 panel-font-bold">@debtor@</span>
+                                </script>
+                            </face>
+                        </basis>
+
+                        <basis core="print" datamembername="db.credit" run="atclient">
+                            <layout>
+                                <script type="text/template">
+                                <div
+                                    class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                    <span
+                                        class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                        <svg width="31" height="31">
+                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-ticket"></use>
+                                        </svg>
+                                    </span>
+                                    <div class="panel-flex panel-flex-col panel-justify-between">
+                                        <span class="panel-text-xs panel-text-zinc-900">بستنکار ( ریال )</span>
+                                        @child
+                                    </div>
+                                </div>
+                            </script>
+                            </layout>
+                            <face>
+                                <script type="text/template">
+                                    <span class="panel-text-green-600 panel-font-bold">@creditor@</span>
+                                </script>
+                            </face>
+                        </basis>
+
+                        <basis core="print" datamembername="db.credit" run="atclient">
+                            <layout>
+                                <script type="text/template">
+                                <div
+                                    class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                    <span
+                                        class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                        <svg width="31" height="31">
+                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-all-point">
+                                            </use>
+                                        </svg>
+                                    </span>
+                                    <div class="panel-flex panel-flex-col panel-justify-between">
+                                        <span class="panel-text-xs panel-text-zinc-900">مانده (ریال)</span>
+                                        @child
+                                    </div>
+                                </div>
+                            </script>
+                            </layout>
+                            <face>
+                                <script type="text/template">
+                                    <span class="panel-text-zinc-900 panel-font-bold">@Remaining_credit@</span>
+                                </script>
+                            </face>
+                        </basis>
                     </section>
 
                 </div>
@@ -112,6 +204,11 @@
                 </section>
                 <section class="panel-bg-white panel-rounded-2xl panel-p-3 panel-mt-2">
                     <h2 class="panel-font-medium panel-mb-3">لیست پرداخت شارژ آنلاین</h2>
+                    <div class="panel_grid_style">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
+                            options="OnlineChargingList">
+                        </basis>
+                    </div>
                 </section>
             </div>
         </div>
@@ -156,6 +253,182 @@
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
+
+    <script>
+        async function onProcessedAllowOnlineCharging(args) {
+            try {
+                const responseJson = await args.response.json();
+
+                const ownerid = responseJson?.result?.ownerid;
+                const credit = responseJson?.credit ?? {};
+
+                const formatNumber = (val) => {
+                    const num = Number(val ?? 0) || 0;
+                    return Intl.NumberFormat().format(num);
+                };
+
+                $bc.setSource("db.ownerid", [{
+                    reciverownerid: ownerid,
+                    run: true,
+                }]);
+
+                $bc.setSource("db.credit", {
+                    total_credit: formatNumber(credit.total_credit),
+                    debtor: formatNumber(credit.debtor),
+                    creditor: formatNumber(credit.creditor),
+                    Remaining_credit: formatNumber(credit.Remaining_credit),
+                });
+
+            } catch (e) {
+                console.log(e);
+
+                $bc.setSource("db.ownerid", []);
+                $bc.setSource("db.credit", {});
+            }
+        }
+
+        async function onProcessedAllowChargingView(args) {
+            try {
+                const responseJson = await args.response.json();
+
+                const rawList = Array.isArray(responseJson) ? responseJson : [];
+
+
+                const list = rawList
+                    .filter(item => item?.charging)
+                    .map(item => item.charging);
+
+
+                $bc.setSource("db.list", list);
+
+            } catch (e) {
+                console.log(e);
+                $bc.setSource("db.list", []);
+            }
+        }
+
+        var OnlineChargingList = {
+            columns: {
+
+                docID: {
+                    title: "شماره سند",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p class="panel-ltr">${row?.docID ?? "-"}</p>`,
+                },
+
+                accountname: {
+                    title: "نام پرداخت کننده",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p>${row?.accountname ?? "-"}</p>`,
+                },
+
+                price: {
+                    title: "مبلغ پرداختی (ریال)",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const val = Number(row?.price ?? 0);
+                        if (!val) return `<p class="panel-ltr">-</p>`;
+
+                        return `<p class="is-separated panel-ltr">
+                    ${Intl.NumberFormat().format(val)}
+                </p>`;
+                    },
+                },
+
+                date: {
+                    title: "تاریخ",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) => {
+                        const j = row?.date?.sstring;
+                        const g = row?.date?.mstring;
+
+                        if (!j && !g)
+                            return `<p>-</p>`;
+
+                        return `
+                    <div class="panel-flex panel-flex-col panel-gap-0.5">
+                        ${j ? `<span>${j}</span>` : ""}
+                        ${g ? `<span class="panel-ltr">${g}</span>` : ""}
+                    </div>
+                `;
+                    },
+                },
+
+                hour: {
+                    title: "ساعت",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p class="panel-ltr">${row?.date?.hour || "-"}</p>`,
+                },
+
+                bankname: {
+                    title: "نام بانک",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p>${row?.bankname || "-"}</p>`,
+                },
+
+                cardno: {
+                    title: "شماره کارت",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p class="panel-ltr">${row?.cardno || "-"}</p>`,
+                },
+
+                refnumber: {
+                    title: "شماره پیگیری",
+                    filter: false,
+                    sort: false,
+                    cellMaker: (row) =>
+                        `<p class="panel-ltr">${row?.refnumber || "-"}</p>`,
+                },
+            },
+
+            filter: 'row',
+            rowNumber: "ردیف",
+            defaultSort: false,
+            direction: "rtl",
+            paging: 50,
+            information: true,
+            firstAndLastBtn: true,
+
+            culture: {
+                labels: {
+                    "next": "بعدی",
+                    "previous": "قبلی",
+                    "first": "اولین صفحه",
+                    "last": "آخرین صفحه",
+                    "information": "نمایش ${from} تا ${to} از مجموع ${total}"
+                }
+            },
+
+            noData: (td) => {
+                td.innerHTML = `<div class="noData">
+            <div class="icon panel-flex panel-justify-center panel-mb-3">
+                <svg width="70" height="70">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-no-items"></use>
+                </svg>
+            </div>
+            <div class="text">
+                ${translate('no_items_found')}
+            </div>
+        </div>`;
+            },
+
+            mode: "grid",
+            pageCount: false
+        };
+
+    </script>
 </body>
 
 </html>
