@@ -39,7 +39,7 @@
 
             <div class="panel-flex-1">
                 <section class="panel-flex panel-items-center panel-gap-2">
-                    <basis core="print" datamembername="db.total" run="atclient">
+                    <basis core="print" datamembername="cms.total" run="atclient">
                         <layout>
                             <script type="text/template">
                                 <div
@@ -64,7 +64,7 @@
                         </face>
                     </basis>
 
-                    <basis core="print" datamembername="db.total" run="atclient">
+                    <basis core="print" datamembername="cms.total" run="atclient">
                         <layout>
                             <script type="text/template">
                             <div
@@ -89,7 +89,7 @@
                         </face>
                     </basis>
 
-                    <basis core="print" datamembername="db.total" run="atclient">
+                    <basis core="print" datamembername="cms.total" run="atclient">
                         <layout>
                             <script type="text/template">
                             <div
@@ -123,7 +123,7 @@
                         <h2 class="panel-text-zinc-900 panel-font-medium">لیست امتیاز ها</h2>
                     </div>
                     <div class="panel_grid_style">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
                             options="CustomerClubList">
                         </basis>
                     </div>
@@ -141,11 +141,11 @@
             try {
                 const responseJson = await args.response.json()
 
-                const list = responseJson?.sources?.find(s => s?.options?.tableName === "db.list")?.data
-                const total = responseJson?.sources?.find(s => s?.options?.tableName === "db.total")?.data
+                const list = responseJson?.sources?.find(s => s?.options?.tableName === "cms.list")?.data
+                const total = responseJson?.sources?.find(s => s?.options?.tableName === "cms.total")?.data
                 console.log(total);
 
-                $bc.setSource("db.list", Array.isArray(list) ? list : [])
+                $bc.setSource("cms.list", Array.isArray(list) ? list : [])
 
                 const t = total && typeof total === "object" ? total : {}
                 const received = Number(t.total_received ?? 0) || 0
@@ -158,10 +158,10 @@
                     }
                 }
 
-                $bc.setSource("db.total", totalView)
+                $bc.setSource("cms.total", totalView)
             } catch {
-                $bc.setSource("db.list", [])
-                $bc.setSource("db.total", { info: {} })
+                $bc.setSource("cms.list", [])
+                $bc.setSource("cms.total", { info: {} })
             }
         }
 

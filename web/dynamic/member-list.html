@@ -6,15 +6,15 @@
             "name": "q", 
             "type":"list",
             "request": "find_user_list"
-        }]} ' content-type="application/json" onProcessed="onProcessedFindUserList" triggers="db.refreshCounters">
+        }]} ' content-type="application/json" onProcessed="onProcessedFindUserList" triggers="cms.refreshCounters">
 </basis>
 
 
 <basis core="api" name="usersinfo" run="atclient" url="https://api.trust-login.com/[##cms.cookie.rkey##]/fa/usersinfo"
     method="post" body='{
-        "users": [{##db.userID.users##}],
+        "users": [{##cms.userID.users##}],
         "type": "userid"
-    }' content-type="application/json" onProcessed="onProcessedUserInfo" triggers="db.userID">
+    }' content-type="application/json" onProcessed="onProcessedUserInfo" triggers="cms.userID">
 </basis>
 
 
@@ -27,12 +27,12 @@
                 "type": "list",
                 "name": "q",
                 "request": "commission_counter_add",
-                "user": "{##db.trustUserId.result##}",
-                "commissonid": "{##db.userProfile.comgroupid##}",
-                "companyid": "{##db.userProfile.agencyid##}"
+                "user": "{##cms.trustUserId.result##}",
+                "commissonid": "{##cms.userProfile.comgroupid##}",
+                "companyid": "{##cms.userProfile.agencyid##}"
             }
         ]
-    } ' content-type="application/json" triggers="db.trustUserId" if="{##db.trustUserId.run|(false)##}"
+    } ' content-type="application/json" triggers="cms.trustUserId" if="{##cms.trustUserId.run|(false)##}"
     onProcessed="onProcessedCounterAdd">
 </basis>
 
@@ -45,12 +45,12 @@
                 "type": "scalar",
                 "name": "q",
                 "request": "agency_delete_user",
-                "agency_userid": "{##db.refreshCounters.userid##}",
-                "groupid": "{##db.userProfile.comgroupid##}"
+                "agency_userid": "{##cms.refreshCounters.userid##}",
+                "groupid": "{##cms.userProfile.comgroupid##}"
             }
         ]
-    } ' content-type="application/json" onProcessed="onProcessedDeleteUser" triggers="db.refreshCounters"
-    if="{##db.refreshCounters.run|(false)##}">
+    } ' content-type="application/json" onProcessed="onProcessedDeleteUser" triggers="cms.refreshCounters"
+    if="{##cms.refreshCounters.run|(false)##}">
 </basis>
 
 <basis core="api" name="comgroup_agency_by_user" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
@@ -110,7 +110,7 @@
                         </button>
                     </div>
                     <div class="panel_grid_style">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.list" options="UsersList">
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list" options="UsersList">
                         </basis>
                     </div>
                 </section>
@@ -267,7 +267,7 @@
                 }
 
                 try {
-                    $bc.setSource("db.trustUserId", [{
+                    $bc.setSource("cms.trustUserId", [{
                         result: username,
                         run: true,
                     }])
@@ -284,13 +284,13 @@
             try {
                 const responseJson = await args.response.json()
 
-                $bc.setSource("db.list",
+                $bc.setSource("cms.list",
                     Array.isArray(responseJson) ? responseJson : []
                 )
 
             } catch (err) {
                 console.log(err)
-                $bc.setSource("db.list", [])
+                $bc.setSource("cms.list", [])
             }
         }
 
@@ -317,8 +317,8 @@
             el.classList.remove('panel-hidden')
         }
 
-        window.usedForId = Number("{##db.refreshCounters.userid##}")
-        window.usedForAction = "{##db.refreshCounters.action##}"
+        window.usedForId = Number("{##cms.refreshCounters.userid##}")
+        window.usedForAction = "{##cms.refreshCounters.action##}"
 
         async function onProcessedFindUserList(args) {
             const responseJson = await args.response.json()
@@ -340,7 +340,7 @@
                 return
             }
 
-            $bc.setSource("db.userProfile", [{
+            $bc.setSource("cms.userProfile", [{
                 ...responseJson,
                 run: true,
             }])
@@ -365,7 +365,7 @@
                 window.usedForAction = null
             }
 
-            $bc.setSource("db.userID", [{
+            $bc.setSource("cms.userID", [{
                 users: Array.from(usersSet),
                 run: true,
             }])
@@ -385,7 +385,7 @@
                         addUsedForId = Number(responseJson.usedforid)
                         window.usedForId = Number(addUsedForId)
                         window.usedForAction = "add"
-                        $bc.setSource("db.refreshCounters", [{
+                        $bc.setSource("cms.refreshCounters", [{
                             userid: addUsedForId
                         }])
                         break
@@ -466,7 +466,7 @@
             window.usedForId = Number(removedId)
             window.usedForAction = "remove"
 
-            $bc.setSource("db.refreshCounters", [{
+            $bc.setSource("cms.refreshCounters", [{
                 userid: removedId,
                 run: true,
             }])

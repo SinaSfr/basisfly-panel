@@ -1,4 +1,4 @@
-<basis core="api" name="db.get_company_ownerid" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+<basis core="api" name="cms.get_company_ownerid" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
     method="post" body='{
     "name": "db",
     "mid": "20",
@@ -27,12 +27,12 @@
 </basis>
 
 <basis core="api" name="report-excel" url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]"
-    method="post" body='{##db.reportExcel.query##}' content-type="application/json" run="atclient"
-    triggers="db.reportExcel" if="{##db.reportExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
+    method="post" body='{##cms.reportExcel.query##}' content-type="application/json" run="atclient"
+    triggers="cms.reportExcel" if="{##cms.reportExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
 
 <basis core="api" name="credit-excel" url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]"
-    method="post" body='{##db.creditExcel.query##}' content-type="application/json" run="atclient"
-    triggers="db.creditExcel" if="{##db.creditExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
+    method="post" body='{##cms.creditExcel.query##}' content-type="application/json" run="atclient"
+    triggers="cms.creditExcel" if="{##cms.creditExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -137,7 +137,7 @@
                 <section>
                     <div class="panel-hidden" data-panel="remaining_balance" data-run="0">
                         <section class="panel-flex panel-items-center panel-gap-2 panel-mt-5">
-                            <basis core="print" datamembername="db.total" run="atclient">
+                            <basis core="print" datamembername="cms.total" run="atclient">
                                 <layout>
                                     <script type="text/template">
                                     <div
@@ -162,7 +162,7 @@
                                 </face>
                             </basis>
 
-                            <basis core="print" datamembername="db.total" run="atclient">
+                            <basis core="print" datamembername="cms.total" run="atclient">
                                 <layout>
                                     <script type="text/template">
                                     <div
@@ -187,7 +187,7 @@
                                 </face>
                             </basis>
 
-                            <basis core="print" datamembername="db.total" run="atclient">
+                            <basis core="print" datamembername="cms.total" run="atclient">
                                 <layout>
                                     <script type="text/template">
                                     <div
@@ -217,12 +217,12 @@
                     </div>
 
                     <div class="panel_grid_style panel-credit__excel panel-hidden" data-panel="credit" data-run="0">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.credit"
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.credit"
                             options="creditItems"></basis>
                     </div>
 
                     <div class="panel_grid_style panel-report__excel" data-panel="report" data-run="1">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.report"
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.report"
                             options="reportItems" onRendered="onRenderedSetExcelClick"></basis>
                     </div>
                 </section>
@@ -291,15 +291,15 @@
                 const locale = localeMap[currentLanguage] || 'fa-IR';
 
                 const report =
-                    responseJson?.sources?.find(s => s?.options?.tableName === "db.report")?.data || [];
+                    responseJson?.sources?.find(s => s?.options?.tableName === "cms.report")?.data || [];
                 const credit =
-                    responseJson?.sources?.find(s => s?.options?.tableName === "db.credit")?.data || [];
+                    responseJson?.sources?.find(s => s?.options?.tableName === "cms.credit")?.data || [];
 
-                $bc.setSource("db.report", Array.isArray(report) ? report : []);
-                $bc.setSource("db.credit", Array.isArray(credit) ? credit : []);
+                $bc.setSource("cms.report", Array.isArray(report) ? report : []);
+                $bc.setSource("cms.credit", Array.isArray(credit) ? credit : []);
 
                 const totalData =
-                    responseJson?.sources?.find(s => s?.options?.tableName === "db.total")?.data || [];
+                    responseJson?.sources?.find(s => s?.options?.tableName === "cms.total")?.data || [];
 
                 const row = totalData[0] || {};
 
@@ -321,20 +321,20 @@
                 };
 
 
-                $bc.setSource("db.total", totalView);
+                $bc.setSource("cms.total", totalView);
 
             } catch (e) {
                 console.error(e);
-                $bc.setSource("db.report", []);
-                $bc.setSource("db.credit", []);
-                $bc.setSource("db.total", { info: {} });
+                $bc.setSource("cms.report", []);
+                $bc.setSource("cms.credit", []);
+                $bc.setSource("cms.total", { info: {} });
             }
         }
 
         async function onProcessedCompanyOwnerid(args) {
             const responseJson = await args.response.json();
             if (responseJson && responseJson !== 0) {
-                $bc.setSource("db.ownerid", [{
+                $bc.setSource("cms.ownerid", [{
                     "result": responseJson
                 }]);
             }

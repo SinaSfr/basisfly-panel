@@ -13,50 +13,50 @@ const loadTranslations = async () => {
 const translate = (text) =>
   translations[text]?.[currentLanguageTranslate] || text
 
-;(async () => {
-  await loadTranslations()
-})()
-;(() => {
-  const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
-  const panelWalletAmount = document.querySelector('.panel-wallet-amount')
-  if (!visibilityAmountBtn || !panelWalletAmount) return
+  ; (async () => {
+    await loadTranslations()
+  })()
+  ; (() => {
+    const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
+    const panelWalletAmount = document.querySelector('.panel-wallet-amount')
+    if (!visibilityAmountBtn || !panelWalletAmount) return
 
-  const original =
-    panelWalletAmount.dataset.amount || panelWalletAmount.textContent.trim()
-  panelWalletAmount.dataset.amount = original
+    const original =
+      panelWalletAmount.dataset.amount || panelWalletAmount.textContent.trim()
+    panelWalletAmount.dataset.amount = original
 
-  function maskAll(str) {
-    return Array.from(str)
-      .map((ch) => (ch === ' ' ? ' ' : '*'))
-      .join('')
-  }
-
-  const masked = maskAll(original)
-
-  let hidden = false
-
-  const render = () => {
-    panelWalletAmount.textContent = hidden ? masked : original
-    visibilityAmountBtn.setAttribute('aria-pressed', String(hidden))
-
-    const useEl = visibilityAmountBtn.querySelector('use')
-    if (useEl) {
-      useEl.setAttribute(
-        'href',
-        hidden
-          ? '/userPanel/images/panel-sprite-icons.svg#icon-eye-slash'
-          : '/userPanel/images/panel-sprite-icons.svg#icon-eye',
-      )
+    function maskAll(str) {
+      return Array.from(str)
+        .map((ch) => (ch === ' ' ? ' ' : '*'))
+        .join('')
     }
-  }
 
-  visibilityAmountBtn.addEventListener('click', () => {
-    hidden = !hidden
+    const masked = maskAll(original)
+
+    let hidden = false
+
+    const render = () => {
+      panelWalletAmount.textContent = hidden ? masked : original
+      visibilityAmountBtn.setAttribute('aria-pressed', String(hidden))
+
+      const useEl = visibilityAmountBtn.querySelector('use')
+      if (useEl) {
+        useEl.setAttribute(
+          'href',
+          hidden
+            ? '/userPanel/images/panel-sprite-icons.svg#icon-eye-slash'
+            : '/userPanel/images/panel-sprite-icons.svg#icon-eye',
+        )
+      }
+    }
+
+    visibilityAmountBtn.addEventListener('click', () => {
+      hidden = !hidden
+      render()
+    })
+
     render()
-  })
-
-  render()
-})()
+  })()
 
 document.addEventListener('DOMContentLoaded', () => {
   const openBtn = document.querySelector('.panel-increase-balance__open-btn')
@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nationalityDropdown.innerHTML =
       '<div class="panel-w-full panel-h-12"><span class="loader panel-flex panel-mx-auto"></span></div>'
 
-    $bc.setSource('db.autoSearch', [
+    $bc.setSource('cms.autoSearch', [
       {
         term: value,
         type: 'کشور',
@@ -786,7 +786,7 @@ function clearAllHighlights() {
 }
 
 //------------------------Advanced Search --------------------------
-;(() => {
+; (() => {
   const openBtn = document.getElementById('btnOpenAdvancedSearch')
   const modalId =
     openBtn?.getAttribute('data-modal-open') || 'advancedContractSearch'
@@ -827,47 +827,47 @@ function clearAllHighlights() {
   })
 })()
 
-//----------------clear advanced search---------------------
-;(() => {
-  const modal = document.getElementById('advancedContractSearch')
-  const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
+  //----------------clear advanced search---------------------
+  ; (() => {
+    const modal = document.getElementById('advancedContractSearch')
+    const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
 
-  if (!modal || !clearBtn) return
+    if (!modal || !clearBtn) return
 
-  const clearAdvancedSearchFilters = () => {
-    const scope = modal
+    const clearAdvancedSearchFilters = () => {
+      const scope = modal
 
-    scope
-      .querySelectorAll(
-        'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
-      )
-      .forEach((el) => {
+      scope
+        .querySelectorAll(
+          'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
+        )
+        .forEach((el) => {
+          el.value = ''
+          el.dispatchEvent(new Event('input', { bubbles: true }))
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope
+        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+        .forEach((el) => {
+          el.checked = false
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope.querySelectorAll('textarea').forEach((el) => {
         el.value = ''
         el.dispatchEvent(new Event('input', { bubbles: true }))
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
 
-    scope
-      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-      .forEach((el) => {
-        el.checked = false
+      scope.querySelectorAll('select').forEach((el) => {
+        el.selectedIndex = 0
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
+    }
 
-    scope.querySelectorAll('textarea').forEach((el) => {
-      el.value = ''
-      el.dispatchEvent(new Event('input', { bubbles: true }))
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-
-    scope.querySelectorAll('select').forEach((el) => {
-      el.selectedIndex = 0
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-  }
-
-  clearBtn.addEventListener('click', clearAdvancedSearchFilters)
-})()
+    clearBtn.addEventListener('click', clearAdvancedSearchFilters)
+  })()
 
 // ----------dropdown menu (advanced search)--------------
 /* =========================================================
@@ -1029,7 +1029,7 @@ async function onProcessedSearch_item(args) {
 
     if (json?.sources) {
       const refundSearchSource = json.sources.find(
-        (source) => source.options.tableName === 'db.invoice_refund_view',
+        (source) => source.options.tableName === 'cms.invoice_refund_view',
       )
 
       if (refundSearchSource && refundSearchSource.data) {
@@ -1385,7 +1385,7 @@ const watchSchemaReady = ({
 
   if (isReady()) {
     applyReadyState()
-    return () => {}
+    return () => { }
   }
 
   const container = document.querySelector(containerSelector)
@@ -1568,6 +1568,7 @@ const onProcessededitUserSchema = async (args) => {
 async function onRenderedSetExcelClick(args) {
   setExcel('.panel-report__excel', 'div[data-bc-export-item]', 'report')
   setExcel('.panel-credit__excel', 'div[data-bc-export-item]', 'credit')
+  setExcel('.panel-charging__excel', 'div[data-bc-export-item]', 'chargingOnline')
   setExcel(
     '.panel-invoiceList__excel',
     'div[data-bc-export-item]',
@@ -1589,6 +1590,7 @@ async function onProcessedGetExcel(args) {
   try {
     const response = args.response
     const responseJson = await response.json()
+    console.log(responseJson)
     var link = document.createElement('a')
     document.body.appendChild(link)
     link.setAttribute('type', 'hidden')
@@ -1670,6 +1672,18 @@ function getFilters(type) {
       'detailsCost.total.buy.cost': 'مبلغ خرید',
       'detailsCost.total.buy.unit': 'واحد مبلغ خرید',
     }
+  } else if (type === 'chargingOnline') {
+    return {
+      'charging.index': 'ردیف',
+      'charging.docID': 'شماره سند',
+      'charging.accountname': 'نام پرداخت کننده',
+      'charging.price': 'مبلغ پرداختی',
+      'charging.date.mstring': 'تاریخ',
+      'charging.date.hour': 'ساعت',
+      'charging.bankname': 'نام بانک',
+      'charging.cardno': 'شماره کارت',
+      'charging.refnumber': 'شماره پیگیری',
+    }
   }
 }
 
@@ -1696,7 +1710,7 @@ const generateDynamicFields = (type) => {
       multi_excel: 'report_credit_List',
       excel_type: 'accounting_credit',
       filters: getFilters(type),
-      db: 'db.creditExcel',
+      db: 'cms.creditExcel',
     }
   }
 
@@ -1719,11 +1733,11 @@ const generateDynamicFields = (type) => {
           search: {
             date: {
               basedate: getValue('input[name="_root.date.basedate"]'),
-              begindate: getValue('.fdate-string'), 
-              enddate: getValue('.tdate-string'), 
+              begindate: getValue('.fdate-string'),
+              enddate: getValue('.tdate-string'),
             },
             factorid: getValue('input[name="_root.factorid"]'),
-            refnumber: getValue('input[name="_root.refnumber"]'), 
+            refnumber: getValue('input[name="_root.refnumber"]'),
           },
           deleted: '0',
           pageindex: '1',
@@ -1745,7 +1759,29 @@ const generateDynamicFields = (type) => {
       multi_excel: 'report_document_List',
       excel_type: 'accounting_document',
       filters: getFilters(type),
-      db: 'db.reportExcel',
+      db: 'cms.reportExcel',
+    }
+  }
+
+  function chargingOnline() {
+    return {
+      multi_excel: 'report_charging_online',
+      excel_type: 'charging_onlin',
+      filters: getFilters(type),  
+      db: 'cms.chargingExcel',
+      name: "db",
+      mid: "20",
+      member: [
+        {
+          name: 'q',
+          type: 'list',
+          request: 'charging_view',
+          supplierdmnid: getValue('.Xsupplierdmnid'),
+          reciverownerid: getValue('.Xreciverownerid'),
+          perpage: "30",
+          pageindex: "1"
+        }
+      ]
     }
   }
 
@@ -1755,6 +1791,8 @@ const generateDynamicFields = (type) => {
     return invoiceList()
   } else if (type === 'report') {
     return report()
+  } else if (type === 'chargingOnline') {
+    return chargingOnline()
   }
 
   return dynamicFields

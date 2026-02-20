@@ -1,4 +1,4 @@
-<basis core="callback" run="atclient" triggers="db.passengerlist" if="{##db.passengerlist.run|(false)##}"
+<basis core="callback" run="atclient" triggers="cms.passengerlist" if="{##cms.passengerlist.run|(false)##}"
     method="callback_source"></basis>
 </basis>
 
@@ -7,24 +7,24 @@
 </basis>
 
 <basis core="api" name="api.autoSearch"
-    url="https://data.basiscore.net/{##db.autoSearch.lang##}/bc/{##db.autoSearch.type##}/q/fix?term={##db.autoSearch.term##}&token=1E45BBAE-3BE7-4B08-8A8E-8DF7B2E0C7D7"
-    method="get" content-type="application/json" Access-Control-Allow-Origin='*' run="atclient" triggers="db.autoSearch"
-    if="{##db.autoSearch.run|(false)##}" onprocessed="onProcessed_autoSearch">
+    url="https://data.basiscore.net/{##cms.autoSearch.lang##}/bc/{##cms.autoSearch.type##}/q/fix?term={##cms.autoSearch.term##}&token=1E45BBAE-3BE7-4B08-8A8E-8DF7B2E0C7D7"
+    method="get" content-type="application/json" Access-Control-Allow-Origin='*' run="atclient" triggers="cms.autoSearch"
+    if="{##cms.autoSearch.run|(false)##}" onprocessed="onProcessed_autoSearch">
 </basis>
 
 <basis core="api" name="api.save" url="https://basisfly.com/panel/main/cms/upsert-passengers/[##cms.cookie.rkey##]"
-    method="post" content-type="application/json" run="atclient" triggers="db.add_passenger"
-    if="{##db.add_passenger.run|(false)##}" body='{
+    method="post" content-type="application/json" run="atclient" triggers="cms.add_passenger"
+    if="{##cms.add_passenger.run|(false)##}" body='{
         "member" : [
             {
-                "passenger_list" : {##db.add_passenger.query##}
+                "passenger_list" : {##cms.add_passenger.query##}
             }
         ]
     }' onprocessed="onProcessed_save">
 </basis>
 
 
-<basis core="api" name="db.get_company_ownerid" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
+<basis core="api" name="cms.get_company_ownerid" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
     method="post" body='{
     "name": "db",
     "mid": "20",
@@ -62,10 +62,10 @@
                 url="https://basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]" method="post" body='{
                 "member" : [
                     {
-                        "query" : {##db.search.query|(0)##}
+                        "query" : {##cms.search.query|(0)##}
                     }   
                 ]
-            }' content-type="application/json" run="atclient" triggers="db.search list.refresh"
+            }' content-type="application/json" run="atclient" triggers="cms.search list.refresh"
                 onProcessed="onProcessed_list"></basis>
             <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
                 <section class="panel-flex panel-justify-between">
@@ -242,7 +242,7 @@
                 <section class="panel-mt-12">
                     <h1 class="panel-text-zinc-900 panel-font-medium panel-mb-6">لیست مسافران</h1>
                     <div class="panel_grid_style panel_grid_passenger passenger-list__scroll-top">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.order"
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.order"
                             options="reportItems">
                         </basis>
                     </div>
@@ -300,7 +300,7 @@
             const element = document.querySelector('[data-bc-refresh-container]');
             element.querySelector('span').click();
 
-            $bc.setSource("db.add_passenger", [{
+            $bc.setSource("cms.add_passenger", [{
                 "run": false
             }]);
         }
@@ -311,9 +311,9 @@
                 const responseJson = await response.json();
                 const data = responseJson;
 
-                $bc.setSource("db.order", data);
+                $bc.setSource("cms.order", data);
             } catch (e) {
-                $bc.setSource("db.order", []);
+                $bc.setSource("cms.order", []);
             }
         }
 
@@ -332,7 +332,7 @@
                     json.code = data.code;
                 }
 
-                $bc.setSource('db.search', [{
+                $bc.setSource('cms.search', [{
                     "query": JSON.stringify(json),
                     "run": true
                 },])
@@ -365,7 +365,7 @@
             }
 
             // ارسال به API
-            $bc.setSource("db.add_passenger", [{
+            $bc.setSource("cms.add_passenger", [{
                 query: JSON.stringify(passengerData),
                 run: true
             }]);
@@ -406,7 +406,7 @@
         }
 
         function stop_running_autoSearch() {
-            $bc.setSource('db.autoSearch', [{ run: false }])
+            $bc.setSource('cms.autoSearch', [{ run: false }])
         }
 
         function editObject(row) {
@@ -488,7 +488,7 @@
                 delete: "1"
             }
 
-            $bc.setSource("db.add_passenger", [{
+            $bc.setSource("cms.add_passenger", [{
                 query: JSON.stringify(json_input),
                 run: true
             }])
@@ -540,7 +540,7 @@
 
                 if (!window.$bc || typeof window.$bc.setSource !== 'function') return
 
-                window.$bc.setSource('db.passengerlist', [
+                window.$bc.setSource('cms.passengerlist', [
                     {
                         query: JSON.stringify(main_json),
                         run: true,
@@ -552,7 +552,7 @@
         async function onProcessedCompanyOwnerid(args) {
             const responseJson = await args.response.json();
             if (responseJson && responseJson !== 0) {
-                $bc.setSource("db.ownerid", [{
+                $bc.setSource("cms.ownerid", [{
                     "result": responseJson
                 }]);
             }

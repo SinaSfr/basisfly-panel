@@ -6,16 +6,16 @@
             "lid": 1,
             "user_id": 1006946
         },
-        "pageindex" : "{##db.paging.pageno|(1)##}",
-        "perpage" : "{##db.paging.perpage|(1000)##}",
+        "pageindex" : "{##cms.paging.pageno|(1)##}",
+        "perpage" : "{##cms.paging.perpage|(1000)##}",
         "request" : "invoice_refund_list",
         "lid" : "1"
     }
 ]
-}' content-type="application/json" run="atclient" triggers="db.refundlist db.paging"
+}' content-type="application/json" run="atclient" triggers="cms.refundlist cms.paging"
     onProcessed="onProcessedRefundList"></basis>
-<basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient" triggers="db.edit"
-    if="{##db.edit.run|(false)##}">
+<basis core="dbsource" source="basisfly" name="cms" procedurename="dbsource" run="atclient" triggers="cms.edit"
+    if="{##cms.edit.run|(false)##}">
     <member name="invoice_refund_request_view" method="panel" query='{ 
         "name": "db", 
         "mid": "20",
@@ -25,16 +25,16 @@
                 "name": "q",
                 "type":"list",
                 "request": "invoice_refund_request_view",
-                "id" : "{##db.edit.id##}"
+                "id" : "{##cms.edit.id##}"
             }
         ] 
     }' preview=""></member>
 </basis>
-<basis core="callback" run="atclient" triggers="db.invoice_refund_request_view" method="callback_sourceRefundItem">
+<basis core="callback" run="atclient" triggers="cms.invoice_refund_request_view" method="callback_sourceRefundItem">
 </basis>
 
 <basis core="api" name="api.rest" url="https://basisfly.com/panel/main/update/[##cms.cookie.rkey##]" method="post"
-    content-type="application/json" run="atclient" triggers="db.delete" if="{##db.delete.run|(false)##}" body='{
+    content-type="application/json" run="atclient" triggers="cms.close" if="{##cms.close.run|(false)##}" body='{
         "name": "db",
         "mid": "20",
         "member": [
@@ -42,14 +42,14 @@
                 "type": "scalar",
                 "name": "q",
                 "request": "invoice_refund_request_close",
-                "id": "{##db.delete.id##}"
+                "id": "{##cms.close.id##}"
             }
         ]
-    }' onprocessed="onProcessed_delete">
+    }' onprocessed="onProcessedCloseRefund">
 </basis>
 
 <basis core="api" name="invoice_refund_save" url="https://basisfly.com/panel/main/update/[##cms.cms.rkey##]"
-    method="post" content-type="application/json" run="atclient" triggers="db.save" if="{##db.save.run|(false)##}" body='{ 
+    method="post" content-type="application/json" run="atclient" triggers="cms.save" if="{##cms.save.run|(false)##}" body='{ 
       "name": "db", 
       "mid": "20",
       "member":
@@ -60,7 +60,7 @@
               "request": "invoice_refund_save", 
               "username": "Arash Saeidi",
               "invoicetype": "1",
-              "query":{##db.save.query##}
+              "query":{##cms.save.query##}
 
           }
       ]
@@ -126,7 +126,7 @@
                             <span class="panel-text-zinc-900 panel-font-medium">لیست درخواست ها</span>
                         </h2>
                         <div class="panel_grid_style panel-refund__list">
-                            <basis core="component.grid.grid" run="atclient" dataMemberName="db.orders"
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.orders"
                                 options="refundList"></basis>
                         </div>
                         <div
@@ -135,11 +135,11 @@
                             <form bc-triggers="submit" name="cms.form"
                                 class="refund-search__form panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto panel-max-h-[600px] max-h panel-overflow-y-auto">
                                 <input type="hidden" name="run" class="check-run" value="false" />
-                                <input type="hidden" name="_root.oid" value="{##db.edit.id##}" />
+                                <input type="hidden" name="_root.oid" value="{##cms.edit.id##}" />
                                 <input type="hidden" class="userid-whoIs-logined" name="_root.userid"
-                                    value="[##db.checkrkey.userid|(0)##]" />
+                                    value="[##cms.checkrkey.userid|(0)##]" />
                                 <input type="hidden" class="username-whoIs-logined" name="_root.username"
-                                    value="{##db.userinfo.username##}" />
+                                    value="{##cms.userinfo.username##}" />
 
                                 <div
                                     class="refund-search__header panel-modal-header panel-flex panel-items-center panel-justify-between panel-mb-5">
@@ -251,7 +251,7 @@
         async function onProcessedRefundList(args) {
 
             var emptyOptions = {
-                "tableName": "db.orders",
+                "tableName": "cms.orders",
                 "keyFieldName": null,
                 "statusFieldName": null,
                 "mergeType": 0,
@@ -263,12 +263,12 @@
                 const data = responseJson.sources[0].data;
                 var options = responseJson.sources[0].options;
                 if (data.length) {
-                    $bc.setSource("db.orders", data, options);
+                    $bc.setSource("cms.orders", data, options);
                 } else {
-                    $bc.setSource("db.orders", [], emptyOptions);
+                    $bc.setSource("cms.orders", [], emptyOptions);
                 }
             } catch (e) {
-                $bc.setSource("db.orders", [], emptyOptions);
+                $bc.setSource("cms.orders", [], emptyOptions);
             }
         }
 
@@ -318,7 +318,7 @@
             if (refunfNameEl) refunfNameEl.textContent = refundType;
 
             // ست کردن دیتا برای مودال
-            $bc.setSource("db.edit", [{
+            $bc.setSource("cms.edit", [{
                 id: id,
                 run: true
             }]);
@@ -519,22 +519,22 @@
 
         async function callback_save(source) {
             for (const element of source.source.rows) {
-                $bc.setSource("db.save", [{
+                $bc.setSource("cms.save", [{
                     "query": JSON.stringify(element._root),
                     "run": true
                 },])
             }
         };
 
-        async function deleteInvoiceRefund(element, event, id) {
-            $bc.setSource("db.delete", [{
+        async function closeInvoiceRefund(element, event, id) {
+            $bc.setSource("cms.close", [{
                 "id": id,
                 "run": true
             },]);
 
         };
 
-        async function onProcessed_delete(args) {
+        async function onProcessedCloseRefund(args) {
             await handleProcessedResponse(args)
         }
 
@@ -756,7 +756,7 @@
                         const closeAction = !isClosed
                             ? `
         <button class="refund-list__icon-item remove panel-flex panel-items-center panel-gap-1"
-           onclick="deleteInvoiceRefund(this,event,'${id}')">
+           onclick="closeInvoiceRefund(this,event,'${id}')">
            <svg width="24" height="24">
                <use class="!panel-text-red-500 panel-transition-all panel-duration-200
                        group-hover:panel-text-white" href="/userPanel/images/panel-sprite-icons.svg#icon-trash"></use>

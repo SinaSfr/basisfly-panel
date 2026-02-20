@@ -387,7 +387,7 @@
                                 class="panel-all__invoice">(0)</span></p>
                     </div>
                     <div class="panel_grid_style panel-invoiceList__excel">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.list"
+                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
                             options="InvoiceListItems" onRendered="onRenderedSetExcelClick">
                         </basis>
                     </div>
@@ -450,12 +450,12 @@
                 const totalInvoiceEl = document.querySelector(".panel-all__invoice");
                 if (totalInvoiceEl) totalInvoiceEl.textContent = `(${totalInvoiceSafe})`;
 
-                $bc.setSource("db.list", data, options);
+                $bc.setSource("cms.list", data, options);
             } catch (e) {
                 const totalEl = document.querySelector(".panel-all__invoice");
                 if (totalEl) totalEl.textContent = `(0)`;
 
-                $bc.setSource("db.list", [], get_option("db.list"));
+                $bc.setSource("cms.list", [], get_option("cms.list"));
             }
         }
         async function callback_sourceInvoiceList(source) {
