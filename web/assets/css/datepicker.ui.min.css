@@ -20,6 +20,15 @@ ul {
 
 }
 
+[data-datepicker-id]:hover{
+    background: var(--primary-800) !important;
+    border-radius: 4px;
+}
+
+[data-datepicker-id]:hover span{
+    color: white !important;
+}
+
 p {
     padding: 0;
     margin: 0

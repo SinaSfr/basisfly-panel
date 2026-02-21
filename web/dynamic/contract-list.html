@@ -1,6 +1,35 @@
 <basis core="callback" run="atclient" method="setPage" triggers="list.refresh"></basis>
 <basis core="callback" run="atclient" triggers="cms.form" method="callback_sourceInvoiceList">
 </basis>
+<basis core="api" name="api.booking" run="atclient"
+    url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post" body='{
+    "name": "db",
+    "mid": "20",
+    "member": [
+        {
+            "name": "q",
+            "type": "list",
+            "request": "factor_list",
+            "open": "0",
+            "productid": "",
+            "couponCode": "",
+            "hotelid": "",
+            "search":{##cms.search.search|("")##},
+            "deleted": "0",
+            "pageindex": "{##cms.paging.pageno|(1)##}",
+            "perpage": "20"
+        }
+    ]
+}' content-type="application/json" triggers="cms.search cms.paging" onProcessed="onProcessedInvoice_list">
+</basis>
+
+<basis core="api" name="api.excelBooking" run="atclient"
+    url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post"
+    body='{##cms.bookingExcel.query##}' content-type="application/json"
+    triggers="cms.search cms.paging cms.bookingExcel" if="{##cms.bookingExcel.run|(false)##}"
+    onprocessed="onProcessedGetExcel">
+</basis>
+
 <basis core="api" name="search_item" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
     method="post" body='{
     "name": "db",
@@ -35,38 +64,13 @@
         <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-            <basis core="api" name="api.booking" run="atclient"
-                url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post"
-                body='{
-                    "name": "db",
-                    "mid": "20",
-                    "member": [
-                        {
-                            "name": "q",
-                            "type": "list",
-                            "request": "factor_list",
-                            "open": "0",
-                            "productid": "",
-                            "couponCode": "",
-                            "hotelid": "",
-                            "search":{##cms.search.search|("")##},
-                            "deleted": "0",
-                            "pageindex": "{##cms.paging.pageno|(1)##}",
-                            "perpage": "20"
-                        }
-                    ]
-                }' content-type="application/json" triggers="cms.search cms.paging"
-                onProcessed="onProcessedInvoice_list">
-            </basis>
-            <basis core="api" name="api.excelBooking" run="atclient"
-                url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post"
-                body='{##cms.bookingExcel.query##}' content-type="application/json"
-                triggers="cms.search cms.paging cms.bookingExcel" if="{##cms.bookingExcel.run|(false)##}"
-                onprocessed="onProcessedGetExcel">
-            </basis>
-
-
-            <div class="panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
+            <div
+                class="panel-loading__wrap panel-flex panel-flex-col panel-items-center panel-justify-center panel-flex-1 panel-bg-white panel-rounded-2xl">
+                <div class="panel-loading__content"></div>
+                <div class="panel-loading__title">در حال دریافت اطلاعات…</div>
+                <div class="panel-loading__hint">لطفاً چند لحظه صبر کنید</div>
+            </div>
+            <div class="panel-main__content panel-hidden panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
                 <div class="panel-flex panel-items-end panel-justify-between">
                     <form bc-triggers="submit" name="cms.form" onsubmit="submit_form_invoice(this,event)"
                         class="panel-mb-0">
@@ -386,9 +390,9 @@
                         <p class="panel-text-zinc-900 panel-text-xs">جمع کل قرارداد ها <span
                                 class="panel-all__invoice">(0)</span></p>
                     </div>
-                    <div class="panel_grid_style panel-invoiceList__excel">
+                    <div id="panelHasExcel" class="panel_grid_style panel-invoiceList__excel">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
-                            options="InvoiceListItems" onRendered="onRenderedSetExcelClick">
+                            options="InvoiceListItems" onRendered="onRenderedShowContent">
                         </basis>
                     </div>
                 </section>
@@ -785,7 +789,7 @@
                                 .replace(/>/g, '&gt;');
 
                         const getErrorText = (r) => {
-                            if (String(r?.error?.eid ?? '') !== '0') return '';
+                            if (String(r?.error?.eid ?? '') !== '1') return '';
 
                             const t = r?.error?.type;
 

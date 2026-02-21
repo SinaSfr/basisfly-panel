@@ -1,0 +1,2764 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <basis core="call" file="book/taglist" lid="1"></basis>
+    <title>اطلاعات رزرو</title>
+    <meta name="description" content="اطلاعات رزرو">
+    <link href="[##cms.cms.cdn##]/userPanel/css/user-panel.ui.min.css?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/css" rel="stylesheet" />
+    <style>
+        .panel-items-baseline {
+            align-items: baseline;
+        }
+
+        .panel-inline-block {
+            display: inline-block;
+        }
+
+        .panel-rtl {
+            direction: rtl;
+        }
+
+        .panel-ltr {
+            direction: ltr;
+        }
+
+        .\!panel-mt-1 {
+            margin-top: 0.25rem !important;
+        }
+
+        .\!panel-mx-auto {
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        .panel-user__description table thead tr:first-child,
+        .panel-docs table thead tr:first-child {
+            display: none !important;
+        }
+
+        .\!panel-py-5 {
+            padding-top: 1.25rem !important;
+            padding-bottom: 1.25rem !important;
+        }
+    </style>
+</head>
+
+<body class="panel-bg-zinc-50">
+    <!-- Header -->
+    <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <!-- Main-->
+    <main>
+        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+            <!-- Sidebar -->
+            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+            <!-- Commands / Requests -->
+            <basis core="call" file="userPanel/booking/view/commands" lid="1"></basis>
+            <basis core="call" file="userPanel/final/payment/commands" lid="1"></basis>
+            <!-- Layout Section -->
+            <div class="panel-flex-1">
+                <!-- Invoice Header / Summary -->
+                <basis core="print" datamembername="db.invoice_scalar_value" run="atclient">
+                    <face>
+                        <script type="text/template">
+                            <div data-unit="@unit@" data-type="@type@" data-factorid="@factorid@"
+                            class="panel-invoice__value panel-bg-white panel-border panel-border-zinc-200 panel-border-solid panel-rounded-xl panel-p-3">
+                            <div class="panel-text-xs panel-text-zinc-600 panel-flex panel-gap-1">
+                                <a href="/" class="panel-text-xs panel-text-zinc-600">صفحه اصلی</a>
+                                <span>></span>
+                                <a href="/userPanel/booking/list" class="panel-text-xs panel-text-zinc-600">سفرهای من</a>
+                                <span>></span>
+                                {{
+                                    return `مشاهده <span>${$data.open == 0 ? 'قرارداد' : 'پیش قرارداد'}</span> / شماره`
+                                }}
+                                <span>@factorid@</span>
+                            </div>
+                            <div class="panel-flex panel-items-center panel-justify-between panel-mt-2">
+                                {{
+                                    return `<h2 class="panel-font-medium panel-text-zinc-900">مشاهده ${$data.open == 0 ? 'قرارداد' : 'پیش قرارداد'}</h2>`
+                                }}
+                                <div class="panel-flex panel-items-center panel-gap-5">
+                                    <span
+                                        class="panel-flex panel-items-center panel-gap-1 panel-font-medium panel-text-xs">ساعت:
+                                        <span>@time@ دقیقه</span></span>
+                                    <span
+                                        class="panel-flex panel-items-center panel-gap-1 panel-font-medium panel-text-xs">شماره
+                                        فاکتور: <span>@factorid@</span></span>
+                                </div>
+                            </div>
+                            {{
+                                const safeTitle = $data.title.replace(/&/g, '#&#').replace(/</g, '<').replace(/>/g, '>');
+                                return ` <div class="panel-bg-primary-50 panel-rounded-lg panel-px-3 panel-py-1 panel-text-sm panel-mt-3"><span>${safeTitle}</span>
+                                    ${$data.cancel == 0 ? '' : '<span class="panel-text-label-red panel-px-2">(باطل شد)</span>'}
+                                </div>`
+                            }}
+                        </div>
+                        <section class="panel-flex panel-items-center panel-gap-2 panel-mt-5">
+                            <div
+                                class="panel-flex-[2] panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-calendar-tools"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    <span class="panel-text-xs panel-text-zinc-900">تاریخ سفر</span>
+                                    <div class="panel-flex panel-items-center panel-gap-6 panel-items-baseline">
+                                        <div class="panel-text-zinc-900 panel-text-sm panel-flex panel-gap-1"><span>@travelDate.sstring.from@</span>
+                                            {{
+                                                if($data.travelDate.sstring.to !== ''){
+                                                    return `<span>الی</span><span>${$data.travelDate.sstring.to}</span>`
+                                                };
+                                            }}
+                                        </div>
+                                        <div class="panel-text-zinc-900 panel-text-sm panel-flex panel-gap-1 panel-font-sans">
+                                            <span>@travelDate.mstring.from@</span>
+                                            {{
+                                                if($data.travelDate.mstring.to !== ''){
+                                                    return `<span>to</span><span>${$data.travelDate.mstring.to}</span>`
+                                                };
+                                            }}
+                                        </div>
+                                    </div>
+                               
+                                </div>
+                            </div>
+                            <div
+                                class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-calendar"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    {{
+                                        return `<span class="panel-text-xs panel-text-zinc-900 panel-flex panel-gap-1">تاریخ <span> ${$data.open == 0 ? 'قرارداد' :  'پیش قرارداد'} </span></span>`
+                                    }}
+                                   
+                                    <div class="panel-flex panel-items-baseline panel-gap-5">
+                                        <span class="panel-text-zinc-900 panel-text-sm">@invoiceDate.sdate@</span>
+                                        <span class="panel-text-zinc-900 panel-text-sm panel-font-sans">@invoiceDate.mdate@</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                <span
+                                    class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                    <svg width="31" height="31" class="panel-text-zinc-900">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-two-person"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between">
+                                    <span class="panel-text-xs panel-text-zinc-900">مسافران</span>
+                                    <span class="panel-text-zinc-900 panel-text-sm">@passengers@ مسافر</span>
+                                </div>
+                            </div>
+                        </section>
+                        </script>
+                    </face>
+                </basis>
+                <!-- Tabs Navigation -->
+                <nav class="panel-bg-zinc-200 panel-rounded-xl panel-p-3 panel-mt-8">
+                    <ul class="panel-flex panel-items-center panel-gap-4" id="tabs">
+                        <li data-tab="profile"
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-gap-1 panel-h-12 panel-text-sm panel-text-zinc-900 panel-bg-white panel-rounded-xl panel-cursor-pointer panel-px-2 panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="24" height="24" class="panel-text-zinc-900">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-sidebar-person-small"></use>
+                            </svg>
+                            <span>مشخصات خرید</span>
+                        </li>
+
+                        <li data-tab="finance"
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-gap-1 panel-h-12 panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-px-2 panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="24" height="24" class="panel-text-zinc-900">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-invoice"></use>
+                            </svg>
+                            <span>مالی</span>
+                        </li>
+
+                        <li data-tab="docs"
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-gap-1 panel-h-12 panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-px-2 panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="24" height="24" class="panel-text-zinc-900">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-document-small"></use>
+                            </svg>
+                            <span>مدارک</span>
+                        </li>
+
+                        <li data-tab="payment"
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-gap-1 panel-h-12 panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-px-2 panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="24" height="24">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-card"></use>
+                            </svg>
+                            <span>پرداخت</span>
+                        </li>
+
+                        <li data-tab="notes"
+                            class="panel-flex-1 panel-flex panel-items-center panel-justify-center panel-gap-1 panel-h-12 panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-px-2 panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="24" height="24">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-pencil"></use>
+                            </svg>
+                            <span>پاداشت ها</span>
+                        </li>
+
+                        <li data-tab="refund"
+                            class="panel-flex-[2] panel-flex panel-items-center panel-justify-center panel-gap-1 panel-h-12 panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-px-2 panel-transition-all panel-duration-300 hover:panel-bg-white">
+                            <svg width="24" height="24">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-refund"></use>
+                            </svg>
+                            <span> درخواست استرداد و تغییر</span>
+                        </li>
+                    </ul>
+
+
+                </nav>
+                <!-- Tabs Content Wrapper -->
+                <div class="panel-mt-4 panel_grid_style">
+                    <!-- Tab Panel: Profile (Purchase Details) -->
+                    <div data-tab-panel="profile">
+                        <basis core="call" run="atclient" file="/userPanel/booking/view/profile" method="get" lid="1"
+                            pageindex="[##cms.cms.pageindex|(1)##]">
+                        </basis>
+                    </div>
+                    <!-- Tab Panel: Finance -->
+                    <div data-tab-panel="finance" class="panel-hidden">
+                        <basis core="call" run="atclient" file="/userPanel/booking/view/finance" method="get" lid="1"
+                            if="{##cms.finance##}" triggers="cms.finance" pageindex="[##cms.cms.pageindex|(1)##]">
+                        </basis>
+                    </div>
+                    <!-- Tab Panel: Docs -->
+                    <div data-tab-panel="docs" class="panel-hidden">
+                        <basis core="call" run="atclient" file="/userPanel/booking/view/docs" method="get" lid="1"
+                            if="{##cms.docs##}" triggers="cms.docs" pageindex="[##cms.cms.pageindex|(1)##]"
+                            OnRendered="addDocsRadioEventListeners">
+                        </basis>
+                    </div>
+
+                    <!-- Tab Panel: Payment -->
+                    <div data-tab-panel="payment" class="panel-hidden">
+                        <basis core="call" run="atclient" file="/userPanel/booking/view/payment" method="get" lid="1"
+                            if="{##cms.payment##}" triggers="cms.payment" pageindex="[##cms.cms.pageindex|(1)##]">
+                        </basis>
+
+                    </div>
+
+                    <!-- Tab Panel: notes -->
+                    <div data-tab-panel="notes" class="panel-hidden">
+                        <basis core="call" run="atclient" file="/userPanel/booking/view/notes" method="get" lid="1"
+                            if="{##cms.notes##}" triggers="cms.notes" pageindex="[##cms.cms.pageindex|(1)##]">
+                        </basis>
+                    </div>
+                    <!-- Tab Panel: Refund -->
+                    <div data-tab-panel="refund" class="panel-hidden">
+                        <basis core="call" run="atclient" file="/userPanel/booking/view/refund" method="get" lid="1"
+                            if="{##cms.refund##}" triggers="cms.refund" pageindex="[##cms.cms.pageindex|(1)##]">
+                        </basis>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="sharedDropdown"
+        class="panel-hidden panel-fixed panel-z-50 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-overflow-hidden"
+        role="listbox" aria-label="dropdown">
+        <div class="panel-p-3 panel-border-b panel-border-solid panel-border-zinc-200">
+            <input id="sharedDropdownSearch" type="text"
+                class="panel-w-full panel-h-12 panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white panel-transition panel-duration-300"
+                placeholder="جستجو..." />
+        </div>
+        <div id="sharedDropdownList" class="panel-max-h-40 panel-overflow-y-auto panel-p-2"></div>
+    </div>
+    <!-- Footer-->
+    <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
+    <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
+        type="text/javascript"></script>
+    <script>
+        /**
+   * ------------------------------------------------------------
+   * Profile Tabs + Grids (cleaned + deduplicated)
+   * - English comments
+   * - Shared helpers to avoid repeating the same logic everywhere
+   * ------------------------------------------------------------
+   */
+
+        /* =========================
+           Shared Helpers
+        ========================= */
+
+        /**
+         * Safely convert any value to trimmed string.
+         */
+        function toText(value, fallback = "-") {
+            if (value == null) return fallback;
+            const s = String(value).trim();
+            return s === "" ? fallback : s;
+        }
+
+        /**
+         * Render value with LTR wrapper (phones, codes, etc.).
+         */
+        function renderLtr(value, fallback = "-") {
+            return `<span class="panel-inline-block panel-ltr">${toText(value, fallback)}</span>`;
+        }
+
+        /**
+         * Render value with sans font (emails, passports, etc.).
+         */
+        function renderSans(value, fallback = "-") {
+            return `<span class="panel-font-sans">${toText(value, fallback)}</span>`;
+        }
+
+        /**
+         * Format numbers with Intl.NumberFormat safely.
+         */
+        function formatNumber(value, fallback = "-") {
+            if (value == null || value === "") return fallback;
+            const n = Number(value);
+            if (Number.isNaN(n)) return fallback;
+            return new Intl.NumberFormat().format(n);
+        }
+
+        /**
+         *  gender mapping (profile buyer).
+         */
+        function mapGender(gender) {
+            if (gender == 0) return "زن";
+            if (gender == 1) return "مرد";
+            return "-";
+        }
+
+
+
+        /**
+         * Buyer account type mapping.
+         */
+        function mapBuyerAccType(acctype) {
+            if (acctype == 243) return "مسافر";
+            if (acctype == 241) return "کانتر آژانس خودم";
+            if (acctype == 181) return "کانتر آژانس خودم";
+            if (acctype == 182) return "تامین کننده";
+            if (acctype == 242) return "کانتر آژانس همکار";
+            return "-";
+        }
+
+        /**
+         * Passenger type mapping.
+         */
+        function mapPassengerType(t) {
+            if (t == 0) return "نوزاد";
+            if (t == 1) return "کودک";
+            if (t == 2) return "بزرگسال";
+            if (t == 3) return "کودک";
+            if (t == 4) return "بزرگسال (اضافی)";
+            return "-";
+        }
+
+        /**
+         * Map cabin class to Persian labels.
+         */
+        function mapCabinClassFa(v) {
+            const s = toText(v, "").toLowerCase();
+            if (s === "economy") return "اکونومی";
+            if (s === "business" || s === "bussiness") return "بیزینس";
+            if (s === "first") return "فرست";
+            return toText(v, "");
+        }
+
+        /**
+         * Build "Webservice / Ref" cell HTML for an object: {webservice, refnumber}.
+         */
+        function renderWebserviceCell(wsObj) {
+            if (!wsObj) return "-";
+
+            const ws = toText(wsObj.webservice, "-");
+            const refRaw = toText(wsObj.refnumber, "");
+            const ref = refRaw === "-" ? "" : refRaw;
+
+            return `<div class="panel-flex panel-gap-1 panel-justify-center panel-items-center panel-font-sans">
+        <span>${ws}</span>
+        ${ref ? `<span>/</span><span>${ref}</span>` : ``}
+    </div>`;
+        }
+
+        /**
+         * Safely show an element by selector (remove "hidden" if exists).
+         */
+        function unhideIfExists(selector) {
+            const el = document.querySelector(selector);
+            if (!el) return;
+            el.classList.remove("hidden");
+        }
+
+        /**
+         * Safe $bc.setSource wrapper.
+         */
+        function setBcSourceSafe(key, value) {
+            if (!window.$bc || typeof $bc.setSource !== "function") {
+                console.warn("$bc.setSource is not available");
+                return;
+            }
+            $bc.setSource(key, value);
+        }
+
+        /**
+         * Shared grid UI/behavior options.
+         */
+        const GRID_BASE_OPTIONS = {
+            sorting: false,
+            filter: false,
+            rowNumber: false,
+            defaultSort: false,
+            direction: "rtl",
+            paging: "",
+            information: false,
+            firstAndLastBtn: false,
+        };
+
+        /**
+         * Create a grid config with shared base options.
+         */
+        function makeGrid(columns) {
+            return { columns, ...GRID_BASE_OPTIONS };
+        }
+
+        /* =========================
+           Tabs Controller
+        ========================= */
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+
+            /**
+             * Tabs root element (ul or container that holds li[data-tab]).
+             */
+            const tabsRoot = document.getElementById("tabs");
+            if (!tabsRoot) return;
+
+            /**
+             * Tabs and panels.
+             */
+            const tabs = Array.from(tabsRoot.querySelectorAll("li[data-tab]"));
+            const panels = Array.from(document.querySelectorAll("[data-tab-panel]"));
+
+            /**
+             * Hidden class support (some templates use "hidden", some use "panel-hidden").
+             */
+            const HIDDEN_CLASSES = ["panel-hidden", "hidden"];
+            const ACTIVE_CLASS = "panel-bg-white";
+
+            /**
+             * Keep track of which tabs have already loaded their data source once.
+             */
+            const loadedTabs = new Set();
+
+            /**
+             * Tab-to-source map (profile is intentionally excluded).
+             */
+            const apiByTab = {
+                finance: () => setBcSourceSafe("cms.finance", true),
+                docs: () => setBcSourceSafe("cms.docs", true),
+                payment: () => setBcSourceSafe("cms.payment", true),
+                notes: () => setBcSourceSafe("cms.notes", true),
+                refund: () => setBcSourceSafe("cms.refund", true),
+            };
+
+            /**
+             * Hide/show utilities.
+             */
+            function hideEl(el) {
+                HIDDEN_CLASSES.forEach((c) => el.classList.add(c));
+            }
+
+            function showEl(el) {
+                HIDDEN_CLASSES.forEach((c) => el.classList.remove(c));
+            }
+
+            /**
+             * Set active tab and show/hide panels.
+             */
+            function setActiveTab(tabKey) {
+                panels.forEach((p) => {
+                    const key = p.getAttribute("data-tab-panel");
+                    if (key === tabKey) showEl(p);
+                    else hideEl(p);
+                });
+
+                tabs.forEach((t) => {
+                    const isActive = t.getAttribute("data-tab") === tabKey;
+                    t.classList.toggle(ACTIVE_CLASS, isActive);
+                    t.setAttribute("aria-selected", isActive ? "true" : "false");
+                });
+            }
+
+            /**
+             * Run API/source only once per tab (profile never runs).
+             */
+            function runApiOnce(tabKey) {
+                if (tabKey === "profile") return;
+                if (loadedTabs.has(tabKey)) return;
+
+                loadedTabs.add(tabKey);
+
+                const fn = apiByTab[tabKey];
+                if (typeof fn !== "function") return;
+
+                try {
+                    fn();
+                } catch (e) {
+                    console.error("Tab API failed:", tabKey, e);
+                }
+            }
+
+            /**
+             * Click handler for tabs.
+             */
+            tabsRoot.addEventListener("click", (e) => {
+                const li = e.target.closest("li[data-tab]");
+                if (!li || !tabsRoot.contains(li)) return;
+
+                const tabKey = li.getAttribute("data-tab");
+                if (!tabKey) return;
+
+                setActiveTab(tabKey);
+                runApiOnce(tabKey);
+            });
+
+            /**
+             * Initial state: show profile only (no API).
+             */
+            setActiveTab("profile");
+        });
+
+        /* =========================
+           Buyer Grids
+        ========================= */
+
+        if (typeof bvProfileBuyerPersonGrid === "undefined") {
+            /**
+             * Grid: Buyer -> Person (includes userid column).
+             */
+            var bvProfileBuyerPersonGrid = makeGrid({
+                firstname: {
+                    title: "نام",
+                    cellMaker: (row) => toText(row?.fullname?.firstname),
+                },
+                lastname: {
+                    title: "نام خانوادگی",
+                    cellMaker: (row) => toText(row?.fullname?.lastname),
+                },
+                email: {
+                    title: "ایمیل",
+                    cellMaker: (row) => renderSans(row?.email),
+                },
+                tel: {
+                    title: "تلفن ثابت",
+                    cellMaker: (row) => renderLtr(row?.tel),
+                },
+                mobile: {
+                    title: "تلفن همراه",
+                    cellMaker: (row) => renderLtr(row?.mobile),
+                },
+                address: "آدرس",
+                gender: {
+                    title: "جنسیت",
+                    cellMaker: (row) => mapGender(row?.gender),
+                },
+                counterName: "کانتر اقدام کننده",
+                acctype: {
+                    title: "نوع خریدار",
+                    cellMaker: (row) => mapBuyerAccType(row?.acctype),
+                },
+                userid: {
+                    title: "(UserId)کد کاربر ",
+                    cellMaker: (row) => `<span>${toText(row?.userid)}</span>`,
+                },
+            });
+        }
+
+        if (typeof bvProfileBuyerMycounterPGrid === "undefined") {
+            /**
+             * Grid: Buyer -> My Counter (Person)
+             */
+            var bvProfileBuyerMycounterPGrid = makeGrid({
+                firstname: {
+                    title: "نام",
+                    cellMaker: (row) => toText(row?.fullname?.firstname),
+                },
+                lastname: {
+                    title: "نام خانوادگی",
+                    cellMaker: (row) => toText(row?.fullname?.lastname),
+                },
+                email: {
+                    title: "ایمیل",
+                    cellMaker: (row) => renderSans(row?.email),
+                },
+                tel: {
+                    title: "تلفن ثابت",
+                    cellMaker: (row) => renderLtr(row?.tel),
+                },
+                mobile: {
+                    title: "تلفن همراه",
+                    cellMaker: (row) => renderLtr(row?.mobile),
+                },
+                address: "آدرس",
+                gender: {
+                    title: "جنسیت",
+                    cellMaker: (row) => mapGender(row?.gender),
+                },
+                counterName: "کانتر اقدام کننده",
+                acctype: {
+                    title: "نوع خریدار",
+                    cellMaker: (row) => mapBuyerAccType(row?.acctype),
+                },
+            });
+        }
+
+        if (typeof bvProfileBuyerMycounterAGrid === "undefined") {
+            /**
+             * Grid: Buyer -> My Counter (Agency)
+             */
+            var bvProfileBuyerMycounterAGrid = makeGrid({
+                agencyname: "نام آژانس",
+                agencymanegername: "مدیر عامل",
+                agencytell: {
+                    title: "تلفن ثابت",
+                    cellMaker: (row) => renderLtr(row?.agencytell),
+                },
+                agencymobile: {
+                    title: "تلفن همراه",
+                    cellMaker: (row) => renderLtr(row?.agencymobile),
+                },
+                agencyaddress: "آدرس",
+                agencyweb: "وب سایت",
+                counterName: "کانتر اقدام کننده",
+                acctype: {
+                    title: "نوع خریدار",
+                    cellMaker: (row) => mapBuyerAccType(row?.acctype),
+                },
+            });
+        }
+
+        if (typeof bvProfileBuyerPartnerGrid === "undefined") {
+            /**
+             * Grid: Buyer -> Partner Agency (includes counter info)
+             */
+            var bvProfileBuyerPartnerGrid = makeGrid({
+                agencyname: "نام آژانس",
+                agencymanegername: "مدیر عامل",
+                agencytell: {
+                    title: "تلفن ثابت",
+                    cellMaker: (row) => renderLtr(row?.agencytell),
+                },
+                agencymobile: {
+                    title: "تلفن همراه",
+                    cellMaker: (row) => renderLtr(row?.agencymobile),
+                },
+                agencyaddress: "آدرس",
+                namecounter: {
+                    title: " کانتر خرید کننده",
+                    cellMaker: (row) => `${toText(row?.namecounter, "")} ${toText(row?.familycounter, "")}`.trim() || "-",
+                },
+                email_counter: {
+                    title: "ایمیل کانتر",
+                    cellMaker: (row) => renderSans(row?.email_counter),
+                },
+                mobile_counter: {
+                    title: "تلفن همراه کانتر",
+                    cellMaker: (row) => renderLtr(row?.mobile_counter),
+                },
+                counterName: "کانتر اقدام کننده",
+                acctype: {
+                    title: "نوع خریدار",
+                    cellMaker: (row) => mapBuyerAccType(row?.acctype),
+                },
+            });
+        }
+
+        if (typeof bvProfileBuyerSupplierGrid === "undefined") {
+            /**
+             * Grid: Buyer -> Supplier
+             */
+            var bvProfileBuyerSupplierGrid = makeGrid({
+                agencyname: "نام آژانس",
+                agencymanegername: "مدیر عامل",
+                agencytell: {
+                    title: "تلفن ثابت",
+                    cellMaker: (row) => renderLtr(row?.agencytell),
+                },
+                agencymobile: {
+                    title: "تلفن همراه",
+                    cellMaker: (row) => renderLtr(row?.agencymobile),
+                },
+                agencyaddress: "آدرس",
+                agencyweb: "وب سایت",
+                counterName: "کانتر اقدام کننده",
+                acctype: {
+                    title: "نوع خریدار",
+                    cellMaker: (row) => mapBuyerAccType(row?.acctype),
+                },
+            });
+        }
+
+        /* =========================
+           Passengers (dynamic grid)
+        ========================= */
+
+        let passengersSource = 0;
+        let invoicePassengersScalarSource = 0;
+        let invoicePassengersScalarArray = [];
+        let bvProfilePassengersGrid = {};
+
+        /**
+         * Callback: build passenger grid after both sources are ready.
+         * - db.passengers
+         * - db.invoice_scalar_value
+         */
+        function bvPassengersCallback(args) {
+            const resultJson = args?.source?.rows || [];
+            const resultType = args?.source?.id;
+
+            if (resultType === "db.passengers") {
+                passengersSource = 1;
+            } else if (resultType === "db.invoice_scalar_value") {
+                invoicePassengersScalarSource = 1;
+                invoicePassengersScalarArray = resultJson;
+            }
+
+            if (passengersSource !== 1 || invoicePassengersScalarSource !== 1) return;
+
+            /**
+             * Some invoice scalar types change which columns we show.
+             */
+            let compact = false;
+            for (const element of invoicePassengersScalarArray) {
+                if ([12, 13, 14].includes(Number(element?.type))) {
+                    compact = true;
+                    break;
+                }
+            }
+
+            if (compact) {
+                bvProfilePassengersGrid = makeGrid({
+                    firstname: {
+                        title: "نام",
+                        cellMaker: (row) => toText(row?.passengerinfo?.fullname?.firstname),
+                    },
+                    lastname: {
+                        title: "نام خانوادگی",
+                        cellMaker: (row) => toText(row?.passengerinfo?.fullname?.lastname),
+                    },
+                    birthdate: {
+                        title: "تاریخ تولد",
+                        cellMaker: (row) => {
+                            const m = toText(row?.passengerinfo?.birthdate?.M_birthdate, "-");
+                            const s = toText(row?.passengerinfo?.birthdate?.S_birthdate, "-");
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                        },
+                    },
+                    gender: {
+                        title: "جنسیت",
+                        cellMaker: (row) => mapGender(row?.passengerinfo?.gender),
+                    },
+                    type: {
+                        title: "مسافر",
+                        cellMaker: (row) => mapPassengerType(row?.passengerinfo?.type),
+                    },
+                });
+            } else {
+                bvProfilePassengersGrid = makeGrid({
+                    firstname: {
+                        title: "نام",
+                        cellMaker: (row) => toText(row?.passengerinfo?.fullname?.firstname),
+                    },
+                    lastname: {
+                        title: "نام خانوادگی",
+                        cellMaker: (row) => toText(row?.passengerinfo?.fullname?.lastname),
+                    },
+                    birthdate: {
+                        title: "تاریخ تولد",
+                        cellMaker: (row) => {
+                            const m = toText(row?.passengerinfo?.birthdate?.M_birthdate, "-");
+                            const s = toText(row?.passengerinfo?.birthdate?.S_birthdate, "-");
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                        },
+                    },
+                    nationalcode: {
+                        title: "کد ملی",
+                        cellMaker: (row) => toText(row?.passengerinfo?.nationalcode),
+                    },
+                    passportcode: {
+                        title: "کد پاسپورت",
+                        cellMaker: (row) => renderSans(row?.passengerinfo?.passportcode),
+                    },
+                    passportexpiration: {
+                        title: "تاریخ انقضای پاسپورت",
+                        cellMaker: (row) => renderSans(row?.passengerinfo?.passportexpiration),
+                    },
+                    countryofresidence: {
+                        title: "ملیت",
+                        cellMaker: (row) => toText(row?.passengerinfo?.countryofresidence?.ecountryname),
+                    },
+                    gender: {
+                        title: "جنسیت",
+                        cellMaker: (row) => mapGender(row?.passengerinfo?.gender),
+                    },
+                    type: {
+                        title: "مسافر",
+                        cellMaker: (row) => mapPassengerType(row?.passengerinfo?.type),
+                    },
+                });
+            }
+
+            setTimeout(() => {
+                setBcSourceSafe("cms.bvProfilePassengersGrid", true);
+            }, 10);
+
+            passengersSource = 0;
+            invoicePassengersScalarSource = 0;
+        }
+
+        /* =========================
+           Products (Departures + Insurances)
+        ========================= */
+
+        let departuresSource = 0;
+        let invoiceProductsScalarSource = 0;
+        let insurancesSource = 0;
+
+        let invoiceProductsScalarArray = [];
+        let bvProfileInsurancesGrid = {};
+        let bvProfileDeparturesGrid = {};
+
+        /**
+         * Callback: build departures/insurances grids after required sources are ready.
+         */
+        function bvProductsCallback(args) {
+            const resultJson = args?.source?.rows || [];
+            const resultType = args?.source?.id || "";
+            const resultName = resultType.split(".");
+
+            /**
+             * If this section has rows, show its corresponding product panel container.
+             */
+            if (resultJson.length > 0 && resultName.length > 1) {
+                unhideIfExists(`.panel-product__${resultName[1]}`);
+            }
+
+            if (resultType === "db.departure") {
+                departuresSource = 1;
+            } else if (resultType === "db.invoice_scalar_value") {
+                invoiceProductsScalarSource = 1;
+                invoiceProductsScalarArray = resultJson;
+            } else if (resultType === "db.insurance") {
+                insurancesSource = 1;
+            }
+
+            /**
+             * If invoice scalars are ready, trigger tour list source for type=10 items.
+             */
+            if (invoiceProductsScalarSource === 1) {
+                for (const element of invoiceProductsScalarArray) {
+                    if (Number(element?.type) === 10) {
+                        setBcSourceSafe("db.tourList", [
+                            { basiscoreid: element?.basiscoreid, run: true },
+                        ]);
+                    }
+                }
+            }
+
+            /**
+             * Departures grid depends on: db.departure + db.invoice_scalar_value
+             */
+            if (departuresSource === 1 && invoiceProductsScalarSource === 1) {
+                for (const element of invoiceProductsScalarArray) {
+                    const t = Number(element?.type);
+
+                    /**
+                     * Update title label for departure section based on product type.
+                     */
+                    const typeEl = document.querySelector(".panel-product__type__departure");
+                    if (typeEl) {
+                        if (t === 1) typeEl.innerHTML = " (پرواز یکطرفه) ";
+                        else if (t === 7) typeEl.innerHTML = " (پرواز چندمسیره) ";
+                        else if (t === 2 || t === 6 || t === 4) typeEl.innerHTML = " (پرواز دوطرفه)";
+                        else if (t === 8) typeEl.innerHTML = " (قطار یکطرفه)";
+                        else if (t === 9) typeEl.innerHTML = " (قطار دوطرفه)";
+                        else if (t === 15) typeEl.innerHTML = " (اتوبوس)";
+                    }
+
+                    /**
+                     * Flight / Hotel+Flight departures.
+                     */
+                    if ([1, 2, 4, 6, 7].includes(t)) {
+                        bvProfileDeparturesGrid = makeGrid({
+                            title: {
+                                title: "عنوان",
+                                cellMaker: (row) => {
+                                    const isDep = row?.title === "departure";
+                                    const label = isDep ? "رفت" : "برگشت";
+                                    const codeLabel = "شماره پرواز:";
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${label}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${codeLabel}</span><span class="panel-font-sans">${toText(row?.routecode)}</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeStartairport: {
+                                title: "مبدا",
+                                cellMaker: (row) => {
+                                    const city = toText(row?.startairport?.startotherinfo?.city);
+                                    const airport = toText(row?.startairport?.airport);
+                                    const short = toText(row?.startairport?.startotherinfo?.shortname);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${city}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${airport}</span><span>(${short})</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeEndairport: {
+                                title: "مقصد",
+                                cellMaker: (row) => {
+                                    const city = toText(row?.endairport?.endotherinfo?.city);
+                                    const airport = toText(row?.endairport?.airport);
+                                    const short = toText(row?.endairport?.endotherinfo?.shortname);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${city}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${airport}</span><span>(${short})</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeDate: {
+                                title: "تاریخ ",
+                                cellMaker: (row) => {
+                                    const m = toText(row?.routeDate?.mstring);
+                                    const s = toText(row?.routeDate?.sstring);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                                },
+                            },
+                            atimeEtime: {
+                                title: "زمان",
+                                cellMaker: (row) => {
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center"><span>ورود:</span><span>${toText(row?.atime)}</span></div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center"><span>خروج:</span><span>${toText(row?.etime)}</span></div>
+                            </div>`;
+                                },
+                            },
+                            airbaggageAirline: {
+                                title: "ایرلاین",
+                                cellMaker: (row) => {
+                                    const airbaggage = row?.airbaggage
+                                        ? `<div class="panel-flex panel-items-center panel-justify-center">
+                                        <svg width="31" height="28"><use href="/userPanel/images/panel-sprite-icons.svg#icon-case"></use></svg>
+                                        <span class="panel-inline-block panel-ltr !panel-mt-1">${toText(row?.airbaggage)}</span>
+                                   </div>`
+                                        : "";
+
+                                    const rawSrc = toText(row?.airlineimage, "");
+                                    const src = rawSrc ? (rawSrc.startsWith("/") ? rawSrc : `/${rawSrc}`) : "";
+                                    const alt = toText(row?.airline, "");
+
+                                    return `<div>
+                                ${src ? `<img src="${src}" class="!panel-mx-auto" width="60" height="24" alt="${alt}"/>` : "-"}
+                                ${airbaggage}
+                            </div>`;
+                                },
+                            },
+                            routeclassConnectionTime: {
+                                title: "خدمات",
+                                cellMaker: (row) => {
+                                    const classFa = mapCabinClassFa(row?.class);
+                                    const classCode = toText(row?.classCode, "").trim();
+                                    const parts = [];
+                                    if (classFa) parts.push(`<span>${classFa}</span>`);
+                                    if (classCode && classCode !== "-") parts.push(`<span>${classCode}</span>`);
+
+                                    const classHtml = parts.join(`<span class="panel-px-2">/</span>`);
+                                    const connection = toText(row?.connectionTime ?? 0);
+
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${classHtml || "-"}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>زمان بین دو پرواز:</span><span>${connection}</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                        });
+                    }
+                    /**
+                     * Bus departures.
+                     */
+                    else if (t === 15) {
+                        bvProfileDeparturesGrid = makeGrid({
+                            title: {
+                                title: "عنوان",
+                                cellMaker: (row) => {
+                                    const isDep = row?.title === "departure";
+                                    const label = isDep ? "رفت" : "برگشت";
+                                    const codeLabel = "شماره اتوبوس:";
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${label}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${codeLabel}</span><span class="panel-font-sans">${toText(row?.routecode)}</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeStartstation: {
+                                title: "مبدا",
+                                cellMaker: (row) => {
+                                    const city = toText(row?.startstation?.startotherinfo?.city);
+                                    const station = toText(row?.startstation?.station);
+                                    const short = toText(row?.startstation?.startotherinfo?.shortname);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${city}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${station}</span><span>(${short})</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeEndstation: {
+                                title: "مقصد",
+                                cellMaker: (row) => {
+                                    const city = toText(row?.endstation?.endotherinfo?.city);
+                                    const station = toText(row?.endstation?.station);
+                                    const short = toText(row?.endstation?.endotherinfo?.shortname);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${city}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${station}</span><span>(${short})</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeDate: {
+                                title: "تاریخ ",
+                                cellMaker: (row) => {
+                                    const m = toText(row?.routeDate?.mstring);
+                                    const s = toText(row?.routeDate?.sstring);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                                },
+                            },
+                            atimeEtime: {
+                                title: "زمان",
+                                cellMaker: (row) => {
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center"><span>ورود:</span><span>${toText(row?.atime)}</span></div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center"><span>خروج:</span><span>${toText(row?.etime)}</span></div>
+                            </div>`;
+                                },
+                            },
+                            airlineimage: {
+                                title: " اتوبوس",
+                                cellMaker: (row) => {
+                                    const rawSrc = toText(row?.airlineimage, "");
+                                    const src = rawSrc ? (rawSrc.startsWith("/") ? rawSrc : `/${rawSrc}`) : "";
+                                    const alt = toText(row?.BusOperator, "");
+                                    return src ? `<div><img src="${src}" class="!panel-mx-auto" width="60" height="24" alt="${alt}"/></div>` : "-";
+                                },
+                            },
+                        });
+                    }
+                    /**
+                     * Train departures (fallback).
+                     */
+                    else {
+                        bvProfileDeparturesGrid = makeGrid({
+                            title: {
+                                title: "عنوان",
+                                cellMaker: (row) => {
+                                    const isDep = row?.title === "departure";
+                                    const label = isDep ? "رفت" : "برگشت";
+                                    const codeLabel = "شماره قطار:";
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${label}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${codeLabel}</span><span class="panel-font-sans">${toText(row?.routecode)}</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeStartairport: {
+                                title: "مبدا",
+                                cellMaker: (row) => {
+                                    const city = toText(row?.startairport?.startotherinfo?.city);
+                                    const airport = toText(row?.startairport?.airport);
+                                    const short = toText(row?.startairport?.startotherinfo?.shortname);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${city}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${airport}</span><span>(${short})</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeEndairport: {
+                                title: "مقصد",
+                                cellMaker: (row) => {
+                                    const city = toText(row?.endairport?.endotherinfo?.city);
+                                    const airport = toText(row?.endairport?.airport);
+                                    const short = toText(row?.endairport?.endotherinfo?.shortname);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div>${city}</div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                                    <span>${airport}</span><span>(${short})</span>
+                                </div>
+                            </div>`;
+                                },
+                            },
+                            routeDate: {
+                                title: "تاریخ ",
+                                cellMaker: (row) => {
+                                    const m = toText(row?.routeDate?.mstring);
+                                    const s = toText(row?.routeDate?.sstring);
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                                },
+                            },
+                            atimeEtime: {
+                                title: "زمان",
+                                cellMaker: (row) => {
+                                    return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center"><span>ورود:</span><span>${toText(row?.atime)}</span></div>
+                                <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center"><span>خروج:</span><span>${toText(row?.etime)}</span></div>
+                            </div>`;
+                                },
+                            },
+                            trainimage: {
+                                title: " قطار",
+                                cellMaker: (row) => {
+                                    const rawSrc = toText(row?.trainimage, "");
+                                    const src = rawSrc ? (rawSrc.startsWith("/") ? rawSrc : `/${rawSrc}`) : "";
+                                    const alt = toText(row?.trainid, "");
+                                    return src ? `<div><img src="${src}" class="!panel-mx-auto" width="60" height="24" alt="${alt}"/></div>` : "-";
+                                },
+                            },
+                            routeclassConnectionTime: {
+                                title: "خدمات",
+                                cellMaker: (row) => {
+                                    const classFa = mapCabinClassFa(row?.class);
+                                    const classCode = toText(row?.classCode, "").trim();
+                                    const parts = [];
+                                    if (classFa) parts.push(`<span>${classFa}</span>`);
+                                    if (classCode && classCode !== "-") parts.push(`<span>${classCode}</span>`);
+                                    const classHtml = parts.join(`<span class="panel-px-2">/</span>`);
+                                    return `<div>${classHtml || "-"}</div>`;
+                                },
+                            },
+                        });
+                    }
+                }
+
+                setTimeout(() => {
+                    setBcSourceSafe("cms.bvProfileDeparturesGrid", true);
+                }, 10);
+
+                departuresSource = 0;
+            }
+
+            /**
+             * Insurances grid depends on: db.insurance + db.invoice_scalar_value
+             */
+            if (insurancesSource === 1 && invoiceProductsScalarSource === 1) {
+                for (const element of invoiceProductsScalarArray) {
+                    const t = Number(element?.type);
+
+                    if (t === 5 || t === 6) {
+                        bvProfileInsurancesGrid = makeGrid({
+                            country: "کشور ",
+                            Provider: "شرکت تامین کننده ",
+                            name: "نوع بیمه ",
+                            duration: {
+                                title: "مدت زمان",
+                                cellMaker: (row) => {
+                                    const d = toText(row?.duration?.duration);
+                                    const dt = toText(row?.duration?.durationtype);
+                                    return `<span>${d}</span><span class="!panel-px-2">-</span><span>${dt}</span>`;
+                                },
+                            },
+                        });
+                    } else if (t === 4 || t === 10) {
+                        bvProfileInsurancesGrid = makeGrid({
+                            insuranceCountry: "کشور ",
+                            insuranceProvider: "شرکت تامین کننده ",
+                            insuranceName: {
+                                title: "نوع بیمه ",
+                                cellMaker: (row) => toText(row?.insuranceName),
+                            },
+                        });
+                    }
+                }
+
+                setTimeout(() => {
+                    setBcSourceSafe("cms.bvProfileInsurancesGrid", true);
+                }, 10);
+
+                insurancesSource = 0;
+            }
+        }
+
+        /* =========================
+           Hotels Grid
+        ========================= */
+
+        if (typeof bvProfileHotelsGrid === "undefined") {
+            /**
+             * Grid: Hotels list.
+             */
+            var bvProfileHotelsGrid = makeGrid({
+                hotelNameStar: {
+                    title: "هتل",
+                    cellMaker: (row) => {
+                        const stars = Number(row?.hotelStar) || 0;
+                        let output = "";
+                        for (let i = 0; i < stars; i++) {
+                            output += `<svg width="28" height="28"><use href="/userPanel/images/panel-sprite-icons.svg#icon-fill-star"></use></svg>`;
+                        }
+                        return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                    <div>${toText(row?.hotelName)}</div>
+                    <div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">${output}</div>
+                </div>`;
+                    },
+                },
+                cityName: {
+                    title: "مقصد",
+                    cellMaker: (row) => toText(row?.cityName),
+                },
+                fromDate: {
+                    title: "تاریخ ورود",
+                    cellMaker: (row) => {
+                        const m = toText(row?.fromDate?.mstring);
+                        const s = toText(row?.fromDate?.sstring);
+                        return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                    },
+                },
+                toDate: {
+                    title: "تاریخ خروج",
+                    cellMaker: (row) => {
+                        const m = toText(row?.toDate?.mstring);
+                        const s = toText(row?.toDate?.sstring);
+                        return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                    },
+                },
+                passengersRoom: {
+                    title: "اتاق /  مسافر",
+                    cellMaker: (row) => {
+                        const room = toText(row?.roomNumber, "").trim();
+                        const p = row?.passengersRoom || {};
+                        const parts = [];
+
+                        if ((p.childWithbed ?? 0) !== 0) parts.push(`<span class="panel-font-sans panel-inline-block panel-ltr">${p.childWithbed} Child</span>`);
+                        if ((p.childWithoutbed ?? 0) !== 0) parts.push(`<span class="panel-font-sans panel-inline-block panel-ltr">${p.childWithoutbed} Child (WOB)</span>`);
+                        if ((p.infant ?? 0) !== 0) parts.push(`<span class="panel-font-sans panel-inline-block panel-ltr">${p.infant} Infant</span>`);
+                        if ((p.extraAdult ?? 0) !== 0) parts.push(`<span class="panel-font-sans panel-inline-block panel-ltr">${p.extraAdult} Adult (Extra)</span>`);
+
+                        parts.push(`<span class="panel-font-sans panel-inline-block panel-ltr">${p.adult ?? 0} Adult</span>`);
+
+                        const paxHtml = parts.join(" + ");
+                        return `<div class="panel-flex panel-flex-col panel-gap-1">${room ? `<div>${room}</div>` : ``}<div>${paxHtml}</div></div>`;
+                    },
+                },
+                service: {
+                    title: "خدمات",
+                    cellMaker: (row) => {
+                        return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                    <div>${toText(row?.roomType)}</div>
+                    <div>${toText(row?.service)}</div>
+                </div>`;
+                    },
+                },
+            });
+        }
+
+        /* =========================
+           Services Grid
+        ========================= */
+
+        if (typeof bvProfileServicesGrid === "undefined") {
+            /**
+             * Grid: Services list.
+             */
+            var bvProfileServicesGrid = makeGrid({
+                servicename: {
+                    title: "خدمات",
+                    cellMaker: (row) => toText(row?.service?.servicename),
+                },
+                servicecityname: {
+                    title: "شهر",
+                    cellMaker: (row) => toText(row?.service?.servicecityname),
+                },
+                servicedate: {
+                    title: "تاریخ",
+                    cellMaker: (row) => {
+                        const d = row?.service?.servicedate;
+                        if (!d) return "-";
+                        return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                    <div class="panel-font-sans">${toText(d?.mstring)}</div>
+                    <div>${toText(d?.sstring)}</div>
+                </div>`;
+                    },
+                },
+                webservice: {
+                    title: "وب سرویس",
+                    cellMaker: (row) => renderWebserviceCell(row?.service?.webservices),
+                },
+            });
+        }
+
+        /* =========================
+           Visa Grid
+        ========================= */
+
+        if (typeof bvProfileVisaGrid === "undefined") {
+            /**
+             * Grid: Visa products.
+             */
+            var bvProfileVisaGrid = makeGrid({
+                visaname: {
+                    title: "نام محصول ",
+                    cellMaker: (row) => toText(row?.visa?.visaname),
+                },
+                visacountry: {
+                    title: "کشور",
+                    cellMaker: (row) => toText(row?.visa?.visacountry),
+                },
+                application: {
+                    title: "کاربرد ویزا",
+                    cellMaker: (row) => toText(row?.visa?.application),
+                },
+                visatype: {
+                    title: "نوع ویزا",
+                    cellMaker: (row) => toText(row?.visa?.visatype),
+                },
+                visit_log: {
+                    title: "تعداد دفعات ورود",
+                    cellMaker: (row) => toText(row?.visa?.visit_log),
+                },
+                validity_duration: {
+                    title: "مدت اعتبار",
+                    cellMaker: (row) => {
+                        const time = toText(row?.visa?.validity_duration?.time, "-");
+                        const months = toText(row?.visa?.validity_duration?.months, "-");
+                        if (time === "-" && months === "-") {
+                            return `<div class="panel-flex panel-gap-1 panel-justify-center panel-items-center"><span>-</span></div>`;
+                        }
+                        return `<div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                    <span>${time}</span><span>${months}</span>
+                </div>`;
+                    },
+                },
+                documents: {
+                    title: "مدارک مورد نیاز",
+                    cellMaker: (row) => {
+                        const docs = row?.visa?.documents;
+                        if (!Array.isArray(docs) || docs.length === 0) {
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col"><div>-</div></div>`;
+                        }
+
+                        let hasAny = false;
+                        let output = `<div class="panel-flex panel-gap-1 panel-flex-col">`;
+                        for (const element of docs) {
+                            const name = toText(element?.name1);
+                            if (name !== "-") hasAny = true;
+                            output += `<div>${name}</div>`;
+                        }
+                        output += `</div>`;
+
+                        if (!hasAny) {
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col"><div>-</div></div>`;
+                        }
+                        return output;
+                    },
+                },
+                visadate: {
+                    title: "تاریخ",
+                    cellMaker: (row) => {
+                        const m = toText(row?.visa?.visadate?.mstring);
+                        const s = toText(row?.visa?.visadate?.sstring);
+                        return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                    },
+                },
+            });
+        }
+
+        /* =========================
+           CIP Grid
+        ========================= */
+
+        if (typeof bvProfileCipGrid === "undefined") {
+            /**
+             * Grid: CIP.
+             */
+            var bvProfileCipGrid = makeGrid({
+                loungename: "نام محصول ",
+                airportname: "نام فرودگاه",
+                route: "شهر",
+                airline: "ایرلاین",
+                route_k: "شهر مبدا",
+                route_d: "شهر مقصد",
+                routecode: {
+                    title: "شماره پرواز",
+                    cellMaker: (row) => renderSans(row?.routecode),
+                },
+                routeDate: {
+                    title: "تاریخ",
+                    cellMaker: (row) => {
+                        const m = toText(row?.routeDate?.mstring);
+                        const s = toText(row?.routeDate?.sstring);
+                        return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                    },
+                },
+                time: {
+                    title: "ساعت  پرواز",
+                    cellMaker: (row) => toText(row?.time),
+                },
+                travelType: {
+                    title: "نوع سفر",
+                    cellMaker: (row) => (row?.travelType == 1 ? "داخلی" : "خارجی"),
+                },
+                flightType: {
+                    title: "نوع پرواز",
+                    cellMaker: (row) => (row?.flightType == 1 ? "ورودی" : "خروجی"),
+                },
+            });
+        }
+
+        /* =========================
+           Tour Details Grid
+        ========================= */
+
+        if (typeof bvProfileTourdetailsGrid === "undefined") {
+            /**
+             * Grid: Tour details key/value list.
+             */
+            var bvProfileTourdetailsGrid = makeGrid({
+                type: {
+                    title: "عنوان",
+                    cellMaker: (row) => {
+                        const t = toText(row?.type, "-");
+                        if (t === "type") return "نوع تور";
+                        if (t === "appropriate") return "مناسب برای";
+                        if (t === "diff") return "سطح سختی";
+                        if (t === "tool") return "ملزومات مورد نیاز";
+                        if (t === "service11") return "خدمات رایگان";
+                        if (t === "journey") return "برنامه سفر";
+                        if (t === "description") return "توضیحات";
+                        if (t === "basiscoreid") return "-";
+                        return "-";
+                    },
+                },
+                value: {
+                    title: "توضیحات",
+                    cellMaker: (row) => {
+                        const arr = Array.isArray(row?.value) ? row.value : [];
+                        if (!arr.length) return "-";
+                        return arr.map((x) => `<div>${toText(x)}</div>`).join("");
+                    },
+                },
+            });
+        }
+
+        /* =========================
+           Transfers Grid
+        ========================= */
+
+        if (typeof bvProfileTransfersGrid === "undefined") {
+            /**
+             * Grid: Transfers (data may be nested under row.transfers).
+             */
+            var bvProfileTransfersGrid = makeGrid({
+                t_servicename: {
+                    title: "خدمات",
+                    cellMaker: (row) => toText((row?.transfers || row)?.t_servicename),
+                },
+                transfername: {
+                    title: "ترنسفر",
+                    cellMaker: (row) => toText((row?.transfers || row)?.transfername),
+                },
+                routename: {
+                    title: "نوع ترنسفر",
+                    cellMaker: (row) => toText((row?.transfers || row)?.routename),
+                },
+                airport: {
+                    title: "فرودگاه",
+                    cellMaker: (row) => toText((row?.transfers || row)?.airport),
+                },
+                departure_Date: {
+                    title: "تاریخ رفت",
+                    cellMaker: (row) => toText(row?.transfers?.departure_Date),
+                },
+                return_Date: {
+                    title: "تاریخ برگشت",
+                    cellMaker: (row) => toText(row?.transfers?.return_Date),
+                },
+                departure_routecode: {
+                    title: "شماره پرواز رفت",
+                    cellMaker: (row) => toText((row?.transfers || row)?.departure_routecode),
+                },
+                return_routecode: {
+                    title: "شماره پرواز برگشت",
+                    cellMaker: (row) => toText((row?.transfers || row)?.return_routecode),
+                },
+                departure_hour: {
+                    title: "ساعت پرواز رفت",
+                    cellMaker: (row) => toText((row?.transfers || row)?.departure_hour),
+                },
+                return_hour: {
+                    title: "ساعت پرواز برگشت",
+                    cellMaker: (row) => toText((row?.transfers || row)?.return_hour),
+                },
+                departure_airlinename: {
+                    title: "ایرلاین رفت",
+                    cellMaker: (row) => toText((row?.transfers || row)?.departure_airlinename),
+                },
+                return_airlinename: {
+                    title: "ایرلاین برگشت",
+                    cellMaker: (row) => toText((row?.transfers || row)?.return_airlinename),
+                },
+                webservice: {
+                    title: "وب سرویس",
+                    cellMaker: (row) => renderWebserviceCell(row?.transfers?.webservices),
+                },
+            });
+        }
+
+        /* =========================
+           Price Details (dynamic grid)
+        ========================= */
+
+        let priceDetailsSource = 0;
+        let invoicePricesScalarSource = 0;
+        let invoicePricesScalarArray = [];
+        let bvProfilePriceDetailsGrid = {};
+
+        /**
+         * Callback: build price details grid after both sources are ready.
+         * - db.pricedetails
+         * - db.panel_invoice_scalarvalue
+         */
+        function bvPriceDetailsCallback(args) {
+            const resultJson = args?.source?.rows || [];
+            const resultType = args?.source?.id;
+
+            if (resultType === "db.pricedetails") {
+                priceDetailsSource = 1;
+            } else if (resultType === "db.panel_invoice_scalarvalue") {
+                invoicePricesScalarSource = 1;
+                invoicePricesScalarArray = resultJson;
+            }
+
+            if (priceDetailsSource !== 1 || invoicePricesScalarSource !== 1) return;
+
+            for (const element of invoicePricesScalarArray) {
+                const t = Number(element?.type);
+
+                if ([1, 2, 5, 7, 8, 9, 11, 13].includes(t)) {
+                    const typeEl = document.querySelector(".panel-product__type__price");
+                    if (typeEl) typeEl.textContent = " نفرات ";
+
+                    bvProfilePriceDetailsGrid = makeGrid({
+                        type: "رنج سنی مسافر",
+                        count: {
+                            title: "تعداد مسافر",
+                            cellMaker: (row) => {
+                                unhideIfExists(".panel-product__price__details");
+                                return toText(row?.count);
+                            },
+                        },
+                        perperson: {
+                            title: "قیمت واحد",
+                            cellMaker: (row) => formatNumber(row?.perperson),
+                        },
+                        perperson_basefare: {
+                            title: "قیمت fare",
+                            cellMaker: (row) => formatNumber(row?.perperson_basefare),
+                        },
+                        total_basefare: {
+                            title: "قیمت کل fare",
+                            cellMaker: (row) => formatNumber(row?.total_basefare),
+                        },
+                        perperson_tax: {
+                            title: "قیمت tax",
+                            cellMaker: (row) => formatNumber(row?.perperson_tax),
+                        },
+                        total_tax: {
+                            title: "قیمت کل tax",
+                            cellMaker: (row) => formatNumber(row?.total_tax),
+                        },
+                        provider_fare: {
+                            title: "مالیات و خدمات",
+                            cellMaker: (row) => formatNumber(row?.provider_fare),
+                        },
+                        total: {
+                            title: "قیمت کل",
+                            cellMaker: (row) => formatNumber(row?.total),
+                        },
+                        unit: {
+                            title: "واحد",
+                            cellMaker: (row) => toText(row?.unit),
+                        },
+                    });
+                } else if ([3, 4, 10].includes(t)) {
+                    const typeEl = document.querySelector(".panel-product__type__price");
+                    if (typeEl) typeEl.textContent = " نفرات / اتاق ";
+
+                    bvProfilePriceDetailsGrid = makeGrid({
+                        roomIndex: {
+                            title: "اتاق",
+                            cellMaker: (row) => {
+                                if (t !== 3) unhideIfExists(".panel-product__price__details");
+
+                                const idx = Number(row?.roomIndex);
+                                if (idx === 1) return "اتاق اول";
+                                if (idx === 2) return "اتاق دوم";
+                                if (idx === 3) return "اتاق سوم";
+                                if (idx === 4) return "اتاق چهارم";
+                                if (idx === 5) return "اتاق پنجم";
+                                if (idx === 6) return "اتاق ششم";
+                                return "-";
+                            },
+                        },
+                        type: "رنج سنی مسافر",
+                        count: {
+                            title: "تعداد مسافر",
+                            cellMaker: (row) => toText(row?.count),
+                        },
+                        perperson: {
+                            title: "قیمت واحد",
+                            cellMaker: (row) => formatNumber(row?.perperson),
+                        },
+                        total: {
+                            title: "قیمت کل",
+                            cellMaker: (row) => formatNumber(row?.total),
+                        },
+                        unit: {
+                            title: "واحد",
+                            cellMaker: (row) => toText(row?.unit),
+                        },
+                    });
+                } else {
+                    const typeEl = document.querySelector(".panel-product__type__price");
+                    if (typeEl) typeEl.textContent = " محصولات ";
+
+                    bvProfilePriceDetailsGrid = makeGrid({
+                        firstname: {
+                            title: "پرواز",
+                            cellMaker: (row) => {
+                                unhideIfExists(".panel-product__price__details");
+                                return formatNumber(row?.flight);
+                            },
+                        },
+                        lastname: {
+                            title: "هتل",
+                            cellMaker: (row) => formatNumber(row?.hotel),
+                        },
+                        birthdate: {
+                            title: "بیمه",
+                            cellMaker: (row) => formatNumber(row?.insurance),
+                        },
+                        nationalcode: {
+                            title: "خدمات و گشت",
+                            cellMaker: (row) => formatNumber(row?.service),
+                        },
+                        passportcode: {
+                            title: "ترنسفر",
+                            cellMaker: (row) => formatNumber(row?.transfer),
+                        },
+                        total: {
+                            title: "جمع کل",
+                            cellMaker: (row) => formatNumber(row?.total),
+                        },
+                        unit: {
+                            title: "واحد",
+                            cellMaker: (row) => toText(row?.unit),
+                        },
+                    });
+                }
+            }
+
+            setTimeout(() => {
+                setBcSourceSafe("cms.bvProfilePriceDetailsGrid", true);
+            }, 10);
+
+            priceDetailsSource = 0;
+            invoicePricesScalarSource = 0;
+        }
+
+        /* =========================
+           Price Sub-Grids
+        ========================= */
+
+        if (typeof bvWheelchairPricesGrid === "undefined") {
+            /**
+             * Grid: Wheelchair prices.
+             */
+            var bvWheelchairPricesGrid = makeGrid({
+                count: {
+                    title: "تعداد صندلی چرخدار",
+                    cellMaker: (row) => toText(row?.wheelchair?.count),
+                },
+                des_service: {
+                    title: "توضیحات",
+                    cellMaker: (row) => toText(row?.wheelchair?.des_service),
+                },
+                perperson: {
+                    title: "قیمت واحد",
+                    cellMaker: (row) => formatNumber(row?.wheelchair?.perperson),
+                },
+                total: {
+                    title: "قیمت کل",
+                    cellMaker: (row) => formatNumber(row?.wheelchair?.total),
+                },
+                unit: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.wheelchair?.unit),
+                },
+            });
+        }
+
+        if (typeof bvEscortinfoPricesGrid === "undefined") {
+            /**
+             * Grid: Escort info prices.
+             */
+            var bvEscortinfoPricesGrid = makeGrid({
+                firsname: {
+                    title: "نام",
+                    cellMaker: (row) => toText(row?.escort?.firsname),
+                },
+                lastname: {
+                    title: "نام خانوادگی",
+                    cellMaker: (row) => toText(row?.escort?.lastname),
+                },
+                gender: {
+                    title: "جنسیت",
+                    cellMaker: (row) => mapGender(row?.escort?.gender),
+                },
+                perperson: {
+                    title: "قیمت واحد",
+                    cellMaker: (row) => formatNumber(row?.escort?.perperson),
+                },
+                total: {
+                    title: "قیمت کل",
+                    cellMaker: (row) => formatNumber(row?.escort?.total),
+                },
+                unit: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.escort?.unit),
+                },
+            });
+        }
+
+        if (typeof bvPassengerTransferPricesGrid === "undefined") {
+            /**
+             * Grid: Passenger transfer prices.
+             */
+            var bvPassengerTransferPricesGrid = makeGrid({
+                name: {
+                    title: "نام و نام خانوادگی",
+                    cellMaker: (row) => toText(row?.passenger_transfer?.name),
+                },
+                airport_arrival: {
+                    title: "فرودگاه مبدا",
+                    cellMaker: (row) => toText(row?.passenger_transfer?.airport_arrival),
+                },
+                type_transfer: {
+                    title: "نوع ترنسفر",
+                    cellMaker: (row) => toText(row?.passenger_transfer?.type_transfer),
+                },
+                arrival_flight_number: {
+                    title: "شماره پرواز رفت",
+                    cellMaker: (row) => toText(row?.passenger_transfer?.arrival_flight_number),
+                },
+                airport_departure: {
+                    title: "فرودگاه مقصد",
+                    cellMaker: (row) => toText(row?.passenger_transfer?.airport_departure),
+                },
+                departure_flight_number: {
+                    title: "شماره پرواز برگشت ",
+                    cellMaker: (row) => toText(row?.passenger_transfer?.departure_flight_number),
+                },
+                perperson: {
+                    title: "قیمت واحد",
+                    cellMaker: (row) => formatNumber(row?.passenger_transfer?.cost),
+                },
+                unit: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.passenger_transfer?.unit),
+                },
+            });
+        }
+
+        if (typeof bvTransfersPricesGrid === "undefined") {
+            /**
+             * Grid: Transfer prices.
+             */
+            var bvTransfersPricesGrid = makeGrid({
+                car_name: {
+                    title: "نام ترنسفر",
+                    cellMaker: (row) => toText(row?.transfer?.car_name),
+                },
+                address: {
+                    title: "آدرس",
+                    cellMaker: (row) => toText(row?.transfer?.address),
+                },
+                time: {
+                    title: "ساعت",
+                    cellMaker: (row) => toText(row?.transfer?.time),
+                },
+                phone: {
+                    title: "تلفن",
+                    cellMaker: (row) => renderLtr(row?.transfer?.phone),
+                },
+                des_transfer: {
+                    title: "توضیحات",
+                    cellMaker: (row) => toText(row?.transfer?.des_transfer),
+                },
+                perperson: {
+                    title: "قیمت واحد",
+                    cellMaker: (row) => formatNumber(row?.transfer?.perperson),
+                },
+                total: {
+                    title: "قیمت کل",
+                    cellMaker: (row) => formatNumber(row?.transfer?.total),
+                },
+                unit: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.transfer?.unit),
+                },
+            });
+        }
+
+        if (typeof bvServicesPricesGrid === "undefined") {
+            /**
+             * Grid: Services prices.
+             */
+            var bvServicesPricesGrid = makeGrid({
+                name: {
+                    title: "نام خدمات",
+                    cellMaker: (row) => toText(row?.service?.name),
+                },
+                count: {
+                    title: "تعداد",
+                    cellMaker: (row) => toText(row?.service?.count),
+                },
+                des_service: {
+                    title: "توضیحات",
+                    cellMaker: (row) => toText(row?.service?.des_service),
+                },
+                perperson: {
+                    title: "قیمت واحد",
+                    cellMaker: (row) => formatNumber(row?.service?.perperson),
+                },
+                total: {
+                    title: "قیمت کل",
+                    cellMaker: (row) => formatNumber(row?.service?.total),
+                },
+                unit: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.service?.unit),
+                },
+            });
+        }
+
+        if (typeof bvBaggagesPricesGrid === "undefined") {
+            /**
+             * Grid: Baggage prices.
+             */
+            var bvBaggagesPricesGrid = makeGrid({
+                name: {
+                    title: "نام و نام خانوادگی",
+                    cellMaker: (row) => toText(row?.baggage?.name),
+                },
+                title: {
+                    title: "عنوان",
+                    cellMaker: (row) => toText(row?.baggage?.title),
+                },
+                type: {
+                    title: "توضیحات",
+                    cellMaker: (row) => toText(row?.baggage?.type),
+                },
+                perperson: {
+                    title: "قیمت واحد",
+                    cellMaker: (row) => formatNumber(row?.baggage?.cost),
+                },
+                unit: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.baggage?.unit),
+                },
+            });
+        }
+
+        /* =========================
+           Bills
+        ========================= */
+
+        if (typeof bvbillRequestPricesGrid === "undefined") {
+            /**
+             * Grid: Bill request prices.
+             */
+            var bvbillRequestPricesGrid = makeGrid({
+                perperson: {
+                    title: "جمع کل",
+                    cellMaker: (row) => formatNumber(row?.totalprice),
+                },
+                commission: {
+                    title: "کسر کمیسیون",
+                    cellMaker: (row) => formatNumber(row?.commission),
+                },
+                couponcost: {
+                    title: "مبلغ تخفیف",
+                    cellMaker: (row) => formatNumber(row?.coupon?.couponcost),
+                },
+                couponcode: {
+                    title: "کد تخفیف",
+                    cellMaker: (row) => toText(row?.coupon?.couponcode),
+                },
+                totalwithcommisions: {
+                    title: "مبلغ قابل پرداخت",
+                    cellMaker: (row) => formatNumber(row?.totalwithcommisions),
+                },
+                currency_rate: {
+                    title: "نرخ تبدیل",
+                    cellMaker: (row) => formatNumber(row?.currency_rate),
+                },
+                unit: "واحد",
+            });
+        }
+
+        if (typeof bvBillPricesGrid === "undefined") {
+            /**
+             * Grid: Bill prices.
+             */
+            var bvBillPricesGrid = makeGrid({
+                totalprice: {
+                    title: "جمع کل",
+                    cellMaker: (row) => formatNumber(row?.totalprice),
+                },
+                commission: {
+                    title: "کسر کمیسیون",
+                    cellMaker: (row) => formatNumber(row?.commission),
+                },
+                couponcost: {
+                    title: "مبلغ تخفیف",
+                    cellMaker: (row) => formatNumber(row?.coupon?.couponcost),
+                },
+                couponcode: {
+                    title: "کد تخفیف",
+                    cellMaker: (row) => toText(row?.coupon?.couponcode),
+                },
+                totalwithcommisions: {
+                    title: "مبلغ قابل پرداخت",
+                    cellMaker: (row) => `<span class="panel-font-bold">${formatNumber(row?.totalwithcommisions)}</span>`,
+                },
+                unit: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.unit),
+                },
+            });
+        }
+
+        /* =========================
+           User Description + Reservation Errors
+        ========================= */
+
+        if (typeof bvUserDescriptionGrid === "undefined") {
+            /**
+             * Grid: User description.
+             */
+            var bvUserDescriptionGrid = makeGrid({
+                userDescription: {
+                    title: " توضیحات",
+                    cellMaker: (row) => {
+                        const v = toText(row?.userDescription, "-");
+                        if (v === "-") return "-";
+
+                        unhideIfExists(".panel-user__description");
+                        return `<div class="panel-w-full panel-bg-zinc-100 panel-text-right !panel-px-3 !panel-py-5 panel-text-zinc-600 panel-outline-none panel-rounded-lg">
+                    <p>${v}</p>
+                </div>`;
+                    },
+                },
+            });
+        }
+
+        if (typeof bvReservationErrorGrid === "undefined") {
+            /**
+             * Grid: Reservation errors.
+             */
+            var bvReservationErrorGrid = makeGrid({
+                userDescription: {
+                    title: "متن خطا",
+                    cellMaker: (row) => {
+                        unhideIfExists(".panel-product__error");
+                        let err = row?.error;
+                        if (typeof err === "object") err = JSON.stringify(err);
+
+                        return `<div class="panel-flex panel-gap-1 panel-justify-center panel-items-center">
+                    <span>${toText(err)}</span>
+                    <span class="space panel-font-sans">Time: ${toText(row?.time)}</span>
+                </div>`;
+                    },
+                },
+            });
+        }
+
+        /* =========================
+         Report Account Grid
+      ========================= */
+
+        if (typeof bvReportAccountGrid === "undefined") {
+            /**
+             * Cache unit once (avoid querying DOM for every row).
+             */
+            const __unit =
+                document.querySelector(".panel-invoice__value")?.dataset?.unit || "-";
+            /**
+             * Grid: Report Account (debtor/creditor/description/unit/etc.)
+             */
+            var bvReportAccountGrid = {
+                columns: {
+                    debtor: {
+                        title: "مبلغ بدهکاری",
+                        cellMaker: (row) => formatNumber(row?.debtor),
+                    },
+                    creditor: {
+                        title: "مبلغ بستانکاری",
+                        cellMaker: (row) => formatNumber(row?.creditor),
+                    },
+                    accountname: {
+                        title: "نام حساب",
+                        cellMaker: (row) => toText(row?.accountname),
+                    },
+                    doctype: {
+                        title: "نوع سند",
+                        cellMaker: (row) => toText(row?.doctype),
+                    },
+                    docDate: {
+                        title: "تاریخ",
+                        cellMaker: (row) => {
+                            const d = toText(row?.date);
+                            const h = toText(row?.hour);
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col">
+                        <div>${d}</div>
+                        <div>${h}</div>
+                    </div>`;
+                        },
+                    },
+                    credit: {
+                        title: "باقیمانده",
+                        cellMaker: (row) => formatNumber(row?.credit),
+                    },
+                    unit: {
+                        title: "واحد",
+                        cellMaker: () => __unit,
+                    },
+                    description: {
+                        title: "توضیحات",
+                        cellMaker: (row) => {
+                            /**
+                             * Description may contain nested fields:
+                             * - desc
+                             * - bankname
+                             * - refnumber
+                             */
+                            const desc = row?.description || {};
+                            const parts = [desc?.desc, desc?.bankname, desc?.refnumber]
+                                .map((x) => (x == null ? "" : String(x).trim()))
+                                .filter((x) => x !== "");
+
+                            return parts.length ? parts.join(" - ") : "-";
+                        },
+                    },
+                    userid: {
+                        title: "ثبت شده توسط",
+                        cellMaker: (row) => toText(row?.userid),
+                    },
+                },
+                sorting: false,
+                filter: false,
+                rowNumber: false,
+                defaultSort: false,
+                direction: "rtl",
+                paging: "",
+                information: false,
+                firstAndLastBtn: false,
+            };
+        }
+        /* =========================
+        Document Grid
+     ========================= */
+
+        if (typeof bvDocsGrid === "undefined") {
+            var bvDocsGrid = {
+                columns: {
+                    debtor: {
+                        title: "",
+                        cellMaker: (row) => {
+
+                            const title = String(row?.doucument?.title ?? "").trim()
+                            if (title === "invoice") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span>قرارداد </span></div>`
+                            } else if (title === "ticket") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span>بلیط </span></div>`
+
+                            } else if (title === "voucher") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span>واچر </span></div>`
+                            } else if (title === "visa") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span> مدارک آپلود شده توسط کاربر  </span></div>`
+                            } else if (title === "insurance") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span>بیمه </span></div>`
+                            } else if (title === "lounge") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span>lounge </span></div>`
+                            } else if (title === "uploadvisa") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span>مدارک اپلود شده توسط ادمین </span></div>`
+                            } else if (title === "floating_contract") {
+                                return `<div class="panel-flex panel-items-center panel-gap-4"><svg width="31" height="31">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-pdf"></use>
+                                    </svg><span>مدارک اپلود شده در قرارداد شناوری </span></div>`
+
+                            }
+
+                        }
+                    },
+                    lang: {
+                        title: "",
+                        cellMaker: () => {
+                            const selectedLanguage = document.querySelector('input[name="language"]:checked + span').textContent;
+                            return `<div class="panel-docs__lang">${selectedLanguage}</div>`;
+
+                        },
+                    },
+                    header: {
+                        title: "",
+                        cellMaker: () => {
+                            return `<div class="panel-docs__header__type">با سربرگ</div>`
+
+                        },
+                    }, link: {
+                        title: "",
+                        cellMaker: (row) => {
+                            let linksHtml = ''
+                            if (row?.doucument?.links && Array.isArray(row.doucument.links)) {
+                                row.doucument.links.forEach(linkObj => {
+                                    const newLinkWhead = linkObj?.link?.whead?.new_link
+                                    const newLinkWohead = linkObj?.link?.wohead?.new_link
+                                    const name = linkObj?.link?.whead?.name || linkObj?.link?.wohead?.name
+                                    if (newLinkWhead && name) {
+                                        linksHtml += `
+                    <a href="${newLinkWhead}" 
+                       data-whead="${newLinkWhead}" 
+                       data-wohead="${newLinkWohead || ''}" 
+                       target="_blank">
+                       دانلود فایل (${name})
+                    </a><br/>
+                `
+                                    }
+                                })
+                            }
+                            return linksHtml
+                        }
+                    },
+                },
+                sorting: false,
+                filter: false,
+                rowNumber: false,
+                defaultSort: false,
+                direction: "rtl",
+                paging: "",
+                information: false,
+                firstAndLastBtn: false,
+            };
+        }
+
+        // Function to initialize radio button event listeners for language and header selection
+        function addDocsRadioEventListeners() {
+            setBcSourceSafe("cms.user-type", true); // Set user type
+
+            // Language section: Initialize event listeners for language change
+            const languageRadios = document.querySelectorAll('[name="language"]'); // Select all language radio buttons
+
+            // Header section: Initialize event listeners for header change
+            const headerRadios = document.querySelectorAll('[name="header"]'); // Select all header radio buttons
+
+            // Language change event listener
+            languageRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    // Get the selected language
+                    const selectedLanguage = document.querySelector('input[name="language"]:checked + span').textContent;
+
+                    // Update the language in panel-docs
+                    const langElements = document.querySelectorAll('.panel-docs__lang');
+                    langElements.forEach(el => {
+                        el.textContent = selectedLanguage; // Update language in the document
+                    });
+
+                    // Determine the language value to send
+                    let langValue = '';
+                    if (selectedLanguage === 'فارسی') {
+                        langValue = '1'; // Persian
+                    } else if (selectedLanguage === 'انگلیسی') {
+                        langValue = '2'; // English
+                    } else if (selectedLanguage === 'عربی') {
+                        langValue = '3'; // Arabic
+                    }
+
+                    // Send the selected language value to the backend
+                    setBcSourceSafe("cms.lang", langValue);
+                });
+            });
+
+            // Header change event listener
+            headerRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    // Check if "with header" is selected
+                    const isWithHeader = document.querySelector('input[name="header"]:checked + span').textContent.includes('با سربرگ');
+
+                    // Update header type in panel-docs
+                    const headerElements = document.querySelectorAll('.panel-docs__header__type');
+                    headerElements.forEach(el => {
+                        el.textContent = isWithHeader ? 'با سربرگ' : 'بدون سربرگ'; // Update header text based on selection
+                    });
+
+                    // Update the links based on header selection (with header / without header)
+                    const links = document.querySelectorAll('.panel-docs a');
+                    links.forEach(link => {
+                        const dataWhead = link.getAttribute('data-whead');
+                        const dataWohead = link.getAttribute('data-wohead');
+
+                        // Change the href based on the selected header type
+                        link.href = isWithHeader ? dataWhead : dataWohead;
+                    });
+                });
+            });
+        }
+
+        // Example data callback function to handle buyer information
+        function bvBuyerInfoCallback(args) {
+            const resultJson = args?.source?.rows || []; // Extract the data for processing
+            const accounttype = resultJson[0]?.accounttype; // Get the account type
+
+            // If accounttype is 3, disable the "without header" option
+            if (accounttype === 3) {
+                const withoutHeaderRadio = document.getElementById("without-header");
+                if (withoutHeaderRadio) {
+                    withoutHeaderRadio.disabled = true; // Disable the radio button for "without header"
+                }
+            }
+        }
+
+        if (typeof bvReportPayemntGrid === "undefined") {
+            const __unit =
+                document.querySelector(".panel-invoice__value")?.dataset?.unit || "-";
+            var bvReportPayemntGrid = {
+                columns: {
+                    dateinfo: {
+                        title: "تاریخ ",
+                        cellMaker: (row) => {
+                            const m = toText(row?.dateinfo?.mstring);
+                            const s = toText(row?.dateinfo?.sstring);
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                        },
+
+                    },
+                    hour: {
+                        title: "ساعت",
+                        cellMaker: (row, data, td) => {
+                            return `${row.hour}`;
+                        },
+                    },
+                    bankname: "نام بانک",
+                    refnumber: {
+                        title: "شماره پیگیری",
+                        cellMaker: (row, data, td) => {
+                            return `${row.refnumber}`;
+                        },
+                    },
+                    cardno: {
+                        title: "شماره کارت",
+                        cellMaker: (row, data, td) => {
+                            return `<div class="panel-ltr"> ${row.cordno}</div>`;
+                        },
+                    },
+                    cost: {
+                        title: "مبلغ",
+                        cellMaker: (row, data, td) => {
+                            return `${new Intl.NumberFormat().format(row.cost)}`;
+                        },
+                    },
+                    unit: {
+                        title: "واحد",
+                        cellMaker: () => __unit,
+                    },
+                    status: {
+                        title: "وضعیت",
+                        cellMaker: (row, data, td) => {
+                            if (row.status == 1) {
+                                return 'موفق';
+                            } else {
+                                return 'ناموفق';
+                            }
+
+
+                        },
+
+                    },
+                },
+
+                sorting: false,
+                filter: false,
+                rowNumber: "ردیف",
+                defaultSort: false,
+                direction: "rtl",
+                paging: "",
+                information: false,
+                firstAndLastBtn: false,
+
+            }
+
+        };
+
+        if (typeof bvInvoiceNoteGrid === "undefined") {
+
+            var bvInvoiceNoteGrid = {
+                columns: {
+                    username: {
+                        title: "نام ارسال کننده",
+                        cellMaker: (row, data, td) => {
+                            return `${row?.result?.username}`;
+                        },
+                    },
+                    date: {
+                        title: "تاریخ ",
+                        cellMaker: (row) => {
+                            const m = toText(row?.result?.date?.mstring);
+                            const s = toText(row?.result?.date?.sstring);
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                        },
+                    },
+                    hour: {
+                        title: "ساعت",
+                        cellMaker: (row, data, td) => {
+                            return `${row?.result?.hour?.hour}`;
+                        },
+                    },
+                    hnoteour: {
+                        title: "متن یادداشت",
+                        cellMaker: (row, data, td) => {
+                            return `${row?.result?.note}`;
+                        },
+                    },
+                },
+                sorting: false,
+                filter: false,
+                rowNumber: "ردیف",
+                defaultSort: false,
+                direction: "rtl",
+                paging: "",
+                information: false,
+                firstAndLastBtn: false,
+
+            }
+
+        };
+
+        function bvInvoiceNoteCallback(args) {
+            const resultJson = args?.source?.rows || []; // Extract the data for processing
+
+            // Remove the object with the key "objectcount"
+            const filteredResult = resultJson.filter(item => !item.hasOwnProperty('objectcount'));
+
+            return setBcSourceSafe("cms.bvInvoiceNoteGrid", filteredResult)
+        }
+
+        if (typeof bvInvoicePassengerListGrid === "undefined") {
+            var bvInvoicePassengerListGrid = {
+                columns: {
+                    label: {
+                        title: "--",
+                        cellMaker: (row, data, td) => {
+                            return `<input type="checkbox" name="" value="" onchange="handleInvoicePassengerSelection(event,this)"/>`;
+                        },
+                    },
+                    firstname: {
+                        title: "نام",
+                        cellMaker: (row, data, td) => {
+                            return `<input type="hidden" value="${row.firstname}" data-name="_root.passengers__${row.rownumber}.firstname"/>${row.firstname}`;
+                        },
+                    },
+                    lastname: {
+                        title: "نام خانوادگی",
+                        cellMaker: (row, data, td) => {
+                            return `<input type="hidden"  value="${row.lastname}" data-name="_root.passengers__${row.rownumber}.lastname"/>${row.lastname}`;
+                        },
+                    },
+                    username: {
+                        title: "کد ملی",
+                        cellMaker: (row, data, td) => {
+                            return `<input type="hidden"  value="${row.nationalcode}" data-name="_root.passengers__${row.rownumber}.nationalcode"/><span>${row.nationalcode}</span>`;
+                        },
+                    },
+                    birthdate: {
+                        title: "تاریخ تولد",
+                        cellMaker: (row, data, td) => {
+                            return `<input type="hidden" value="${row.birthdate}" data-name="_root.passengers__${row.rownumber}.birthdate"/><span class="panel-font-sans">${row.birthdate}</span>`;
+                        },
+                    },
+                    gender: {
+                        title: "جنسیت",
+                        cellMaker: (row, data, td) => {
+                            return `<input type="hidden" value="${row?.gender}" data-name="_root.passengers__${row.rownumber}.gender"/>${mapGender(row?.gender)}`
+                        },
+                    },
+                    answer: {
+                        title: "مسافر",
+                        cellMaker: (row, data, td) => {
+                            return `<input  type="hidden" value="${row?.type}" data-name="_root.passengers__${row.rownumber}.type"/>${mapPassengerType(row?.type)}`
+                        },
+                    },
+                },
+                sorting: false,
+                filter: false,
+                rowNumber: false,
+                defaultSort: false,
+                direction: "rtl",
+                paging: "",
+                information: false,
+                firstAndLastBtn: false,
+
+            }
+
+        };
+
+        if (typeof bvInvoiceRefundGrid === "undefined") {
+            var bvInvoiceRefundGrid = {
+                columns: {
+                    username: {
+                        title: "نام ارسال کننده",
+                        cellMaker: (row, data, td) => {
+                            return `${row?.result?.username}`;
+                        },
+                    },
+                    date: {
+                        title: "تاریخ",
+                        cellMaker: (row) => {
+                            const m = toText(row?.result?.date?.mstring);
+                            const s = toText(row?.result?.date?.sstring);
+                            return `<div class="panel-flex panel-gap-1 panel-flex-col"><div class="panel-font-sans">${m}</div><div>${s}</div></div>`;
+                        },
+
+                    },
+                    hour: {
+                        title: "ساعت",
+                        cellMaker: (row, data, td) => {
+                            return `${row?.result?.hour.hour}`;
+                        },
+                    },
+                    note: {
+                        title: "عنوان درخواست",
+                        cellMaker: (row, data, td) => {
+                            return `${row?.result?.note}`;
+                        },
+                    },
+                    status: {
+                        title: "وضعیت",
+                        filter: false,
+                        sort: true,
+                        cellMaker: (row, data, td) => {
+                            const answer = Number(row?.result?.answer ?? 0);
+
+                            const statusMap = {
+                                1: { className: 'answer !panel-text-green-700', text: 'بررسی شده' },
+                                2: { className: 'closed !panel-text-blue-600', text: 'بسته شده' },
+                                0: { className: 'notAnswer !panel-text-red-500', text: 'بررسی نشده' }
+                            };
+
+                            const status = statusMap[answer] || statusMap[0];
+
+                            return `
+                            <div class="requestStatus">
+                                <span class="${status.className}">
+                                    ${status.text}
+                                </span>
+                            </div>
+                        `;
+                        }
+                    },
+
+                    operation: {
+                        title: "عملیات",
+                        filter: false,
+                        sort: false,
+                        cellMaker: (row, data, td) => {
+                            const id = row?.result?._id ?? '';
+                            const isClosed = Number(row?.result?.close ?? 0) === 1;
+
+                            const invoiceTypeRaw = row?.result?.invoicetype ?? '';
+                            const invoiceType = String(invoiceTypeRaw).replace(/'/g, "'");
+
+
+
+                            return `
+    <div class="panel-refund__menu__container panel-relative panel-cursor-pointer">
+        <div class="panel-flex panel-justify-center" onclick="onClickShowMoreActions(this, event)">
+        <svg width="24" height="24" class="panel-text-zinc-900">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-kebab-menu"></use>
+                </svg>
+        </div>
+
+        <div data-refundtype='${invoiceType}' class="panel-refund__menu panel-w-32 panel-absolute panel-top-full panel-z-10 panel-left-0 panel-rounded-xl !panel-p-2 panel-bg-white panel-shadow-lg panel-border panel-border-solid panel-border-zinc-300 panel-flex-col panel-gap-4 panel-hidden">
+            <button class="panel-refund__item panel-flex panel-items-center panel-gap-1" onclick="editInvoiceRefund(this,event,'${id}')">
+                <svg width="24" height="24" class="panel-text-zinc-900">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
+                </svg>
+                <span class="title">مشاهده</span>
+            </button>
+
+        </div>
+    </div>
+`;
+                        }
+                    },
+                },
+                sorting: false,
+                filter: false,
+                rowNumber: "ردیف",
+                defaultSort: false,
+                direction: "rtl",
+                paging: "",
+                information: false,
+                firstAndLastBtn: false,
+
+            }
+
+        };
+        /**
+         * Handles the selection of an invoice passenger checkbox.
+         * Updates the 'name' attribute of hidden inputs in the closest row
+         * based on the checkbox state (checked or unchecked).
+         * 
+         * @param {Event} event - The click event triggered by the checkbox.
+         * @param {HTMLElement} element - The checkbox element itself.
+         */
+        function handleInvoicePassengerSelection(event, element) {
+            try {
+                const row = element.closest("tr");
+                const hiddenInputs = row.querySelectorAll("input[type=hidden]");
+
+                hiddenInputs.forEach(input => {
+                    // Set the name attribute based on the checkbox state
+                    if (event.target.checked) {
+                        input.setAttribute("name", input.getAttribute("data-name"));
+                    } else {
+                        input.setAttribute("name", "");
+                    }
+                });
+            } catch (error) {
+                console.error("Error handling invoice passenger selection:", error);
+            }
+        }
+        // تابع برای ارسال درخواست
+        function bvInvoiceRefundCallback(source) {
+            try {
+                const usernameElement = document.querySelector('.default-name');
+                const familyElement = document.querySelector('.default-family');
+
+                if (!usernameElement || !familyElement) {
+                    console.warn("Name or family name element not found.");
+                    return;
+                }
+
+                const username = `${usernameElement.textContent} ${familyElement.textContent}`.trim();
+
+                const invoicetypeElement = document.querySelector('.panel-invoice__value');
+                if (!invoicetypeElement) {
+                    console.warn("Invoice type element not found.");
+                    return;
+                }
+
+                const invoicetype = invoicetypeElement.getAttribute('data-type') || "";
+                const id = invoicetypeElement.getAttribute('data-factorid') || "";
+
+                const rows = source?.source?.rows || [];
+                if (!rows.length) {
+                    console.warn("No rows found in source.");
+                    return;
+                }
+
+                for (const row of rows) {
+                    if (!row?._root) continue;
+
+                    row._root.admin = '1';
+                    row._root.id = id;
+
+                    const data = {
+                        username,
+                        invoicetype,
+                        query: JSON.stringify(row._root),
+                        run: true
+                    };
+
+                    setBcSourceSafe('cms.refund-save', data);
+                }
+            } catch (error) {
+                console.error('Error submitting refund request:', error);
+            }
+        }
+        function bvPaymentPermissionCallback(args) {
+            const resultJson = args?.source?.rows || [];
+            if (resultJson[0] == 1) {
+                setBcSourceSafe("cms.payment-permission", true)
+
+            }
+        }
+        let pricePayment = 0;
+        function bvPricePaymentCallback(args) {
+            const resultJson = args?.source?.rows || [];
+            pricePayment = resultJson[0];
+            setBcSourceSafe("cms.webservice-list", true)
+        }
+        if (typeof WebserviceListGrid === "undefined") {
+            /**
+             * Grid: Buyer -> Person (includes userid column).
+             */
+            var WebserviceListGrid = makeGrid({
+                logo: {
+                    title: "درگاه",
+                    cellMaker: (row) => {
+                        return `<img src="/${row?.logo}" width="40" height="40" alt="${row?.name}"/>`
+                    }
+                },
+                total: {
+                    title: "مبلغ قابل پرداخت",
+                    cellMaker: (row) => `<span class="panel-font-bold">${formatNumber(pricePayment)}</span>`,
+                },
+                moneytype: {
+                    title: "واحد",
+                    cellMaker: (row) => toText(row?.moneytype),
+                },
+                link: {
+                    title: "پرداخت",
+                    cellMaker: (row) => `<button onclick="handlePayment(${row?.id})" class="panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">پرداخت </button>`
+                },
+
+            });
+        }
+        const generateSixDigitNumber = () => {
+            try {
+                const sixDigitNumber = Math.floor(100000 + Math.random() * 900000);
+
+
+
+                return sixDigitNumber;
+            } catch (err) {
+                console.error("Error generating six-digit number: " + err.message);
+            }
+        };
+        let sixDigitNumber = generateSixDigitNumber();
+        let bankId = 0; let bankProviderId = 0;
+
+
+
+        function webserviceDetailCallback(args) {
+            const resultJson = args?.source?.rows || [];
+            const paymentDiv = document.querySelector('div[data-payment-type]');
+            const invoicetypeElement = document.querySelector('.panel-invoice__value');
+            const id = invoicetypeElement.getAttribute('data-factorid') || "";
+            bankId = resultJson[0].bankid;
+            bankProviderId = resultJson[0].provider;
+            if (paymentDiv && paymentDiv.getAttribute('data-payment-type') === 'invoice') {
+                $bc.setSource("cms.token", {
+                    randomId: sixDigitNumber,
+                    provider: resultJson[0].provider,
+                    bankid: resultJson[0].bankid,
+                    doc_type: 6,
+                    factorid: id,
+                    email: userEmail,
+                    mobile: userMobile,
+                    title: 'پرداخت مرحله دوم',
+                });
+            } else {
+
+            }
+
+
+        }
+
+        function handlePayment(element) {
+            setBcSourceSafe("cms.final-payment", element)
+        }
+        function tokenCallback(args) {
+            try {
+                const paymentDiv = document.querySelector('div[data-payment-type]');
+                const invoicetypeElement = document.querySelector('.panel-invoice__value');
+                const id = invoicetypeElement?.getAttribute('data-factorid') || "";
+
+                const source = args.source?.rows;
+                if (source && source[0].url_gateway) {
+                    // ارسال داده‌ها به cms.save-inputs اگر payment-type برابر با 'invoice' باشد
+                    if (paymentDiv && paymentDiv.getAttribute('data-payment-type') === 'invoice') {
+                        $bc.setSource("cms.save-inputs", {
+                            randomId: sixDigitNumber,
+                            provider: bankProviderId,
+                            bankid: bankId,
+                            factorid: id,
+                            session: source[0].session,
+                            orderid: source[0].orderid,
+                            doc_type: 6,
+                        });
+                    }
+
+                    // بررسی متد درخواست و ارسال فرم یا انتقال به درگاه
+                    if (source[0].method === 'POST') {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = source[0].form;
+                        const form = tempDiv.querySelector('form');
+                        if (form) {
+                            document.body.appendChild(form);  // فرم را به body اضافه می‌کنیم
+                            form.submit();
+                        }
+                    } else {
+                        window.location = source[0].url_gateway;
+                    }
+
+
+
+                } else {
+                    // در صورت عدم وجود url_gateway، نمایش پیام خطا
+                    // const errorDiv = document.createElement('div');
+                    // errorDiv.id = 'text-loading';
+                    // errorDiv.textContent = 'امکان اتصال به درگاه پرداخت الکترونیک وجود ندارد.';
+                    // document.body.appendChild(errorDiv);  // اضافه کردن به body
+                }
+            } catch (err) {
+                console.error('tokenCallback=' + err.lineNumber + ',' + err.message);
+            }
+        }
+
+    </script>
+</body>
+
+</html>

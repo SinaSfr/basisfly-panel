@@ -141,9 +141,8 @@
             try {
                 const responseJson = await args.response.json()
 
-                const list = responseJson?.sources?.find(s => s?.options?.tableName === "cms.list")?.data
-                const total = responseJson?.sources?.find(s => s?.options?.tableName === "cms.total")?.data
-                console.log(total);
+                const list = responseJson?.sources?.find(s => s?.options?.tableName === "db.list")?.data
+                const total = responseJson?.sources?.find(s => s?.options?.tableName === "db.total")?.data
 
                 $bc.setSource("cms.list", Array.isArray(list) ? list : [])
 
@@ -188,9 +187,9 @@
 
                         const cls =
                             net > 0
-                                ? "panel-text-green-600"
+                                ? "!panel-text-green-600"
                                 : net < 0
-                                    ? "panel-text-red-600"
+                                    ? "!panel-text-red-500"
                                     : "panel-text-zinc-900"
 
                         return `<p class="is-separated panel-direction-ltr ${cls}">${netText}</p>`
@@ -229,7 +228,7 @@
                     sort: false,
                     cellMaker: (row) => {
                         const val = Number(row.received_points ?? 0) || 0
-                        return `<p class="is-separated panel-direction-ltr panel-text-green-600">+ ${Intl.NumberFormat().format(val)}</p>`
+                        return `<p class="is-separated panel-direction-ltr !panel-text-green-600">+ ${Intl.NumberFormat().format(val)}</p>`
                     },
                 },
 
@@ -239,7 +238,7 @@
                     sort: false,
                     cellMaker: (row) => {
                         const val = Number(row.used_points ?? 0) || 0
-                        return `<p class="is-separated panel-direction-ltr panel-text-red-600">- ${Intl.NumberFormat().format(val)}</p>`
+                        return `<p class="is-separated panel-direction-ltr !panel-text-red-500">- ${Intl.NumberFormat().format(val)}</p>`
                     },
                 },
             },

@@ -13,174 +13,50 @@ const loadTranslations = async () => {
 const translate = (text) =>
   translations[text]?.[currentLanguageTranslate] || text
 
-  ; (async () => {
-    await loadTranslations()
-  })()
-  ; (() => {
-    const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
-    const panelWalletAmount = document.querySelector('.panel-wallet-amount')
-    if (!visibilityAmountBtn || !panelWalletAmount) return
+;(async () => {
+  await loadTranslations()
+})()
+;(() => {
+  const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
+  const panelWalletAmount = document.querySelector('.panel-wallet-amount')
+  if (!visibilityAmountBtn || !panelWalletAmount) return
 
-    const original =
-      panelWalletAmount.dataset.amount || panelWalletAmount.textContent.trim()
-    panelWalletAmount.dataset.amount = original
+  const original =
+    panelWalletAmount.dataset.amount || panelWalletAmount.textContent.trim()
+  panelWalletAmount.dataset.amount = original
 
-    function maskAll(str) {
-      return Array.from(str)
-        .map((ch) => (ch === ' ' ? ' ' : '*'))
-        .join('')
+  function maskAll(str) {
+    return Array.from(str)
+      .map((ch) => (ch === ' ' ? ' ' : '*'))
+      .join('')
+  }
+
+  const masked = maskAll(original)
+
+  let hidden = false
+
+  const render = () => {
+    panelWalletAmount.textContent = hidden ? masked : original
+    visibilityAmountBtn.setAttribute('aria-pressed', String(hidden))
+
+    const useEl = visibilityAmountBtn.querySelector('use')
+    if (useEl) {
+      useEl.setAttribute(
+        'href',
+        hidden
+          ? '/userPanel/images/panel-sprite-icons.svg#icon-eye-slash'
+          : '/userPanel/images/panel-sprite-icons.svg#icon-eye',
+      )
     }
+  }
 
-    const masked = maskAll(original)
-
-    let hidden = false
-
-    const render = () => {
-      panelWalletAmount.textContent = hidden ? masked : original
-      visibilityAmountBtn.setAttribute('aria-pressed', String(hidden))
-
-      const useEl = visibilityAmountBtn.querySelector('use')
-      if (useEl) {
-        useEl.setAttribute(
-          'href',
-          hidden
-            ? '/userPanel/images/panel-sprite-icons.svg#icon-eye-slash'
-            : '/userPanel/images/panel-sprite-icons.svg#icon-eye',
-        )
-      }
-    }
-
-    visibilityAmountBtn.addEventListener('click', () => {
-      hidden = !hidden
-      render()
-    })
-
+  visibilityAmountBtn.addEventListener('click', () => {
+    hidden = !hidden
     render()
-  })()
-
-document.addEventListener('DOMContentLoaded', () => {
-  const openBtn = document.querySelector('.panel-increase-balance__open-btn')
-  if (!openBtn) return
-
-  const root = openBtn.closest('section') || document
-  const popup = root.querySelector('.panel-increase-balance__popup')
-  const closeBtn = root.querySelector('.panel-increase-balance__close-btn')
-
-  if (!popup) return
-
-  const openPopup = () => {
-    popup.classList.remove('panel-hidden')
-    popup.setAttribute('aria-hidden', 'false')
-    document.body.style.overflow = 'hidden'
-  }
-
-  const closePopup = () => {
-    popup.classList.add('panel-hidden')
-    popup.setAttribute('aria-hidden', 'true')
-    document.body.style.overflow = ''
-  }
-
-  openBtn.addEventListener('click', openPopup)
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closePopup)
-    closeBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') closePopup()
-    })
-  }
-
-  popup.addEventListener('click', (e) => {
-    if (e.target === popup) closePopup()
   })
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !popup.classList.contains('panel-hidden')) {
-      closePopup()
-    }
-  })
-})
-
-//------- increase ballance payment----------
-document.addEventListener('DOMContentLoaded', () => {
-  const root =
-    document
-      .querySelector('.panel-increase-balance__amount-input')
-      ?.closest('section') || document
-
-  const payBtn = root.querySelector(
-    '.panel-increase-balance__pay-btn, .panel-increase-balance-pay-btn',
-  )
-  const amountInput = root.querySelector(
-    '.panel-increase-balance__amount-input',
-  )
-  const errorEl = root.querySelector('.panel-increase-balance__amount-error')
-  const gateways = root.querySelector('.panel-increase-balance__gateways')
-
-  if (!payBtn || !amountInput || !errorEl) return
-
-  const normalizeNumber = (val) => String(val || '').replace(/[^\d]/g, '')
-
-  const hideGateways = () => {
-    if (gateways) gateways.classList.add('panel-hidden')
-  }
-
-  const showGateways = () => {
-    if (gateways) gateways.classList.remove('panel-hidden')
-  }
-
-  const showError = (msg) => {
-    errorEl.textContent = msg
-    errorEl.classList.remove('panel-hidden')
-
-    amountInput.classList.add('panel-border-red-500')
-    amountInput.classList.remove('panel-border-zinc-200')
-    amountInput.setAttribute('aria-invalid', 'true')
-
-    hideGateways() // ✅ اگر خطا داریم لیست مخفی شود
-  }
-
-  const clearError = () => {
-    errorEl.textContent = ''
-    errorEl.classList.add('panel-hidden')
-
-    amountInput.classList.remove('panel-border-red-500')
-    amountInput.classList.add('panel-border-zinc-200')
-    amountInput.removeAttribute('aria-invalid')
-  }
-
-  // موقع تایپ: فقط عدد نگه دار + خطا رو پاک کن
-  amountInput.addEventListener('input', () => {
-    const cleaned = normalizeNumber(amountInput.value)
-    if (amountInput.value !== cleaned) amountInput.value = cleaned
-
-    // ✅ اگر خالی یا کمتر از ۵ رقم شد، لیست بسته شود
-    if (!cleaned || cleaned.length < 5) {
-      hideGateways()
-    }
-
-    clearError()
-  })
-
-  payBtn.addEventListener('click', (e) => {
-    e.preventDefault()
-
-    const raw = amountInput.value
-    const cleaned = normalizeNumber(raw)
-
-    if (!cleaned) {
-      showError(translate('enter_amount'))
-      return
-    }
-
-    if (cleaned.length < 5) {
-      showError(translate('amount_min_5_digits'))
-      return
-    }
-
-    clearError()
-    showGateways()
-  })
-})
+  render()
+})()
 
 // ------validateLatin and validatePersian-------
 document.addEventListener('DOMContentLoaded', function () {
@@ -786,7 +662,7 @@ function clearAllHighlights() {
 }
 
 //------------------------Advanced Search --------------------------
-; (() => {
+;(() => {
   const openBtn = document.getElementById('btnOpenAdvancedSearch')
   const modalId =
     openBtn?.getAttribute('data-modal-open') || 'advancedContractSearch'
@@ -827,47 +703,47 @@ function clearAllHighlights() {
   })
 })()
 
-  //----------------clear advanced search---------------------
-  ; (() => {
-    const modal = document.getElementById('advancedContractSearch')
-    const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
+//----------------clear advanced search---------------------
+;(() => {
+  const modal = document.getElementById('advancedContractSearch')
+  const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
 
-    if (!modal || !clearBtn) return
+  if (!modal || !clearBtn) return
 
-    const clearAdvancedSearchFilters = () => {
-      const scope = modal
+  const clearAdvancedSearchFilters = () => {
+    const scope = modal
 
-      scope
-        .querySelectorAll(
-          'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
-        )
-        .forEach((el) => {
-          el.value = ''
-          el.dispatchEvent(new Event('input', { bubbles: true }))
-          el.dispatchEvent(new Event('change', { bubbles: true }))
-        })
-
-      scope
-        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-        .forEach((el) => {
-          el.checked = false
-          el.dispatchEvent(new Event('change', { bubbles: true }))
-        })
-
-      scope.querySelectorAll('textarea').forEach((el) => {
+    scope
+      .querySelectorAll(
+        'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
+      )
+      .forEach((el) => {
         el.value = ''
         el.dispatchEvent(new Event('input', { bubbles: true }))
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
 
-      scope.querySelectorAll('select').forEach((el) => {
-        el.selectedIndex = 0
+    scope
+      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+      .forEach((el) => {
+        el.checked = false
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
-    }
 
-    clearBtn.addEventListener('click', clearAdvancedSearchFilters)
-  })()
+    scope.querySelectorAll('textarea').forEach((el) => {
+      el.value = ''
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+
+    scope.querySelectorAll('select').forEach((el) => {
+      el.selectedIndex = 0
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+  }
+
+  clearBtn.addEventListener('click', clearAdvancedSearchFilters)
+})()
 
 // ----------dropdown menu (advanced search)--------------
 /* =========================================================
@@ -1385,7 +1261,7 @@ const watchSchemaReady = ({
 
   if (isReady()) {
     applyReadyState()
-    return () => { }
+    return () => {}
   }
 
   const container = document.querySelector(containerSelector)
@@ -1565,10 +1441,23 @@ const onProcessededitUserSchema = async (args) => {
   }
 }
 
-async function onRenderedSetExcelClick(args) {
+async function onRenderedShowContent(args) {
+  const loadingWrapper = document.querySelector(".panel-loading__wrap");
+  const contentWrapper = document.querySelector(".panel-main__content");
+
+  if (loadingWrapper) loadingWrapper.classList.add("panel-hidden");
+  if (contentWrapper) contentWrapper.classList.remove("panel-hidden");
+
+  const hasExcel = document.getElementById("panelHasExcel");
+  if (!hasExcel) return;
+
   setExcel('.panel-report__excel', 'div[data-bc-export-item]', 'report')
   setExcel('.panel-credit__excel', 'div[data-bc-export-item]', 'credit')
-  setExcel('.panel-charging__excel', 'div[data-bc-export-item]', 'chargingOnline')
+  setExcel(
+    '.panel-charging__excel',
+    'div[data-bc-export-item]',
+    'chargingOnline',
+  )
   setExcel(
     '.panel-invoiceList__excel',
     'div[data-bc-export-item]',
@@ -1767,10 +1656,10 @@ const generateDynamicFields = (type) => {
     return {
       multi_excel: 'report_charging_online',
       excel_type: 'charging_onlin',
-      filters: getFilters(type),  
+      filters: getFilters(type),
       db: 'cms.chargingExcel',
-      name: "db",
-      mid: "20",
+      name: 'db',
+      mid: '20',
       member: [
         {
           name: 'q',
@@ -1778,10 +1667,10 @@ const generateDynamicFields = (type) => {
           request: 'charging_view',
           supplierdmnid: getValue('.Xsupplierdmnid'),
           reciverownerid: getValue('.Xreciverownerid'),
-          perpage: "30",
-          pageindex: "1"
-        }
-      ]
+          perpage: '30',
+          pageindex: '1',
+        },
+      ],
     }
   }
 

@@ -291,15 +291,15 @@
                 const locale = localeMap[currentLanguage] || 'fa-IR';
 
                 const report =
-                    responseJson?.sources?.find(s => s?.options?.tableName === "cms.report")?.data || [];
+                    responseJson?.sources?.find(s => s?.options?.tableName === "db.report")?.data || [];
                 const credit =
-                    responseJson?.sources?.find(s => s?.options?.tableName === "cms.credit")?.data || [];
+                    responseJson?.sources?.find(s => s?.options?.tableName === "db.credit")?.data || [];
 
                 $bc.setSource("cms.report", Array.isArray(report) ? report : []);
                 $bc.setSource("cms.credit", Array.isArray(credit) ? credit : []);
 
                 const totalData =
-                    responseJson?.sources?.find(s => s?.options?.tableName === "cms.total")?.data || [];
+                    responseJson?.sources?.find(s => s?.options?.tableName === "db.total")?.data || [];
 
                 const row = totalData[0] || {};
 
@@ -348,7 +348,6 @@
             }
         }
 
-        // 1️⃣ صفرگذاری ماه و روز (1404/1/5 → 1404/01/05)
         function padJalaliDate(dateString) {
             if (!dateString) return '';
 
@@ -364,14 +363,12 @@
         }
 
 
-        // 2️⃣ تبدیل / به -
         function replaceSlashWithDash(dateString) {
             if (!dateString) return '';
             return dateString.replace(/\//g, '-');
         }
 
 
-        // 3️⃣ تبدیل شمسی به میلادی (ورودی باید yyyy/mm/dd باشه)
         function jalaliToGregorian(dateString) {
             if (!dateString) return '';
 
@@ -446,11 +443,9 @@
                 tdateInput.value = datePicker.getAttribute("data-datepicker-to-sstring") || "";
             }
 
-            // ✅ مرحله 1: صفرگذاری
             const paddedStart = padJalaliDate(fdateInput?.value);
             const paddedEnd = padJalaliDate(tdateInput?.value);
 
-            // ✅ مرحله 2: تبدیل به میلادی
             const start_date = jalaliToGregorian(paddedStart);
             const end_date = jalaliToGregorian(paddedEnd);
 
@@ -474,33 +469,33 @@
             columns: {
                 AccountNo: {
                     title: "کدتفضیلی",
-                    filter: true,
+                    filter: false,
                     sort: false
 
                 },
 
                 docID: {
                     title: "شماره سند",
-                    sort: true,
-                    filter: true
+                    sort: false,
+                    filter: false
                 },
 
                 accountname: {
                     title: "نام حساب",
-                    filter: true,
+                    filter: false,
                     sort: false,
                 },
 
                 factorid: {
                     title: "شماره قرارداد",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
 
                 },
                 debtor: {
                     title: "مبلغ بدهکاری",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
                     cellMaker: (row, data, td) => {
                         const value = Number(row.debtor ?? 0);
 
@@ -515,8 +510,8 @@
 
                 creditor: {
                     title: "مبلغ بستانکاری",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
                     cellMaker: (row, data, td) => {
                         const value = Number(row.creditor ?? 0);
 
@@ -530,7 +525,7 @@
 
                 doctype: {
                     title: "عنوان سند",
-                    filter: true,
+                    filter: false,
                     sort: false,
                     cellMaker: (row, data, td) =>
                         `<p>${row.doctype} </p><input type="hidden" class="doctypeid" name="doctypeid" value=${row.doctypeID} />`
@@ -562,14 +557,14 @@
                 },
                 date: {
                     title: "تاریخ",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
 
                 },
                 hour: {
                     title: "ساعت",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
 
                 }
 
@@ -622,16 +617,16 @@
 
                 docID: {
                     title: "شماره سند",
-                    sort: true,
-                    filter: true
+                    sort: false,
+                    filter: false
                 },
 
 
 
                 factorid: {
                     title: " قرارداد",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
 
                 },
                 debtor: {
@@ -650,8 +645,8 @@
 
                 creditor: {
                     title: " بستانکاری",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
                     cellMaker: (row, data, td) => {
                         const value = Number(row.creditor ?? 0);
 
@@ -664,7 +659,7 @@
                 },
                 doctype: {
                     title: "عنوان سند",
-                    filter: true,
+                    filter: false,
                     sort: false,
                     cellMaker: (row, data, td) =>
                         `<p class="w-[120px]">${row.doctype ?? ''}</p>
@@ -700,14 +695,14 @@
                 },
                 date: {
                     title: "تاریخ",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
 
                 },
                 hour: {
                     title: "ساعت",
-                    filter: true,
-                    sort: true,
+                    filter: false,
+                    sort: false,
 
                 },
                 remaining: {

@@ -868,6 +868,11 @@
   color: rgb(22 163 74 / var(--tw-text-opacity, 1));
 }
 
+.\!panel-text-green-600 {
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity, 1)) !important;
+}
+
 .panel-text-green-700 {
   --tw-text-opacity: 1;
   color: rgb(21 128 61 / var(--tw-text-opacity, 1));
@@ -1486,6 +1491,13 @@ tr.passenger-row-expanded .panel-row-expander svg {
 
 .panel-ltr {
   direction: ltr;
+}
+
+.panel-disabled{
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+  filter: grayscale(1);
 }
 
 .panel-loading__content {

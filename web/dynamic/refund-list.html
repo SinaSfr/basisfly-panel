@@ -49,7 +49,8 @@
 </basis>
 
 <basis core="api" name="invoice_refund_save" url="https://basisfly.com/panel/main/update/[##cms.cms.rkey##]"
-    method="post" content-type="application/json" run="atclient" triggers="cms.save" if="{##cms.save.run|(false)##}" body='{ 
+    method="post" content-type="application/json" run="atclient" triggers="cms.save" if="{##cms.save.run|(false)##}"
+    body='{ 
       "name": "db", 
       "mid": "20",
       "member":
@@ -166,17 +167,20 @@
                                         <script type="text/template">
                                     <div class="refund-search__column panel-w-1/2 panel-mb-10"
                                          data-userid="@res.userid@" data-close="@res.close@" data-user_name="@res.user_name@">
-                                        <div class="panel-flex panel-items-center panel-gap-2">
+                                        <div class="panel-flex panel-items-center panel-gap-3 panel-text-sm">
                                             <span>@res.user_name@</span>
-                                            <span>@res.date.mstring@</span>
-                                            <span>(@res.date.sstring@)</span>
+                                            <span class="panel-text-gray-300">•</span>
+                                            <div class="panel-flex panel-items-center panel-gap-1">
+                                                <span>@res.date.mstring@</span>
+                                                -
+                                                <span>(@res.date.sstring@)</span>
+                                            </div>
+                                            <span class="panel-text-gray-300">•</span>
                                             <span>@res.date.hour.hour@</span>
                                             <input type="hidden" data-name="_root.description__@res.id@.userid" value="@res.userid@"/>
                                             <input type="hidden" data-name="_root.description__@res.id@.id" value="@res.id@" />
                                         </div>
-                
-                                        <h3 class="panel-refund__name panel-text-zinc-900 panel-mb-6"></h3>
-                
+                                
                                         <div class="">
                                             <_textarea class="is-required data-input panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-pt-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                                       data-name="_root.description__@res.id@.desc"
@@ -203,7 +207,7 @@
 
                                 <div class="refund-search__footer">
                                     <div class="refund-search__actions">
-                                        <button 
+                                        <button
                                             class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mt-5 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
                                             ثبت پاسخ
                                         </button>
@@ -308,22 +312,11 @@
 
         async function editInvoiceRefund(element, event, id) {
 
-
-            const refundMenuContainer = element.closest('.panel-refund__menu__container');
-            const refundMenu = refundMenuContainer ? refundMenuContainer.querySelector('.panel-refund__menu') : null;
-
-            const refundType = refundMenu ? (refundMenu.getAttribute('data-refundtype') || '') : '';
-
-            const refunfNameEl = document.querySelector('.panel-refund__name');
-            if (refunfNameEl) refunfNameEl.textContent = refundType;
-
-            // ست کردن دیتا برای مودال
             $bc.setSource("cms.edit", [{
                 id: id,
                 run: true
             }]);
 
-            // باز کردن مودال
             const modalOverlay = document.querySelector('.panel-modal-overlay');
             if (modalOverlay) {
                 modalOverlay.classList.remove('panel-hidden');
@@ -341,7 +334,7 @@
 
             $bc.setSource("refresh.RefundItemResult", result);
 
-            const container = document.querySelector(".panel_grid_style");
+            const container = document.querySelector(".refund-search__grid");
             if (container) {
                 if (passengerList.length > 0) {
                     container.classList.remove("panel-hidden");
@@ -400,7 +393,7 @@
 
             footer.insertAdjacentHTML(
                 'beforeend',
-                `<div class="refund-search__alert alertMessages panel-flex panel-items-center">
+                `<div class="refund-search__alert alertMessages panel-flex panel-items-center panel-mt-6">
               <svg width="35" height="35" class="!panel-text-red-500">
                         <use href="/userPanel/images/panel-sprite-icons.svg#icon-fill-warning"></use>
                     </svg>
@@ -600,11 +593,9 @@
         }
 
         function ensureNotifyHost() {
-            // اگر خودت در HTML گذاشتی از همون استفاده می‌کنیم
             let host = document.getElementById('referenceObjectViewMessage')
             if (host) return host
 
-            // اگر نبود، توی فرم refund-search می‌سازیم
             const parent =
                 document.querySelector('.refund-search__form') ||
                 document.querySelector('.refund-search__overlay') ||
@@ -637,7 +628,7 @@
             columns: {
                 request: {
                     title: "نام درخواست کننده",
-                    sort: true,
+                    sort: false,
                     filter: false,
                     source: row => `${row.result.username}`,
                     cellMaker: (row, data, td) =>
@@ -646,7 +637,7 @@
                 date: {
                     title: "تاریخ",
                     filter: false,
-                    sort: true,
+                    sort: false,
                     source: row => `${row.result.date.sstring}`,
                     cellMaker: (row, data, td) =>
                         `<div class="panel-flex panel-flex-col en-numbers">
@@ -665,7 +656,7 @@
                 subject: {
                     title: "عنوان درخواست",
                     filter: false,
-                    sort: true,
+                    sort: false,
                     source: row => `${row.result.notetype}`,
                     cellMaker: (row, data, td) =>
                         `<span class="city1 city-start">${row.result.notetype}</span>`
@@ -704,7 +695,7 @@
                 status: {
                     title: "وضعیت",
                     filter: false,
-                    sort: true,
+                    sort: false,
                     cellMaker: (row, data, td) => {
                         const answer = Number(row?.result?.answer ?? 0);
 
@@ -728,7 +719,7 @@
                 serviceType: {
                     title: "خدمات",
                     filter: false,
-                    sort: true,
+                    sort: false,
                     source: row => `${row.result.invoicetype}`,
                     cellMaker: (row, data, td) =>
                         `<span class="city1 city-start">${row.result.invoicetype}</span>`
@@ -736,7 +727,7 @@
                 factorid: {
                     title: "شماره قرارداد",
                     filter: false,
-                    sort: true,
+                    sort: false,
                     source: row => `${row.result.id}`,
                     cellMaker: (row, data, td) =>
                         `<span class="city1 city-start en-numbers">${row.result.id}</span>`
