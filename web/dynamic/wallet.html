@@ -251,7 +251,7 @@
                                 </div>
 
                                 <button
-                                    class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105"
+                                    class="panel-submit__btn panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105"
                                     aria-label="جستجو">
                                     <svg width="24" height="24" class="panel-text-white">
                                         <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
@@ -726,6 +726,9 @@
         }
 
         async function onProcessedGetReportWallet(args) {
+            let form = document.querySelector('form[name="cms.form"]')
+            let btn = form?.querySelector('.panel-submit__btn')
+
             try {
                 const responseJson = await args.response.json();
 
@@ -739,6 +742,9 @@
             } catch (e) {
                 console.log(e);
                 $bc.setSource("cms.report", []);
+            } finally {
+                setTimeout(() => buttonLoading(btn, false), 400)
+                if (form) form._submitBtn = null
             }
         }
 
@@ -813,11 +819,40 @@
             return `${gy}-${String(gm).padStart(2, '0')}-${String(gd).padStart(2, '0')}`;
         }
 
+        function buttonLoading(btn, state = true) {
+            if (!btn) return
+
+            if (state) {
+                // جلوگیری از تکرار
+                if (btn.classList.contains('is-loading')) return
+
+                btn.classList.add('is-loading')
+                btn.disabled = true
+
+                // ذخیره متن قبلی
+                btn.dataset.oldText = btn.innerHTML
+
+                btn.innerHTML = '<div class="panel-loading__btn"></div>'
+            } else {
+                btn.classList.remove('is-loading')
+                btn.disabled = false
+
+                if (btn.dataset.oldText) {
+                    btn.innerHTML = btn.dataset.oldText
+                }
+            }
+        }
         async function callbackWalletSearch(args) {
+            let btn = null
             try {
                 const form =
                     args?.source?.el || document.querySelector('form[name="cms.form"]')
                 if (!form) return
+
+                // دکمه submit فرم
+                btn = form.querySelector('.panel-submit__btn')
+
+                buttonLoading(btn, true)
 
                 const getVal = (sel) => {
                     const el = form.querySelector(sel)

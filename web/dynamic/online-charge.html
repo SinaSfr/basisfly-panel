@@ -109,56 +109,63 @@
 <body class="panel-bg-zinc-50">
     <!-- Header -->
     <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
-    <!-- main -->
-    <main>
-        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
-            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-            <div class="panel-loading__wrap panel-flex panel-flex-col panel-items-center panel-justify-center panel-flex-1 panel-bg-white panel-rounded-2xl">
-                <div class="panel-loading__content"></div>
-                <div class="panel-loading__title">در حال دریافت اطلاعات…</div>
-                <div class="panel-loading__hint">لطفاً چند لحظه صبر کنید</div>
-            </div>
-            <div class="panel-main__content panel-flex-1 panel-hidden">
-                <div class="panel-relative panel-flex panel-justify-between panel-bg-white panel-rounded-2xl panel-p-6">
-                    <img src="/userPanel/images/pattern.png" class="panel-absolute panel-right-0 panel-top-0"
-                        alt="pattern" width="597" height="180" loading="lazy">
-                    <section class="panel-relative panel-flex panel-items-end panel-gap-4 panel-w-full panel-z-10">
-                        <div>
-                            <div class="panel-flex panel-items-center panel-gap-3">
-                                <span
-                                    class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg">
-                                    <svg width="32" height="32" class="panel-text-zinc-900">
-                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-online-charge"></use>
-                                    </svg>
-                                </span>
-                                <div class="panel-flex panel-flex-col panel-justify-between panel-h-full">
-                                    <h2 class="panel-text-xs panel-text-zinc-900">اعتبار</h2>
-                                    <p class="panel-text-zinc-900 panel-font-medium">
-                                        موجودی حساب
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
-                                <div class="panel-flex panel-items-center panel-gap-1">
-                                    <span class="panel-wallet-amount panel-text-4xl panel-font-bold panel-text-zinc-900"
-                                        data-amount="422,340,000">422,340,000</span>
-                                    <span class="panel-font-medium panel-text-zinc-900">تومان</span>
-                                </div>
+    <basis core="call" file="Client_CheckRkey.inc"></basis>
 
-                                <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]=0">
+        <basis core="call" file="userPanel/admin/warning" lid="1"></basis>
+    </basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]<> 0">
+        <!-- main -->
+        <main>
+            <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+                <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+                <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
+                <div class="panel-main__content panel-flex-1 panel-hidden">
+                    <div
+                        class="panel-relative panel-flex panel-justify-between panel-bg-white panel-rounded-2xl panel-p-6">
+                        <img src="/userPanel/images/pattern.png" class="panel-absolute panel-right-0 panel-top-0"
+                            alt="pattern" width="597" height="180" loading="lazy">
+                        <section class="panel-relative panel-flex panel-items-end panel-gap-4 panel-w-full panel-z-10">
+                            <div>
+                                <div class="panel-flex panel-items-center panel-gap-3">
+                                    <span
+                                        class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg">
+                                        <svg width="32" height="32" class="panel-text-zinc-900">
+                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-online-charge">
+                                            </use>
+                                        </svg>
+                                    </span>
+                                    <div class="panel-flex panel-flex-col panel-justify-between panel-h-full">
+                                        <h2 class="panel-text-xs panel-text-zinc-900">اعتبار</h2>
+                                        <p class="panel-text-zinc-900 panel-font-medium">
+                                            موجودی حساب
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
+                                    <div class="panel-flex panel-items-center panel-gap-1">
+                                        <span
+                                            class="panel-wallet-amount panel-text-4xl panel-font-bold panel-text-zinc-900"
+                                            data-amount="422,340,000">422,340,000</span>
+                                        <span class="panel-font-medium panel-text-zinc-900">تومان</span>
+                                    </div>
+
+                                    <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
                                          panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
-                                    aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount="">
-                                    <svg width="24" height="24" class="panel-text-zinc-900">
-                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
-                                    </svg>
-                                </button>
+                                        aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount="">
+                                        <svg width="24" height="24" class="panel-text-zinc-900">
+                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="panel-flex-1 panel-flex panel-gap-3">
-                            <basis core="print" datamembername="cms.credit" run="atclient">
-                                <layout>
-                                    <script type="text/template">
+                            <div class="panel-flex-1 panel-flex panel-gap-3">
+                                <basis core="print" datamembername="cms.credit" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
                                     <div
                                         class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                         <span
@@ -173,17 +180,17 @@
                                         </div>
                                     </div>
                                 </script>
-                                </layout>
-                                <face>
-                                    <script type="text/template">
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
                                         <span class="panel-text-red-500 panel-font-bold">@debtor@</span>
                                     </script>
-                                </face>
-                            </basis>
+                                    </face>
+                                </basis>
 
-                            <basis core="print" datamembername="cms.credit" run="atclient">
-                                <layout>
-                                    <script type="text/template">
+                                <basis core="print" datamembername="cms.credit" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
                                     <div
                                         class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                         <span
@@ -198,17 +205,17 @@
                                         </div>
                                     </div>
                                 </script>
-                                </layout>
-                                <face>
-                                    <script type="text/template">
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
                                         <span class="panel-text-green-600 panel-font-bold">@creditor@</span>
                                     </script>
-                                </face>
-                            </basis>
+                                    </face>
+                                </basis>
 
-                            <basis core="print" datamembername="cms.credit" run="atclient">
-                                <layout>
-                                    <script type="text/template">
+                                <basis core="print" datamembername="cms.credit" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
                                     <div
                                         class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                         <span
@@ -224,86 +231,90 @@
                                         </div>
                                     </div>
                                 </script>
-                                </layout>
-                                <face>
-                                    <script type="text/template">
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
                                         <span class="panel-text-zinc-900 panel-font-bold">@Remaining_credit@</span>
                                     </script>
-                                </face>
+                                    </face>
+                                </basis>
+                            </div>
+                        </section>
+
+                    </div>
+                    <section
+                        class="panel-bg-white panel-border panel-border-zinc-200 panel-border-solid panel-rounded-2xl panel-p-3 panel-mt-2">
+                        <h1 class="panel-font-bold panel-text-zinc-900 panel-mb-3">شارژ آنلاین</h1>
+                        <p class="panel-text-xs panel-text-zinc-900">جهت افزایش موجودی مبلغ را وارد کنید</p>
+                        <div class="panel-flex panel-gap-3 panel-mt-6">
+                            <div class="panel-w-full">
+                                <div class="panel-relative">
+                                    <input type="text" id="onlineChargingPriceInput" name="onlineChargingPrice"
+                                        placeholder="500000"
+                                        class="panel-w-full panel-h-14 panel-border panel-border-solid panel-border-zinc-200 panel-bg-zinc-100 panel-rounded-xl panel-pr-4 panel-pl-11 placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300" />
+                                    <span
+                                        class="panel-absolute panel-left-4 panel-text-zinc-400 panel-top-1/2 -panel-translate-y-1/2">ریال</span>
+                                </div>
+                            </div>
+
+                            <button
+                                class="panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-transition-all panel-duration-300 hover:panel-text-primary-800"
+                                data-action="onlineChargingOpen">
+                                <div
+                                    class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
+                                    <span>پرداخت</span>
+                                </div>
+                                <span
+                                    class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                            </button>
+                        </div>
+                    </section>
+                    <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6 panel-mt-2">
+                        <input type="hidden" class="Xsupplierdmnid" name="Xsupplierdmnid"
+                            value='[##cms.cms.domainid##]'>
+                        <input type="hidden" class="Xreciverownerid" name="Xreciverownerid"
+                            value='{##cms.ownerid.reciverownerid##}'>
+                        <h2 class="panel-font-medium panel-mb-3">لیست پرداخت شارژ آنلاین</h2>
+                        <div id="panelHasExcel" class="panel_grid_style panel-charging__excel">
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
+                                options="OnlineChargingList" onRendered="onRenderedShowContent">
                             </basis>
                         </div>
                     </section>
-
                 </div>
-                <section
-                    class="panel-bg-white panel-border panel-border-zinc-200 panel-border-solid panel-rounded-2xl panel-p-3 panel-mt-2">
-                    <h1 class="panel-font-bold panel-text-zinc-900 panel-mb-3">شارژ آنلاین</h1>
-                    <p class="panel-text-xs panel-text-zinc-900">جهت افزایش موجودی مبلغ را وارد کنید</p>
-                    <div class="panel-flex panel-gap-3 panel-mt-6">
-                        <div class="panel-w-full">
-                            <div class="panel-relative">
-                                <input type="text" id="onlineChargingPriceInput" name="onlineChargingPrice"
-                                    placeholder="500000"
-                                    class="panel-w-full panel-h-14 panel-border panel-border-solid panel-border-zinc-200 panel-bg-zinc-100 panel-rounded-xl panel-pr-4 panel-pl-11 placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300" />
-                                <span
-                                    class="panel-absolute panel-left-4 panel-text-zinc-400 panel-top-1/2 -panel-translate-y-1/2">ریال</span>
-                            </div>
+            </div>
+        </main>
+        <div class="panel-online-charging__popup panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden"
+            aria-hidden="true">
+            <div
+                class="panel-online-charging__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
+                <div class="panel-flex panel-items-center panel-justify-between">
+                    <h2 class="panel-font-bold panel-text-zinc-900">شارژ آنلاین</h2>
+
+                    <button
+                        class="panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                        aria-label="Close" data-action="onlineChargingClose">
+                        <svg width="48" height="48" class="panel-online-charging__close" role="button" tabindex="0">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="panel-mt-5">
+                    <div class="panel-mt-3 panel-increase-balance__gateways">
+                        <h3 class="panel-invoice__value panel-font-medium panel-text-zinc-900" data-factorid="">لیست
+                            درگاه
+                            های پرداخت</h3>
+                        <div class="panel_grid_style panel-pb-5" data-payment-type="onlineCharging">
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="db.webservice_type_list"
+                                options="WebserviceListGrid"></basis>
                         </div>
-
-                        <button
-                            class="panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-transition-all panel-duration-300 hover:panel-text-primary-800"
-                            data-action="onlineChargingOpen">
-                            <div class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
-                                <span>پرداخت</span>
-                            </div>
-                            <span
-                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
-                        </button>
-                    </div>
-                </section>
-                <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6 panel-mt-2">
-                    <input type="hidden" class="Xsupplierdmnid" name="Xsupplierdmnid" value='[##cms.cms.domainid##]'>
-                    <input type="hidden" class="Xreciverownerid" name="Xreciverownerid"
-                        value='{##cms.ownerid.reciverownerid##}'>
-                    <h2 class="panel-font-medium panel-mb-3">لیست پرداخت شارژ آنلاین</h2>
-                    <div id="panelHasExcel" class="panel_grid_style panel-charging__excel">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
-                            options="OnlineChargingList" onRendered="onRenderedShowContent">
-                        </basis>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </main>
-    <div class="panel-online-charging__popup panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden"
-        aria-hidden="true">
-        <div
-            class="panel-online-charging__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
-            <div class="panel-flex panel-items-center panel-justify-between">
-                <h2 class="panel-font-bold panel-text-zinc-900">شارژ آنلاین</h2>
-
-                <button
-                    class="panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
-                    aria-label="Close" data-action="onlineChargingClose">
-                    <svg width="48" height="48" class="panel-online-charging__close" role="button" tabindex="0">
-                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="panel-mt-5">
-                <div class="panel-mt-3 panel-increase-balance__gateways">
-                    <h3 class="panel-invoice__value panel-font-medium panel-text-zinc-900" data-factorid="">لیست درگاه
-                        های پرداخت</h3>
-                    <div class="panel_grid_style panel-pb-5" data-payment-type="onlineCharging">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="db.webservice_type_list"
-                            options="WebserviceListGrid"></basis>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
-    </div>
+    </basis>
 
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>

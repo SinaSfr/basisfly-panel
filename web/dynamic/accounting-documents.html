@@ -48,98 +48,108 @@
 <body class="panel-bg-zinc-50">
     <!-- Header -->
     <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
-    <!-- main -->
-    <main>
-        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
-            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-            <div class="panel-flex-1">
-                <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6">
-                    <h2 class="panel-text-zinc-900 panel-font-medium">جستجوی تراکنش
-                    </h2>
-                    <form id="searchAccountingDocument" bc-triggers="submit" name="cms.form"
-                        class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
-                        <input id="accountingFactoridInput" type="text" name="factorid" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+    <basis core="call" file="Client_CheckRkey.inc"></basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]=0">
+        <basis core="call" file="userPanel/admin/warning" lid="1"></basis>
+    </basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]<> 0">
+        <!-- main -->
+        <main>
+            <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+                <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+                <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
+                <div class="panel-main__content panel-flex-1 panel-hidden">
+                    <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6">
+                        <h2 class="panel-text-zinc-900 panel-font-medium">جستجوی تراکنش
+                        </h2>
+                        <form id="searchAccountingDocument" bc-triggers="submit" name="cms.form"
+                            class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
+                            <input id="accountingFactoridInput" type="text" name="factorid" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                    focus:panel-shadow-md
                                    panel-transition panel-duration-300" placeholder="شماره قرارداد:">
-                        <div class="panel-relative">
-                            <input type="text" name="_root.doctype" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                            <div class="panel-relative">
+                                <input type="text" name="_root.doctype" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                 focus:panel-shadow-md
                                 panel-transition panel-duration-300" placeholder="عنوان سند:">
-                            <svg width="48" height="48"
-                                class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
-                            </svg>
-                        </div>
-                        <div class="panel-relative panel-flex panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                                <svg width="48" height="48"
+                                    class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
+                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                </svg>
+                            </div>
+                            <div class="panel-relative panel-flex panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                         focus:panel-shadow-md
                         panel-transition panel-duration-300 panel-cursor-pointer">
-                            <input type="hidden" class="fdate-string" name="_root.date.begindate">
-                            <input type="hidden" class="tdate-string" name="_root.date.enddate">
-                            <basis core="component.calendar.datepicker" name="datepicker" run="atclient"
-                                options="datepickerHasRangesSetting" OnRendered="OnRenderedStorage"></basis>
-                            <svg width="48" height="48"
-                                class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                <input type="hidden" class="fdate-string" name="_root.date.begindate">
+                                <input type="hidden" class="tdate-string" name="_root.date.enddate">
+                                <basis core="component.calendar.datepicker" name="datepicker" run="atclient"
+                                    options="datepickerHasRangesSetting" OnRendered="OnRenderedStorage"></basis>
+                                <svg width="48" height="48"
+                                    class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
+                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                </svg>
+                            </div>
+                            <button
+                                class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                                aria-label="جستجو">
+                                <svg width="24" height="24" class="panel-text-white">
+                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
+                                </svg>
+                            </button>
+                        </form>
+                    </section>
+                    <section
+                        class="panel-flex panel-flex-col panel-gap-2 panel-bg-primary-50 panel-rounded-xl panel-p-3 panel-mt-3">
+                        <div class="panel-flex panel-items-center panel-gap-2">
+                            <svg width="24" height="26" class="panel-text-primary-800">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-information"></use>
                             </svg>
+                            <p class="panel-text-xs panel-text-zinc-900">در صورتی که جستجو بر اساس تاریخ انجام نشده باشد
+                                اسناد از روز گذشته تا امروز نمایش داده خواهد شد</p>
                         </div>
-                        <button
-                            class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
-                            aria-label="جستجو">
-                            <svg width="24" height="24" class="panel-text-white">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
+                        <div class="panel-flex panel-items-center panel-gap-2">
+                            <svg width="24" height="26" class="panel-text-primary-800">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-information"></use>
                             </svg>
-                        </button>
-                    </form>
-                </section>
-                <section
-                    class="panel-flex panel-flex-col panel-gap-2 panel-bg-primary-50 panel-rounded-xl panel-p-3 panel-mt-3">
-                    <div class="panel-flex panel-items-center panel-gap-2">
-                        <svg width="24" height="26" class="panel-text-primary-800">
-                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-information"></use>
-                        </svg>
-                        <p class="panel-text-xs panel-text-zinc-900">در صورتی که جستجو بر اساس تاریخ انجام نشده باشد
-                            اسناد از روز گذشته تا امروز نمایش داده خواهد شد</p>
-                    </div>
-                    <div class="panel-flex panel-items-center panel-gap-2">
-                        <svg width="24" height="26" class="panel-text-primary-800">
-                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-information"></use>
-                        </svg>
-                        <p class="panel-text-xs panel-text-zinc-900">در صورتی که جستجو بر اساس شماره قرارداد انجام شود .
-                            مانده از قبل در لیست نمایش داده نخواهد شد</p>
-                    </div>
-                </section>
-                <nav class="panel-bg-zinc-200 panel-rounded-xl panel-p-2 panel-mt-6">
-                    <ul class="panel-flex panel-items-center panel-gap-8">
-                        <li data-target="report"
-                            class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
-                            <svg width="48" height="48">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-layers"></use>
-                            </svg>
-                            <span>لیست اسناد حسابداری</span>
-                        </li>
-                        <li data-target="credit"
-                            class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
-                            <svg width="48" height="48">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-file-flow"></use>
-                            </svg>
-                            <span>لیست اسناد اعتبار</span>
-                        </li>
-                        <li data-target="remaining_balance"
-                            class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
-                            <svg width="48" height="48">
-                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-database"></use>
-                            </svg>
-                            <span>نمایش اعتبار</span>
-                        </li>
-                    </ul>
-                </nav>
-                <section>
-                    <div class="panel-hidden" data-panel="remaining_balance" data-run="0">
-                        <section class="panel-flex panel-items-center panel-gap-2 panel-mt-5">
-                            <basis core="print" datamembername="cms.total" run="atclient">
-                                <layout>
-                                    <script type="text/template">
+                            <p class="panel-text-xs panel-text-zinc-900">در صورتی که جستجو بر اساس شماره قرارداد انجام
+                                شود .
+                                مانده از قبل در لیست نمایش داده نخواهد شد</p>
+                        </div>
+                    </section>
+                    <nav class="panel-bg-zinc-200 panel-rounded-xl panel-p-2 panel-mt-6">
+                        <ul class="panel-flex panel-items-center panel-gap-8">
+                            <li data-target="report"
+                                class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
+                                <svg width="48" height="48">
+                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-layers"></use>
+                                </svg>
+                                <span>لیست اسناد حسابداری</span>
+                            </li>
+                            <li data-target="credit"
+                                class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
+                                <svg width="48" height="48">
+                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-file-flow"></use>
+                                </svg>
+                                <span>لیست اسناد اعتبار</span>
+                            </li>
+                            <li data-target="remaining_balance"
+                                class="panel-tab panel-flex-1 panel-flex panel-items-center panel-justify-center panel-text-sm panel-text-zinc-900 panel-rounded-xl panel-cursor-pointer panel-transition-all panel-duration-300 hover:panel-bg-white">
+                                <svg width="48" height="48">
+                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-database"></use>
+                                </svg>
+                                <span>نمایش اعتبار</span>
+                            </li>
+                        </ul>
+                    </nav>
+                    <section>
+                        <div class="panel-hidden" data-panel="remaining_balance" data-run="0">
+                            <section class="panel-flex panel-items-center panel-gap-2 panel-mt-5">
+                                <basis core="print" datamembername="cms.total" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
                                     <div
                                         class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                         <span
@@ -154,17 +164,17 @@
                                         </div>
                                     </div>
                                 </script>
-                                </layout>
-                                <face>
-                                    <script type="text/template">
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
                                         <span class="panel-text-red-500 panel-font-bold">@info.total_used@</span>
                                     </script>
-                                </face>
-                            </basis>
+                                    </face>
+                                </basis>
 
-                            <basis core="print" datamembername="cms.total" run="atclient">
-                                <layout>
-                                    <script type="text/template">
+                                <basis core="print" datamembername="cms.total" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
                                     <div
                                         class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                         <span
@@ -179,17 +189,17 @@
                                         </div>
                                     </div>
                                 </script>
-                                </layout>
-                                <face>
-                                    <script type="text/template">
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
                                         <span class="panel-text-green-600 panel-font-bold">@info.total_received@</span>
                                     </script>
-                                </face>
-                            </basis>
+                                    </face>
+                                </basis>
 
-                            <basis core="print" datamembername="cms.total" run="atclient">
-                                <layout>
-                                    <script type="text/template">
+                                <basis core="print" datamembername="cms.total" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
                                     <div
                                         class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                         <span
@@ -205,30 +215,31 @@
                                         </div>
                                     </div>
                                 </script>
-                                </layout>
-                                <face>
-                                    <script type="text/template">
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
                                         <span class="panel-text-zinc-900 panel-font-bold">@info.remaining@</span>
                                     </script>
-                                </face>
-                            </basis>
+                                    </face>
+                                </basis>
 
-                        </section>
-                    </div>
+                            </section>
+                        </div>
 
-                    <div class="panel_grid_style panel-credit__excel panel-hidden" data-panel="credit" data-run="0">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.credit"
-                            options="creditItems"></basis>
-                    </div>
+                        <div class="panel_grid_style panel-credit__excel panel-hidden" data-panel="credit" data-run="0">
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.credit"
+                                options="creditItems" onRendered="onRenderedShowContent"></basis>
+                        </div>
 
-                    <div class="panel_grid_style panel-report__excel" data-panel="report" data-run="1">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.report"
-                            options="reportItems" onRendered="onRenderedSetExcelClick"></basis>
-                    </div>
-                </section>
+                        <div id="panelHasExcel" class="panel_grid_style panel-report__excel" data-panel="report" data-run="1">
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.report"
+                                options="reportItems" onRendered="onRenderedShowContent"></basis>
+                        </div>
+                    </section>
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </basis>
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"

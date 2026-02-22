@@ -31,23 +31,26 @@
 <body class="panel-bg-zinc-50">
     <!-- Header -->
     <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
-    <!-- main -->
-    <main>
-        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
-            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+    <basis core="call" file="Client_CheckRkey.inc"></basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]=0">
+        <basis core="call" file="userPanel/admin/warning" lid="1"></basis>
+    </basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]<> 0">
+        <!-- main -->
+        <main>
+            <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+                <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
 
-            <div
-                class="panel-loading__wrap panel-flex panel-flex-col panel-items-center panel-justify-center panel-flex-1 panel-bg-white panel-rounded-2xl">
-                <div class="panel-loading__content"></div>
-                <div class="panel-loading__title">در حال دریافت اطلاعات…</div>
-                <div class="panel-loading__hint">لطفاً چند لحظه صبر کنید</div>
-            </div>
-            <div class="panel-main__content panel-flex-1 panel-hidden">
-                <section class="panel-flex panel-items-center panel-gap-2">
-                    <basis core="print" datamembername="cms.total" run="atclient">
-                        <layout>
-                            <script type="text/template">
+                <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
+                <div class="panel-main__content panel-flex-1 panel-hidden">
+                    <section class="panel-flex panel-items-center panel-gap-2">
+                        <basis core="print" datamembername="cms.total" run="atclient">
+                            <layout>
+                                <script type="text/template">
                                 <div
                                     class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border  panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                     <span
@@ -62,17 +65,17 @@
                                     </div>
                                 </div>
                             </script>
-                        </layout>
-                        <face>
-                            <script type="text/template">
+                            </layout>
+                            <face>
+                                <script type="text/template">
                                 <span class="panel-text-green-700 panel-font-bold">@info.remaining@</span>
                             </script>
-                        </face>
-                    </basis>
+                            </face>
+                        </basis>
 
-                    <basis core="print" datamembername="cms.total" run="atclient">
-                        <layout>
-                            <script type="text/template">
+                        <basis core="print" datamembername="cms.total" run="atclient">
+                            <layout>
+                                <script type="text/template">
                             <div
                                 class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                 <span
@@ -87,17 +90,17 @@
                                 </div>
                             </div>
                         </script>
-                        </layout>
-                        <face>
-                            <script type="text/template">
+                            </layout>
+                            <face>
+                                <script type="text/template">
                                 <span class="panel-text-red-500 panel-font-bold">@info.total_used@</span>
                             </script>
-                        </face>
-                    </basis>
+                            </face>
+                        </basis>
 
-                    <basis core="print" datamembername="cms.total" run="atclient">
-                        <layout>
-                            <script type="text/template">
+                        <basis core="print" datamembername="cms.total" run="atclient">
+                            <layout>
+                                <script type="text/template">
                             <div
                                 class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
                                 <span
@@ -112,31 +115,32 @@
                                 </div>
                             </div>
                         </script>
-                        </layout>
-                        <face>
-                            <script type="text/template">
+                            </layout>
+                            <face>
+                                <script type="text/template">
                                 <span class="panel-text-zinc-900 panel-font-bold">@info.total_received@</span>
                             </script>
-                        </face>
-                    </basis>
-
-                </section>
-                <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6 panel-mt-6">
-                    <div class="panel-flex panel-items-center">
-                        <svg width="48" height="48" class="panel-text-primary-800">
-                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-customer-club"></use>
-                        </svg>
-                        <h2 class="panel-text-zinc-900 panel-font-medium">لیست امتیاز ها</h2>
-                    </div>
-                    <div class="panel_grid_style">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
-                            options="CustomerClubList" onRendered="onRenderedShowContent">
+                            </face>
                         </basis>
-                    </div>
-                </section>
+
+                    </section>
+                    <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6 panel-mt-6">
+                        <div class="panel-flex panel-items-center">
+                            <svg width="48" height="48" class="panel-text-primary-800">
+                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-customer-club"></use>
+                            </svg>
+                            <h2 class="panel-text-zinc-900 panel-font-medium">لیست امتیاز ها</h2>
+                        </div>
+                        <div class="panel_grid_style">
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
+                                options="CustomerClubList" onRendered="onRenderedShowContent">
+                            </basis>
+                        </div>
+                    </section>
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </basis>
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
