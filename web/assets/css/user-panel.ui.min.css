@@ -310,6 +310,10 @@
   max-width: 80rem;
 }
 
+.panel-flex-wrap {
+  flex-wrap: wrap;
+}
+
 .panel-flex-1 {
   flex: 1 1 0%;
 }
@@ -575,6 +579,11 @@
   background-color: rgb(0 0 0 / 0.5);
 }
 
+.panel-bg-green-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(240 253 244 / var(--tw-bg-opacity, 1));
+}
+
 .panel-bg-green-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(187 247 208 / var(--tw-bg-opacity, 1));
@@ -834,6 +843,11 @@
 .panel-text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem;
+}
+
+.panel-text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 
 .panel-text-sm {
@@ -1184,6 +1198,10 @@ main {
   border-radius: 12px 0 0 12px;
 }
 
+.panel_grid_style [data-bc-grid="d1"] table[data-bc-table] tbody tr{
+  background: none !important;
+}
+
 .panel_grid_style [data-bc-grid="d1"] table[data-bc-table] tbody tr[data-sys-tr] td[data-sys-td] {
   border-style: solid;
   border-color: var(--Zinc-200, #E4E4E7);
@@ -1221,6 +1239,7 @@ main {
 
 .panel_grid_style [data-bc-grid="d1"] table[data-bc-table] thead tr {
   border-radius: 12px;
+  background: none !important;
 }
 
 .panel_grid_style [data-bc-grid="d1"] table[data-bc-table] thead td:first-child {
@@ -1384,9 +1403,12 @@ tr.passenger-row-expanded .panel-row-expander svg {
 
 .hover\:panel-bg-red-500:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1))
-    /* #ef4444 */
-  ;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:panel-bg-green-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:panel-border-primary-800:hover {
@@ -1493,7 +1515,7 @@ tr.passenger-row-expanded .panel-row-expander svg {
   direction: ltr;
 }
 
-.panel-disabled{
+.panel-disabled {
   opacity: 0.6;
   pointer-events: none;
   user-select: none;

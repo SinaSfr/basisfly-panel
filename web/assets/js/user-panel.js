@@ -224,7 +224,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function setActiveDateType() {
     if (currentDateType === 'gregorian') {
       // Gregorian فعال
-      gregorianBtn.classList.add('panel-bg-primary-800', 'panel-text-white')
+      gregorianB
+
+      tn.classList.add('panel-bg-primary-800', 'panel-text-white')
       gregorianBtn.classList.remove('panel-bg-zinc-200')
 
       jalaliBtn.classList.remove('panel-bg-primary-800', 'panel-text-white')
@@ -903,25 +905,45 @@ async function onProcessedSearch_item(args) {
 
     const json = await (res.clone ? res.clone().json() : res.json())
 
+    /* =====================
+       1) حالت BasisCore sources
+    ====================== */
     if (json?.sources) {
       const refundSearchSource = json.sources.find(
-        (source) => source.options.tableName === 'cms.invoice_refund_view',
+        (source) => source?.options?.tableName === 'cms.invoice_refund_view',
       )
 
-      if (refundSearchSource && refundSearchSource.data) {
+      if (refundSearchSource?.data) {
         json.refund_search = refundSearchSource.data.map((item) => ({
-          id: item.code, // تبدیل code به id
-          name: item.title, // تبدیل title به name
+          id: item?.code,
+          name: item?.title,
         }))
       }
     }
 
+    /* =====================
+       2) حالت doctype (Array مستقیم)
+    ====================== */
+    if (Array.isArray(json)) {
+      const doctype_list = json
+        .map((x) => ({
+          id: x?.doctypeid,
+          name: x?.doctypename,
+        }))
+        .filter((x) => x.id != null && x.name)
+
+      store.set({ doctype_list })
+      return
+    }
+
+    /* =====================
+       3) حالت عادی
+    ====================== */
     store.set(json)
   } catch (e) {
     store.fail(e)
   }
 }
-
 /* =======================
    3) Dropdown UI
 ======================= */
@@ -943,6 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
     rail_company: 'train',
     services: 'type',
     refund_search: 'refund_search',
+    doctype: 'doctype_list',
   })
 
   const ddConfigs = {
@@ -1008,6 +1031,11 @@ document.addEventListener('DOMContentLoaded', () => {
       ph: translate('search_refund_list'),
       dynamic: true,
       hiddenSelector: 'input[name="_root.notetype"]',
+    },
+    doctype: {
+      ph: translate('search_document_title'),
+      dynamic: true,
+      hiddenSelector: 'input[name="doctypeid"]',
     },
   }
 
@@ -1442,17 +1470,18 @@ const onProcessededitUserSchema = async (args) => {
 }
 
 async function onRenderedShowContent(args) {
-  const loadingWrapper = document.querySelector(".panel-loading__wrap");
-  const contentWrapper = document.querySelector(".panel-main__content");
+  const loadingWrapper = document.querySelector('.panel-loading__wrap')
+  const contentWrapper = document.querySelector('.panel-main__content')
 
-  if (loadingWrapper) loadingWrapper.classList.add("panel-hidden");
-  if (contentWrapper) contentWrapper.classList.remove("panel-hidden");
+  if (loadingWrapper) loadingWrapper.classList.add('panel-hidden')
+  if (contentWrapper) contentWrapper.classList.remove('panel-hidden')
 
-  const hasExcel = document.getElementById("panelHasExcel");
-  if (!hasExcel) return;
+  const hasExcel = document.getElementById('panelHasExcel')
+  if (!hasExcel) return
 
   setExcel('.panel-report__excel', 'div[data-bc-export-item]', 'report')
   setExcel('.panel-credit__excel', 'div[data-bc-export-item]', 'credit')
+  setExcel('.panel-wallet__excel', 'div[data-bc-export-item]', 'wallet')
   setExcel(
     '.panel-charging__excel',
     'div[data-bc-export-item]',
@@ -1573,6 +1602,24 @@ function getFilters(type) {
       'charging.cardno': 'شماره کارت',
       'charging.refnumber': 'شماره پیگیری',
     }
+  } else if (type === 'wallet') {
+    return [
+      {
+        docID: 'شماره سند',
+        factorid: 'شماره قرارداد',
+        debtor: 'مبلغ بدهکاری',
+        creditor: 'مبلغ بستانکاری',
+        'description.desc': 'توضیحات',
+        'description.bankname': 'نام بانک',
+        'description.refnumber': 'رفرنس',
+        date: 'تاریخ',
+        hour: 'ساعت',
+        weekday: 'روز',
+      },
+      {
+        Remaining_credit: 'اعتبار',
+      },
+    ]
   }
 }
 
@@ -1655,7 +1702,7 @@ const generateDynamicFields = (type) => {
   function chargingOnline() {
     return {
       multi_excel: 'report_charging_online',
-      excel_type: 'charging_onlin',
+      excel_type: 'charging_online',
       filters: getFilters(type),
       db: 'cms.chargingExcel',
       name: 'db',
@@ -1674,6 +1721,26 @@ const generateDynamicFields = (type) => {
     }
   }
 
+  function wallet() {
+    const getVal = (sel) => {
+      const el = document.querySelector(sel)
+      return el ? String(el.value ?? '').trim() : ''
+    }
+
+
+    return {
+      multi_excel: 'report_wallet_document',
+      excel_type: 'accounting',
+      filters: getFilters(type),
+      db: 'cms.walletExcel',
+      factorid: getVal('input[name="factorid"]'),
+      doctype: getVal('input[name="doctypeid"]'),
+      fromdate: getVal('.fdate-string'),
+      todate: getVal('.tdate-string'),
+      userid: 1005239,
+    }
+  }
+
   if (type === 'credit') {
     return credit()
   } else if (type === 'invoiceList') {
@@ -1682,6 +1749,8 @@ const generateDynamicFields = (type) => {
     return report()
   } else if (type === 'chargingOnline') {
     return chargingOnline()
+  } else if (type === 'wallet') {
+    return wallet()
   }
 
   return dynamicFields

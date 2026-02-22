@@ -1,13 +1,3 @@
-<basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient">
-    <member name="get_unit_currency" query='{
-        "name": "db",
-        "method":"cms",
-        "mid": "20",
-        "member":[{ "type":"list",
-        "name": "q",
-        "request": "currency_unit_view"}]}' preview="" onProcessed="onProcessedGetCurrency"></member>
-</basis>
-
 <basis core="api" name="currency_conversion" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
     method="post" body='{
         "name": "db",
@@ -61,6 +51,27 @@
     } ' content-type="application/json" triggers="cms.setTrueWebservice" if="{##cms.setTrueWebservice.run|(false)##}">
 </basis>
 
+<basis core="api" name="api.createpage" url="https://basisfly.com/accounting/get_report-wallet/[##cms.cookie.rkey##]"
+    method="post" body='{
+    "userid": 1005239,
+    "factorid": "{##cms.search.factorid##}",
+    "doctype": "{##cms.search.doctype##}",
+    "fromdate": "{##cms.search.fromdate##}",
+    "todate": "{##cms.search.todate##}"
+  }' content-type="application/json" run="atclient" triggers="cms.search" onProcessed="onProcessedGetReportWallet">
+</basis>
+
+<basis core="api" name="wallet-excel" url="https://basisfly.com/accounting/get_report-wallet/[##cms.cookie.rkey##]"
+    method="post" body='{##cms.walletExcel.query##}' content-type="application/json" run="atclient"
+    triggers="cms.walletExcel" if="{##cms.walletExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
+
+<basis core="api" name="api.doctype" url="https://basisfly.com/accounting/doctypename" method="post" body='{"lid":"1"}'
+    content-type="application/json" run="atclient" onProcessed="onProcessedSearch_item">
+</basis>
+
+<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form|(false)##}" method="callbackWalletSearch">
+</basis>
+
 <basis core="call" file="userPanel/final/payment/commands" lid="1"></basis>
 
 <!DOCTYPE html>
@@ -77,186 +88,213 @@
 <body class="panel-bg-zinc-50">
     <!-- Header -->
     <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
-    <!-- main -->
-    <main>
-        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
-            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-            <div class="panel-flex-1">
-                <div class="panel-relative panel-flex panel-justify-between panel-bg-white panel-rounded-2xl panel-p-6">
-                    <img src="/userPanel/images/pattern.png" class="panel-absolute panel-right-0 panel-top-0"
-                        alt="pattern" width="597" height="180" loading="lazy">
-                    <section class="panel-relative panel-z-10">
-                        <div class="panel-flex panel-items-center panel-gap-3">
-                            <span class="panel-bg-zinc-100 panel-rounded-lg">
-                                <svg width="48" height="48" class="panel-text-zinc-900">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-wallet"></use>
-                                </svg>
-                            </span>
-                            <div class="panel-flex panel-flex-col panel-justify-between panel-h-full">
-                                <h2 class="panel-text-xs panel-text-zinc-900">اعتبار</h2>
-                                <p class="panel-text-zinc-900 panel-font-medium">
-                                    موجودی حساب
-                                </p>
+
+    <basis core="call" file="Client_CheckRkey.inc"></basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]=0">
+        <basis core="call" file="userPanel/admin/warning" lid="1"></basis>
+    </basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]<> 0">
+        <!-- main -->
+        <main>
+            <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+                <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+                <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
+
+                <div class="panel-main__content panel-flex-1 panel-hidden">
+                    <div
+                        class="panel-relative panel-flex panel-justify-between panel-bg-white panel-rounded-2xl panel-p-6">
+                        <img src="/userPanel/images/pattern.png" class="panel-absolute panel-right-0 panel-top-0"
+                            alt="pattern" width="597" height="180" loading="lazy">
+                        <section class="panel-relative panel-z-10">
+                            <div class="panel-flex panel-items-center panel-gap-3">
+                                <span class="panel-bg-zinc-100 panel-rounded-lg">
+                                    <svg width="48" height="48" class="panel-text-zinc-900">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-wallet"></use>
+                                    </svg>
+                                </span>
+                                <div class="panel-flex panel-flex-col panel-justify-between panel-h-full">
+                                    <h2 class="panel-text-xs panel-text-zinc-900">اعتبار</h2>
+                                    <p class="panel-text-zinc-900 panel-font-medium">
+                                        موجودی حساب
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
-                            <div class="panel-flex panel-items-center panel-gap-1">
-                                <span class="panel-wallet-amount panel-text-4xl panel-font-bold panel-text-zinc-900"
-                                    data-amount="422,340,000">422,340,000</span>
-                                <span class="panel-font-medium panel-text-zinc-900">تومان</span>
-                            </div>
-
-                            <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
-                                     panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
-                                aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount>
-                                <svg width="24" height="24" class="panel-text-zinc-900">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
-                                </svg>
-                            </button>
-                        </div>
-                    </section>
-                    <section>
-                        <button
-                            class="panel-increase-balance__open-btn panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-w-40 panel-h-12 panel-border panel-border-solid panel-rounded-xl panel-border-green-700 panel-text-xs panel-text-green-700 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-white ">
-                            <div class="panel-relative panel-z-10 panel-flex panel-items-center">
-                                <svg width="48" height="48">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-increase-balance"></use>
-                                </svg>
-                                <span>افزایش موجودی</span>
-                            </div>
-                            <span
-                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-green-700 group-hover:panel-scale-x-100"></span>
-                        </button>
-
-                        <div class="panel-increase-balance__popup panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden"
-                            aria-hidden="true">
-                            <div
-                                class="panel-increase-balance-popup__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
-                                <div class="panel-flex panel-items-center panel-justify-between">
-                                    <h2 class="panel-font-bold panel-text-zinc-900">افزایش موجودی</h2>
-
-                                    <button
-                                        class="panel-w-12 bopanelok-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
-                                        aria-label="Close">
-                                        <svg width="48" height="48" class="panel-increase-balance__close-btn"
-                                            role="button" tabindex="0">
-                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
-                                        </svg>
-                                    </button>
-
+                            <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
+                                <div class="panel-flex panel-items-center panel-gap-1">
+                                    <span class="panel-wallet-amount panel-text-4xl panel-font-bold panel-text-zinc-900"
+                                        data-amount="422,340,000">422,340,000</span>
+                                    <span class="panel-font-medium panel-text-zinc-900">تومان</span>
                                 </div>
 
-                                <div class="panel-mt-5">
-                                    <h3 class="panel-text-zinc-900 panel-mb-6">جهت افزایش موجودی مبلغ را وارد کنید</h3>
+                                <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
+                                     panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
+                                    aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount>
+                                    <svg width="24" height="24" class="panel-text-zinc-900">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
+                                    </svg>
+                                </button>
+                            </div>
+                        </section>
+                        <section>
+                            <button
+                                class="panel-increase-balance__open-btn panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-w-40 panel-h-12 panel-border panel-border-solid panel-rounded-xl panel-border-green-700 panel-text-xs panel-text-green-700 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-white ">
+                                <div class="panel-relative panel-z-10 panel-flex panel-items-center">
+                                    <svg width="48" height="48">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-increase-balance">
+                                        </use>
+                                    </svg>
+                                    <span>افزایش موجودی</span>
+                                </div>
+                                <span
+                                    class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-green-700 group-hover:panel-scale-x-100"></span>
+                            </button>
 
-                                    <div class="panel-flex panel-gap-3">
-                                        <div class="panel-w-full">
-                                            <div class="panel-relative">
-                                                <input type="text" name="" id="" placeholder="500000" class="panel-increase-balance__amount-input panel-w-full panel-h-14 panel-border panel-border-solid panel-border-zinc-200 panel-bg-zinc-100 panel-rounded-xl panel-pr-4 panel-pl-11 placeholder-zinc-400 panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                            <div class="panel-increase-balance__popup panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden"
+                                aria-hidden="true">
+                                <div
+                                    class="panel-increase-balance-popup__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
+                                    <div class="panel-flex panel-items-center panel-justify-between">
+                                        <h2 class="panel-font-bold panel-text-zinc-900">افزایش موجودی</h2>
+
+                                        <button
+                                            class="panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                                            aria-label="Close">
+                                            <svg width="48" height="48" class="panel-increase-balance__close-btn"
+                                                role="button" tabindex="0">
+                                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                                            </svg>
+                                        </button>
+
+                                    </div>
+
+                                    <div class="panel-mt-5">
+                                        <h3 class="panel-text-zinc-900 panel-mb-6">جهت افزایش موجودی مبلغ را وارد کنید
+                                        </h3>
+
+                                        <div class="panel-flex panel-gap-3">
+                                            <div class="panel-w-full">
+                                                <div class="panel-relative">
+                                                    <input type="text" name="" id="" placeholder="500000" class="panel-increase-balance__amount-input panel-w-full panel-h-14 panel-border panel-border-solid panel-border-zinc-200 panel-bg-zinc-100 panel-rounded-xl panel-pr-4 panel-pl-11 placeholder-zinc-400 panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                                     focus:panel-shadow-md
                                                     panel-transition panel-duration-300">
+                                                    <span
+                                                        class="panel-absolute panel-left-4 panel-text-zinc-400 panel-top-1/2 -panel-translate-y-1/2">ریال</span>
+
+                                                </div>
                                                 <span
-                                                    class="panel-absolute panel-left-4 panel-text-zinc-400 panel-top-1/2 -panel-translate-y-1/2">ریال</span>
-
+                                                    class="panel-mt-2 panel-text-xs panel-text-red-600 panel-hidden panel-increase-balance__amount-error"></span>
                                             </div>
-                                            <span
-                                                class="panel-mt-2 panel-text-xs panel-text-red-600 panel-hidden panel-increase-balance__amount-error"></span>
+                                            <button
+                                                class="panel-increase-balance__pay-btn panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                                <div
+                                                    class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
+                                                    <span>پرداخت</span>
+                                                </div>
+                                                <span
+                                                    class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                                            </button>
                                         </div>
-                                        <button
-                                            class="panel-increase-balance__pay-btn panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
-                                            <div
-                                                class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
-                                                <span>پرداخت</span>
-                                            </div>
-                                            <span
-                                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
-                                        </button>
-                                    </div>
 
-                                    <div class="panel-mt-3 panel-increase-balance__gateways panel-hidden">
-                                        <h3 class="panel-invoice__value panel-font-medium panel-text-zinc-900 panel-mb-4"
-                                            data-factorid="">لیست درگاه های
-                                            پرداخت</h3>
-                                        <div class="panel_grid_style panel-pb-5" data-payment-type="onlineCharging">
-                                            <basis core="component.grid.grid" run="atclient"
-                                                dataMemberName="db.webservice_type_list" options="WebserviceListGrid">
-                                            </basis>
+                                        <div class="panel-mt-3 panel-increase-balance__gateways panel-hidden">
+                                            <h3 class="panel-invoice__value panel-font-medium panel-text-zinc-900 panel-mb-4"
+                                                data-factorid="">لیست درگاه های
+                                                پرداخت</h3>
+                                            <div class="panel_grid_style panel-pb-5" data-payment-type="onlineCharging">
+                                                <basis core="component.grid.grid" run="atclient"
+                                                    dataMemberName="db.webservice_type_list"
+                                                    options="WebserviceListGrid">
+                                                </basis>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
 
-                </div>
-                <div class=" panel-bg-white panel-rounded-2xl panel-p-6 panel-mt-3">
-                    <section class="panel-w-full">
-                        <div class="panel-flex panel-items-center panel-justify-between">
-                            <h2 class="panel-text-zinc-900 panel-font-medium">جستجو در تاریخچه تراکنش ها و درخواست ها
+                    </div>
+                    <div class=" panel-bg-white panel-rounded-2xl panel-p-6 panel-mt-3">
+                        <section class="panel-w-full">
+                            <h2 class="panel-text-zinc-900 panel-font-medium">جستجو در تاریخچه تراکنش ها و درخواست
+                                ها
                             </h2>
-                            <div class="panel-flex panel-items-center panel-gap-6">
+                            <form bc-triggers="submit" name="cms.form"
+                                class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
+                                <input type="text" name="factorid" id=""
+                                    class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                    placeholder="شماره قرارداد:">
+
+                                <div class="panel-relative" data-dd-key="doctype">
+                                    <input data-dd-input type="text" name="" id=""
+                                        class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-cursor-pointer panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                                        placeholder="عنوان سند:">
+                                    <input type="hidden" name="doctypeid" value="">
+                                    <svg width="48" height="48"
+                                        class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                    </svg>
+                                </div>
+                                <div class="panel-relative panel-flex panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                                focus:panel-shadow-md
+                                panel-transition panel-duration-300 panel-cursor-pointer">
+                                    <input type="hidden" class="fdate-string" name="_root.date.begindate">
+                                    <input type="hidden" class="tdate-string" name="_root.date.enddate">
+                                    <basis core="component.calendar.datepicker" name="datepicker" run="atclient"
+                                        options="datepickerHasRangesSetting" OnRendered="OnRenderedStorage"></basis>
+                                    <svg width="48" height="48"
+                                        class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
+                                    </svg>
+                                </div>
+
+                                <button
+                                    class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105"
+                                    aria-label="جستجو">
+                                    <svg width="24" height="24" class="panel-text-white">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
+                                    </svg>
+                                </button>
+                            </form>
+                        </section>
+                        <section class="panel-mt-8">
+                            <div
+                                class="panel-flex panel-items-center panel-justify-between panel-h-12 panel-float-right panel-w-[92%]">
+                                <h2 class="panel-text-zinc-900 panel-font-medium">لیست تراکنش ها
+                                </h2>
                                 <p class="panel-text-xs panel-text-zinc-900">برای مشاهده کل تراکنش ها رو دانلود کلیک
                                     کنید
                                 </p>
-                                <button
-                                    class="panel-flex panel-items-center panel-justify-center panel-gap-2 panel-w-28 panel-h-14 panel-border panel-border-solid panel-border-zinc-900 panel-rounded-xl panel-text-sm panel-font-medium">
-                                    <img src="/userPanel/images/microsoft-exel.png"
-                                        class="panel-w-6 panel-h-6 panel-object-cover" alt="microsoft-exel" width="25"
-                                        height="25" loading="lazy">
-                                    <span>دانلود</span>
-                                </button>
                             </div>
-                        </div>
 
-                        <div class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
-                            <input type="text" name="" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
-                                   focus:panel-shadow-md
-                                   panel-transition panel-duration-300" placeholder="شماره قرارداد:">
-                            <div class="panel-relative">
-                                <input type="text" name="" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300" placeholder="عنوان سند:">
-                                <svg width="48" height="48"
-                                    class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
-                                </svg>
+                            <div id="panelHasExcel" class="panel_grid_style panel-wallet__excel">
+                                <basis core="component.grid.grid" run="atclient" dataMemberName="cms.report"
+                                    options="WalletList" onRendered="onRenderedShowContent">
+                                </basis>
                             </div>
-                            <div class="panel-relative">
-                                <input type="text" name="" id="" class="panel-w-40 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
-                                focus:panel-shadow-md
-                                panel-transition panel-duration-300" placeholder="از تاریخ:">
-                                <svg width="48" height="48"
-                                    class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
-                                </svg>
-                            </div>
-                            <div class="panel-relative">
-                                <input type="text" name="" id="" class="panel-w-40 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
-                                   focus:panel-shadow-md
-                                   panel-transition panel-duration-300" placeholder="تا تاریخ:">
-                                <svg width="48" height="48"
-                                    class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
-                                </svg>
-                            </div>
-                            <button
-                                class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
-                                aria-label="جستجو">
-                                <svg width="24" height="24" class="panel-text-white">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
-                                </svg>
-                            </button>
-                        </div>
-                    </section>
-                    <section class="panel-mt-8">
-                        <h2 class="panel-text-zinc-900 panel-font-medium">لیست تراکنش ها
-                        </h2>
-                    </section>
+                        </section>
+                    </div>
                 </div>
             </div>
+        </main>
+        <div id="sharedDropdown"
+            class="panel-hidden panel-fixed panel-z-50 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-overflow-hidden"
+            role="listbox" aria-label="dropdown">
+
+
+            <div class="panel-p-3 panel-border-b panel-border-solid panel-border-zinc-200">
+                <input id="sharedDropdownSearch" type="text"
+                    class="panel-w-full panel-h-12 panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white panel-transition panel-duration-300"
+                    placeholder="جستجو..." />
+            </div>
+
+
+            <div id="sharedDropdownList" class="panel-max-h-40 panel-overflow-y-auto panel-p-2"></div>
         </div>
-    </main>
+    </basis>
+
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
@@ -686,6 +724,301 @@
                 console.error('tokenCallback=' + err.lineNumber + ',' + err.message);
             }
         }
+
+        async function onProcessedGetReportWallet(args) {
+            try {
+                const responseJson = await args.response.json();
+
+                const list =
+                    responseJson?.sources
+                        ?.find(s => s?.options?.tableName === "db.report")
+                        ?.data || [];
+
+                $bc.setSource("cms.report", list);
+
+            } catch (e) {
+                console.log(e);
+                $bc.setSource("cms.report", []);
+            }
+        }
+
+        function padJalaliDate(dateString) {
+            if (!dateString) return '';
+
+            const parts = dateString.split('/');
+            if (parts.length !== 3) return dateString;
+
+            let [y, m, d] = parts;
+
+            m = String(parseInt(m)).padStart(2, '0');
+            d = String(parseInt(d)).padStart(2, '0');
+
+            return `${y}/${m}/${d}`;
+        }
+
+
+        function replaceSlashWithDash(dateString) {
+            if (!dateString) return '';
+            return dateString.replace(/\//g, '-');
+        }
+
+
+        function jalaliToGregorian(dateString) {
+            if (!dateString) return '';
+
+            const parts = dateString.split('/');
+            if (parts.length !== 3) return '';
+
+            let jy = parseInt(parts[0]);
+            let jm = parseInt(parts[1]);
+            let jd = parseInt(parts[2]);
+
+            jy += 1595;
+            let days = -355668 + (365 * jy) +
+                Math.floor(jy / 33) * 8 +
+                Math.floor(((jy % 33) + 3) / 4) +
+                jd +
+                (jm < 7 ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+
+            let gy = 400 * Math.floor(days / 146097);
+            days %= 146097;
+
+            if (days > 36524) {
+                gy += 100 * Math.floor(--days / 36524);
+                days %= 36524;
+                if (days >= 365) days++;
+            }
+
+            gy += 4 * Math.floor(days / 1461);
+            days %= 1461;
+
+            if (days > 365) {
+                gy += Math.floor((days - 1) / 365);
+                days = (days - 1) % 365;
+            }
+
+            let gd = days + 1;
+
+            const months = [
+                0, 31,
+                (gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0 ? 29 : 28,
+                31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+            ];
+
+            let gm;
+            for (gm = 1; gm <= 12 && gd > months[gm]; gm++) {
+                gd -= months[gm];
+            }
+
+            return `${gy}-${String(gm).padStart(2, '0')}-${String(gd).padStart(2, '0')}`;
+        }
+
+        async function callbackWalletSearch(args) {
+            try {
+                const form =
+                    args?.source?.el || document.querySelector('form[name="cms.form"]')
+                if (!form) return
+
+                const getVal = (sel) => {
+                    const el = form.querySelector(sel)
+                    return el ? String(el.value ?? '').trim() : ''
+                }
+
+                const setHidden = (sel, value) => {
+                    const el = form.querySelector(sel)
+                    if (!el) return
+                    el.value = value || ''
+                    el.dispatchEvent(new Event('input', { bubbles: true }))
+                    el.dispatchEvent(new Event('change', { bubbles: true }))
+                }
+
+                const factorid = getVal('input[name="factorid"]')
+                const doctypeid = getVal('input[name="doctypeid"]')
+
+                const dp = form.querySelector('.date-picker-input')
+                const fJalaliRaw = dp
+                    ? String(dp.getAttribute('data-datepicker-sstring') || '').trim()
+                    : ''
+                const tJalaliRaw = dp
+                    ? String(dp.getAttribute('data-datepicker-to-sstring') || '').trim()
+                    : ''
+
+                const fJalali = padJalaliDate(fJalaliRaw)
+                const tJalali = padJalaliDate(tJalaliRaw)
+
+                const begindate = fJalali ? jalaliToGregorian(fJalali) : ''
+                const enddate = tJalali ? jalaliToGregorian(tJalali) : ''
+
+                setHidden('.fdate-string', begindate)
+                setHidden('.tdate-string', enddate)
+
+                const main_json = {
+                    factorid: factorid || '',
+                    doctype: doctypeid || '',
+                    fromdate: begindate || '',
+                    todate: enddate || '',
+                }
+
+                $bc.setSource('cms.search', main_json)
+            } catch (e) {
+                console.error('callbackWalletSearch error:', e)
+            }
+        }
+
+        if (typeof WalletList === "undefined") {
+            const nf = new Intl.NumberFormat();
+
+            var WalletList = {
+                columns: {
+
+                    docID: {
+                        title: "شماره سند",
+                        sort: true,
+                        filter: true
+                    },
+
+                    debtor: {
+                        title: "مبلغ",
+                        filter: true,
+                        sort: true,
+
+                        cellMaker: (row) => {
+                            const debtor = Number(row?.debtor || 0);
+                            const creditor = Number(row?.creditor || 0);
+
+                            if (debtor !== 0) {
+                                return `
+              <p class="panel-text-red-600 panel-text-left panel-font-medium is-separated">
+                - ${nf.format(debtor)}
+              </p>`;
+                            }
+
+                            return `
+            <p class="panel-text-green-600 panel-text-left panel-font-medium is-separated">
+              + ${nf.format(creditor)}
+            </p>`;
+                        }
+                    },
+
+                    doctype: {
+                        title: "عنوان سند",
+                        filter: true,
+                        sort: false,
+                        cellMaker: (row) => `
+          <div class="panel-flex panel-flex-col panel-gap-1">
+            <p class="panel-font-medium panel-text-zinc-800">${row?.doctype || ""}</p>
+            <input type="hidden" class="doctypeid" value="${row?.doctypeID || ""}" />
+          </div>
+        `
+                    },
+
+                    description: {
+                        title: "توضیحات",
+                        filter: false,
+                        sort: false,
+                        cellMaker: (row) => {
+                            const d = row?.description || {};
+                            let parts = [];
+
+                            if (d?.desc) parts.push(`<span>${d.desc}</span>`);
+                            if (d?.bankname) parts.push(`<span>${d.bankname}</span>`);
+                            if (d?.refnumber) parts.push(`<span>${d.refnumber}</span>`);
+
+                            if (row?.factorid) {
+                                parts.push(`<span class="panel-text-zinc-500">شماره قرارداد:</span>`);
+                                parts.push(`<span class="panel-font-medium">${row.factorid}</span>`);
+                            }
+
+                            return `
+            <div class="panel-flex panel-flex-wrap panel-gap-1 panel-text-sm">
+              ${parts.join(`<span class="panel-text-zinc-400">/</span>`)}
+            </div>`;
+                        }
+                    },
+
+                    date: {
+                        title: "تاریخ",
+                        filter: true,
+                        sort: true,
+                        cellMaker: (row) => `
+          <div class="panel-flex panel-flex-col panel-gap-1">
+            <p class="panel-font-medium">${row?.date || ""}</p>
+            <p class="panel-text-xs panel-text-zinc-500">(${row?.weekday || ""})</p>
+          </div>
+        `
+                    },
+
+                    hour: {
+                        title: "ساعت",
+                        filter: true,
+                        sort: true,
+                        cellMaker: (row) => `
+          <p class="panel-text-zinc-700 panel-font-medium">${row?.hour || ""}</p>
+        `
+                    }
+                },
+
+                filter: "row",
+                rowNumber: "ردیف",
+                defaultSort: false,
+                direction: "rtl",
+                paging: 50,
+                information: true,
+                firstAndLastBtn: true,
+
+                culture: {
+                    labels: {
+                        next: "بعدی",
+                        previous: "قبلی",
+                        first: "اولین صفحه",
+                        last: "آخرین صفحه",
+                        information: "نمایش ${from} تا ${to} از مجموع ${total}"
+                    }
+                },
+
+                noData: (td) => {
+                    td.innerHTML = `
+        <div class="panel-flex panel-flex-col panel-items-center panel-gap-3 panel-py-10 panel-text-center">
+          <svg width="70" height="70" viewBox="0 0 100 100" class="panel-text-zinc-300">
+            <path d="M50 0C22.4 0 0 22.4 0 50C0 77.6 22.4 100 50 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 50 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z"/>
+          </svg>
+          <p class="panel-text-zinc-500 panel-text-sm">هیچ موردی یافت نشد</p>
+        </div>`;
+                },
+
+                export: [
+                    {
+                        type: "excel",
+                        tooltip: "دانلود اکسل"
+                    }
+                ],
+                mode: "grid",
+                pageCount: false
+            };
+        }
+
+        if (typeof datepickerHasRangesSetting === "undefined") {
+            var datepickerHasRangesSetting = {
+                dateProvider: "basisCalendar",
+                displayNote: false,
+                culture: "fa",
+                secondCulture: "en",
+                lid: 1,
+                todayButton: true,
+                rangeDates: true,
+                type: "click",
+                // rangeDatesSeparated: true,
+                mode: "desktop",
+                style: "[##cms.cms.cdn##]/booking/css/datepicker.ui.min.css",
+            }
+        };
+        async function OnRenderedStorage() {
+            const datePickerInput = document.querySelector(".date-picker-input");
+            if (datePickerInput) {
+                datePickerInput.setAttribute("placeholder", "تاریخ را انتخاب کنید");
+            }
+        }
+
     </script>
 </body>
 

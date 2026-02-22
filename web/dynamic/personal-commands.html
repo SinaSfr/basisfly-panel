@@ -1,0 +1,8 @@
+<basis core="schema" datamembername="answer.data" run="atclient" schemaUrl="/schema" displayMode="edit"
+    button="[data-btn-editUserSchema]" resultSourceId="editUser.data">
+</basis>
+<basis core="callback" run="atclient" triggers="editUser.data" method="editUserSchema"></basis>
+
+<basis name="api.edituser" core="api" url="https://api.trust-login.com/schema/[##cms.cookie.rkey##]/editobject"
+    method="post" body='{"data": {##cms.editUserSchema.value##}}' run="atclient" OnProcessed="onProcessededitUserSchema"
+    triggers="cms.editUserSchema" if="{##cms.editUserSchema.run|(false)##}"></basis>

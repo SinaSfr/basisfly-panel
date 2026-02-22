@@ -14,7 +14,7 @@
     method="post" body='{
         "users": [{##cms.userID.users##}],
         "type": "userid"
-    }' content-type="application/json" onProcessed="onProcessedUserInfo" triggers="cms.userID">
+    }' content-type="application/json" onProcessed="onProcessedUserInfo" triggers="cms.userID" if="{##cms.userID##}">
 </basis>
 
 
@@ -53,18 +53,8 @@
     if="{##cms.refreshCounters.run|(false)##}">
 </basis>
 
-<basis core="api" name="comgroup_agency_by_user" run="atclient" url="https://basisfly.com/panel/[##cms.cookie.rkey##]"
-    method="post" body='{
-        "name": "db",
-        "mid": "20",
-        "member": [
-            {
-                "type": "list",
-                "name": "q",
-                "request": "comgroup_agency_by_user"
-            }
-        ]
-    } ' content-type="application/json" onProcessed="onProcessedComgroupAgency">
+<basis core="callback" run="atclient" triggers="api.comgroup_agency_by_user" if="{##api.comgroup_agency_by_user##}"
+    method="comgroupAgencyUserListCallback">    
 </basis>
 
 
@@ -83,111 +73,120 @@
 <body class="panel-bg-zinc-50">
     <!-- Header -->
     <basis core="call" file="header.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
-    <!-- main -->
-    <main>
-        <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
-            <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-            <div class="panel-flex-1">
-                <section class="panel-memberlist__container panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
-                    <div class="panel-flex panel-items-stretch panel-justify-between panel-mb-6">
-                        <div class="panel-flex panel-flex-col panel-justify-between">
-                            <h1 class="panel-font-bold panel-text-zinc-900">لیست اعضا</h1>
-                            <p id="comgroupAgencyText" class="panel-text-xs panel-text-zinc-900 panel-hidden">گروه
-                                کمیسیونی آلوینی
-                                آژانس بیسیس فلای</p>
-                        </div>
-                        <button
-                            class="userlist__modal-open panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-justify-center panel-w-44 panel-h-14 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-bg-primary-800 panel-text-xs panel-text-white panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-primary-800">
-                            <div class="panel-relative panel-z-10 panel-flex panel-items-center">
-                                <svg width="48" height="48">
-                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-plus-person"></use>
-                                </svg>
-                                <span>افزودن عضو جدید</span>
+    <basis core="call" file="Client_CheckRkey.inc"></basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]=0">
+        <basis core="call" file="userPanel/admin/warning" lid="1"></basis>
+    </basis>
+
+    <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]<> 0">
+        <!-- main -->
+        <main>
+            <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
+                <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
+
+                <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
+                <div class="panel-flex-1 panel-main__content panel-hidden">
+                    <section class="panel-memberlist__container panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
+                        <div class="panel-flex panel-items-stretch panel-justify-between panel-mb-6">
+                            <div class="panel-flex panel-flex-col panel-justify-between">
+                                <h1 class="panel-font-bold panel-text-zinc-900">لیست اعضا</h1>
+                                <p id="comgroupAgencyText" class="panel-text-xs panel-text-zinc-900 panel-hidden"></p>
                             </div>
-                            <span
-                                class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
-                        </button>
-                    </div>
-                    <div class="panel_grid_style">
-                        <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list" options="UsersList">
-                        </basis>
-                    </div>
-                </section>
+                            <button
+                                class="userlist__modal-open panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-justify-center panel-w-44 panel-h-14 panel-border panel-border-solid panel-border-primary-800 panel-rounded-xl panel-bg-primary-800 panel-text-xs panel-text-white panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                <div class="panel-relative panel-z-10 panel-flex panel-items-center">
+                                    <svg width="48" height="48">
+                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-plus-person"></use>
+                                    </svg>
+                                    <span>افزودن عضو جدید</span>
+                                </div>
+                                <span
+                                    class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                            </button>
+                        </div>
+                        <div class="panel_grid_style">
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
+                                options="UsersList" onRendered="onRenderedShowContent">
+                            </basis>
+                        </div>
+                    </section>
+                </div>
             </div>
-        </div>
-    </main>
-    <div
-        class="userlist__modal panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+        </main>
         <div
-            class="userlist__modal-content panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+            class="userlist__modal panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
             <div
-                class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-5 panel-mb-5">
-                <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">افزودن عضو جدید</h2>
-                <button
-                    class="userlist__modal-close panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
-                    aria-label="Close">
-                    <svg width="48" height="48">
-                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
-                    </svg>
-                </button>
-            </div>
-            <h3 class="panel-text-zinc-900 panel-mb-6">مشخصات</h3>
-            <form class="userlist__trust-form panel-flex panel-items-center panel-gap-6" method="post" novalidate>
-                <input type="text" name="Username" data-name="@Field"
-                    class="userlist__trust-input panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
-                    placeholder="ایمیل یا شماره تماس" autocomplete="off" />
+                class="userlist__modal-content panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
+                <div
+                    class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-5 panel-mb-5">
+                    <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">افزودن عضو جدید</h2>
+                    <button
+                        class="userlist__modal-close panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                        aria-label="Close">
+                        <svg width="48" height="48">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                        </svg>
+                    </button>
+                </div>
+                <h3 class="panel-text-zinc-900 panel-mb-6">مشخصات</h3>
+                <form class="userlist__trust-form panel-flex panel-items-center panel-gap-6" method="post" novalidate>
+                    <input type="text" name="Username" data-name="@Field"
+                        class="userlist__trust-input panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
+                        placeholder="ایمیل یا شماره تماس" autocomplete="off" />
 
-                <input type="hidden" value="[##cms.cms.ownerid##]" name="Ownerid" />
-                <input type="hidden" value="[##cms.cms.domainid##]" name="Dmnid" />
-                <input type="hidden" value="[##cms.request.clientip##]" name="Ipaddress" />
-                <input type="hidden" value="1" name="Lid" />
+                    <input type="hidden" value="[##cms.cms.ownerid##]" name="Ownerid" />
+                    <input type="hidden" value="[##cms.cms.domainid##]" name="Dmnid" />
+                    <input type="hidden" value="[##cms.request.clientip##]" name="Ipaddress" />
+                    <input type="hidden" value="1" name="Lid" />
 
-                <button type="submit"
-                    class="userlist__trust-submit panel-flex panel-shrink-0 panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
-                    ثبت
-                </button>
-            </form>
+                    <button type="submit"
+                        class="userlist__trust-submit panel-flex panel-shrink-0 panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
+                        ثبت
+                    </button>
+                </form>
 
-            <div class="userlist__trust-message panel-mt-6"></div>
+                <div class="userlist__trust-message panel-mt-6"></div>
 
-            <div class="userlist__trust-loading panel-flex panel-items-center panel-justify-center panel-hidden">
-                <div class="panel-loading__content"></div>
+                <div class="userlist__trust-loading panel-flex panel-items-center panel-justify-center panel-hidden">
+                    <div class="panel-loading__content"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="removeUserModal"
-        class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-hidden">
-        <div class="panel-bg-white panel-rounded-2xl panel-w-96
+        <div id="removeUserModal"
+            class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-hidden">
+            <div class="panel-bg-white panel-rounded-2xl panel-w-96
                 panel-p-6 panel-shadow-xl">
 
-            <h3 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
-                حذف کاربر
-            </h3>
+                <h3 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
+                    حذف کاربر
+                </h3>
 
-            <p class="panel-text-sm panel-text-zinc-600 panel-mb-6">
-                آیا از حذف این کاربر مطمئن هستید؟
-            </p>
+                <p class="panel-text-sm panel-text-zinc-600 panel-mb-6">
+                    آیا از حذف این کاربر مطمئن هستید؟
+                </p>
 
-            <input type="hidden" id="removeUserId" />
+                <input type="hidden" id="removeUserId" />
 
-            <div class="panel-flex panel-justify-end panel-gap-3">
-                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
+                <div class="panel-flex panel-justify-end panel-gap-3">
+                    <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
                            panel-bg-zinc-200 panel-text-zinc-700
                            hover:panel-bg-zinc-300" onclick="closeRemoveUserModal()">
-                    انصراف
-                </button>
+                        انصراف
+                    </button>
 
-                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
+                    <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
                            panel-bg-red-500 panel-text-white
                            hover:panel-bg-red-700" onclick="confirmRemoveUser()">
-                    حذف
-                </button>
-            </div>
+                        حذف
+                    </button>
+                </div>
 
-            <div id="removeUserMsg" class="panel-hidden panel-text-sm panel-rounded-lg panel-p-2 panel-mt-3"></div>
+                <div id="removeUserMsg" class="panel-hidden panel-text-sm panel-rounded-lg panel-p-2 panel-mt-3"></div>
+            </div>
         </div>
-    </div>
+    </basis>
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
@@ -294,29 +293,42 @@
             }
         }
 
-        async function onProcessedComgroupAgency(args) {
-            const responseJson = await args.response.json()
+        async function comgroupAgencyUserListCallback(args) {
+            try {
 
-            const item = Array.isArray(responseJson) ? responseJson[0] : responseJson
-            const title = (item?.title || '').trim()
-            const agencyName = (item?.agency?.name || '').trim()
+                let rows = null
 
-            const el = document.getElementById('comgroupAgencyText')
-            if (!el) return
+                if (args?.source) {
+                    rows =
+                        args.source.rows ||
+                        args.source._rows ||
+                        args.source.source?.rows ||
+                        args.source.source?._rows ||
+                        null
+                }
 
-            if (!title && !agencyName) {
-                el.textContent = ''
-                el.classList.add('panel-hidden')
-                return
+                const item = Array.isArray(rows) && rows.length ? rows[0] : null
+                const title = String(item?.title ?? '').trim()
+                const agencyName = String(item?.agency?.name ?? '').trim()
+
+                const el = document.getElementById('comgroupAgencyText')
+                if (!el) return
+
+                if (!title && !agencyName) {
+                    el.textContent = ''
+                    el.classList.add('panel-hidden')
+                    return
+                }
+
+                el.textContent = agencyName
+                    ? `گروه کمیسیونی ${title} آژانس ${agencyName}`
+                    : `گروه کمیسیونی ${title}`
+
+                el.classList.remove('panel-hidden')
+            } catch (e) {
+                console.error('comgroupAgencyUserListCallback error:', e)
             }
-
-            el.textContent = agencyName
-                ? `گروه کمیسیونی ${title} آژانس ${agencyName}`
-                : `گروه کمیسیونی ${title}`
-
-            el.classList.remove('panel-hidden')
         }
-
         window.usedForId = Number("{##cms.refreshCounters.userid##}")
         window.usedForAction = "{##cms.refreshCounters.action##}"
 

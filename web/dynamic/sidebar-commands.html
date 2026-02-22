@@ -1,0 +1,35 @@
+<basis core="api" name="api.createpage" url="https://basisfly.com/accounting/credit_view/[##cms.cookie.rkey##]"
+    method="post" body='{"userid":"[##db.checkrkey.userid|(0)##]"}' content-type="application/json" run="atclient">
+</basis>
+
+<basis core="api" name="api.comgroup_agency_by_user" run="atclient"
+    url="https://basisfly.com/panel/[##cms.cookie.rkey##]" method="post" body='{
+        "name": "db",
+        "mid": "20",
+        "member": [
+            {
+                "type": "list",
+                "name": "q",
+                "request": "comgroup_agency_by_user"
+            }
+        ]
+    } ' content-type="application/json">
+</basis>
+<basis core="callback" run="atclient" triggers="api.comgroup_agency_by_user" if="{##api.comgroup_agency_by_user##}"
+    method="comgroupAgencySidebarcallback">
+</basis>
+
+<basis core="api" name="api.useridentityinfo" run="atclient"
+    url="https://api.trust-login.com/[##cms.cookie.rkey##]/useridentityinfo" method="get"
+    onprocessed="onProcessedUserIdentityInfo">
+</basis>
+
+<basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient">
+    <member name="get_unit_currency" query='{
+        "name": "db",
+        "method":"cms",
+        "mid": "20",
+        "member":[{ "type":"list",
+        "name": "q",
+        "request": "currency_unit_view"}]}' preview="" onProcessed="onProcessedGetCurrency"></member>
+</basis>

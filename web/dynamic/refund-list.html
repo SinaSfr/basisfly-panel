@@ -99,7 +99,12 @@
             <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
                 <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-                <div class="panel-flex-1">
+                <div class="panel-loading__wrap panel-flex panel-flex-col panel-items-center panel-justify-center panel-flex-1 panel-bg-white panel-rounded-2xl">
+                    <div class="panel-loading__content"></div>
+                    <div class="panel-loading__title">در حال دریافت اطلاعات…</div>
+                    <div class="panel-loading__hint">لطفاً چند لحظه صبر کنید</div>
+                </div>
+                <div class="panel-main__content panel-flex-1 panel-hidden">
                     <section class="panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
                         <h1 class="panel-font-bold panel-mb-3">درخواست پشتیبانی</h1>
                         <div class="panel-relative panel-w-80">
@@ -128,7 +133,7 @@
                         </h2>
                         <div class="panel_grid_style panel-refund__list">
                             <basis core="component.grid.grid" run="atclient" dataMemberName="cms.orders"
-                                options="refundList"></basis>
+                                options="refundList" onRendered="onRenderedShowContent"></basis>
                         </div>
                         <div
                             class="refund-search__overlay panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-hidden panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-mb-0">
@@ -235,15 +240,12 @@
 
             if (!modalOverlay || !modalContent || !closeModalButton) return;
 
-            // تابع بستن مودال
             const closeModal = () => {
-                modalOverlay.classList.add('panel-hidden');  // مخفی کردن مودال
+                modalOverlay.classList.add('panel-hidden');  
             };
 
-            // بستن با کلیک روی ضربدر
             closeModalButton.addEventListener('click', closeModal);
 
-            // بستن با کلیک روی overlay
             modalOverlay.addEventListener('click', (event) => {
                 if (!modalContent.contains(event.target)) {
                     closeModal();

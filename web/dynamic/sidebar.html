@@ -1,0 +1,188 @@
+<aside class="panel-w-[248px] panel-bg-white panel-rounded-2xl panel-p-3">
+    <!-- Commands / Requests -->
+    <basis core="call" file="userPanel/sidebar/commands" lid="1"></basis>
+    <section>
+        <div class="panel-flex panel-items-center panel-gap-4">
+            <span
+                class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-2xl">
+                <svg width="34" height="34">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-person"></use>
+                </svg>
+            </span>
+            <div class="panel-flex panel-flex-col">
+                <h2 class="panel-text-sm panel-text-zinc-900 panel-font-medium user-profile-header">
+                    <span class="default-name"></span><span class="default-family"></span>
+                </h2>
+                <p class="panel-text-xs panel-text-zinc-600 panel-font-medium panel-userProfile__agancy"></p>
+                <p class="panel-flex panel-gap-0.5 panel-text-xs panel-text-zinc-500">موجودی:
+                    <span>140/000/000</span><span>تومان</span>
+                </p>
+            </div>
+        </div>
+        <div
+            class="panel-flex panel-flex-col panel-gap-3 panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-3 panel-mt-6">
+            <a href="/userPanel/profile"
+                class="panel-group panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                <svg width="24" height="24" class="panel-text-zinc-600">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-setting"></use>
+                </svg>
+                <span class="panel-relative">تنظیمات پروفایل
+                    <span
+                        class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                </span>
+
+            </a>
+            <span onclick="logoutConfirm()"
+                class="panel-group panel-cursor-pointer panel-flex panel-items-center panel-gap-3 panel-text-sm panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                <svg width="24" height="24" class="panel-text-zinc-600">
+                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-exit"></use>
+                </svg>
+                <span class="panel-relative">خروج
+                    <span
+                        class="panel-absolute -panel-bottom-1 panel-right-0 panel-w-0 panel-transition-all panel-duration-300 panel-h-px panel-bg-primary-800 group-hover:panel-w-full"></span>
+                </span>
+            </span>
+        </div>
+    </section>
+    <section class="panel-mt-6">
+        <ul>
+            <li>
+                <a href=""
+                    class="panel-group panel-flex panel-items-center panel-rounded-xl panel-transition-all panel-duration-300 panel-cursor-pointer hover:panel-bg-primary-800 hover:panel-shadow-sidebar-btn">
+                    <svg width="48" height="48"
+                        class="panel-text-zinc-900 panel-transition-all panel-duration-300 group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-sidebar-person"></use>
+                    </svg>
+                    <span
+                        class="panel-text-zinc-900 panel-text-xs panel-transition-all panel-duration-300 group-hover:panel-text-white">پروفایل
+                        من</span>
+                </a>
+            </li>
+            <li>
+                <a href=""
+                    class="panel-group panel-flex panel-items-center panel-rounded-xl panel-transition-all panel-duration-300 panel-cursor-pointer hover:panel-bg-primary-800 hover:panel-shadow-sidebar-btn">
+                    <svg width="48" height="48"
+                        class="panel-text-zinc-900 panel-transition-all panel-duration-300 group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-case"></use>
+                    </svg>
+                    <span
+                        class="panel-text-zinc-900 panel-text-xs panel-transition-all panel-duration-300 group-hover:panel-text-white">سفرهای
+                        من</span>
+                </a>
+            </li>
+            <li>
+                <a href=""
+                    class="panel-group panel-flex panel-items-center panel-rounded-xl panel-transition-all panel-duration-300 panel-cursor-pointer hover:panel-bg-primary-800 hover:panel-shadow-sidebar-btn">
+                    <svg width="48" height="48"
+                        class="panel-text-zinc-900 panel-transition-all panel-duration-300 group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-document"></use>
+                    </svg>
+                    <span
+                        class="panel-text-zinc-900 panel-text-xs panel-transition-all panel-duration-300 group-hover:panel-text-white">لیست
+                        اسناد
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href=""
+                    class="panel-group panel-flex panel-items-center panel-rounded-xl panel-transition-all panel-duration-300 panel-cursor-pointer hover:panel-bg-primary-800 hover:panel-shadow-sidebar-btn">
+                    <svg width="48" height="48"
+                        class="panel-text-zinc-900 panel-transition-all panel-duration-300 group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-customer-club"></use>
+                    </svg>
+                    <span
+                        class="panel-text-zinc-900 panel-text-xs panel-transition-all panel-duration-300 group-hover:panel-text-white">باشگاه
+                        مشتریان
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href=""
+                    class="panel-group panel-flex panel-items-center panel-rounded-xl panel-transition-all panel-duration-300 panel-cursor-pointer hover:panel-bg-primary-800 hover:panel-shadow-sidebar-btn">
+                    <svg width="48" height="48"
+                        class="panel-text-zinc-900 panel-transition-all panel-duration-300 group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-wallet"></use>
+                    </svg>
+                    <span
+                        class="panel-text-zinc-900 panel-text-xs panel-transition-all panel-duration-300 group-hover:panel-text-white">کیف
+                        پول
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href=""
+                    class="panel-group panel-flex panel-items-center panel-rounded-xl panel-transition-all panel-duration-300 panel-cursor-pointer hover:panel-bg-primary-800 hover:panel-shadow-sidebar-btn">
+                    <svg width="48" height="48"
+                        class="panel-text-zinc-900 panel-transition-all panel-duration-300 group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-person-in-comment"></use>
+                    </svg>
+                    <span
+                        class="panel-text-zinc-900 panel-text-xs panel-transition-all panel-duration-300 group-hover:panel-text-white">لیست
+                        مسافران
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href=""
+                    class="panel-group panel-flex panel-items-center panel-rounded-xl panel-transition-all panel-duration-300 panel-cursor-pointer hover:panel-bg-primary-800 hover:panel-shadow-sidebar-btn">
+                    <svg width="48" height="48"
+                        class="panel-text-zinc-900 panel-transition-all panel-duration-300 group-hover:panel-text-white">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-headphone"></use>
+                    </svg>
+                    <span
+                        class="panel-text-zinc-900 panel-text-xs panel-transition-all panel-duration-300 group-hover:panel-text-white">پشتیبانی
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    <script>
+        let userEmail = "";
+        let userMobile = "";
+        async function onProcessedUserIdentityInfo(args) {
+            const response = args.response;
+            const responseJson = await response.json();
+
+            if (!responseJson.errorMessage) {
+                if (responseJson.errorid === 1) {
+                    console.log('useridentityinfo: ' + responseJson.message);
+                } else {
+                    // ذخیره مقادیر ایمیل و موبایل در متغیرهای global
+                    userEmail = responseJson.emailInfo ? responseJson.emailInfo.email : "";
+                    userMobile = responseJson.mobileInfo ? `+98${responseJson.mobileInfo.mobile}` : "";
+
+
+                }
+            }
+        }
+    </script>
+    <script>
+        async function comgroupAgencySidebarcallback(args) {
+            try {
+                let rows =
+                    args?.source?.rows ||
+                    args?.source?._rows ||
+                    args?.source?.source?.rows ||
+                    args?.source?.source?._rows ||
+                    null
+
+                const item = Array.isArray(rows) && rows.length ? rows[0] : null
+                const agencyName = String(item?.agency?.name ?? '').trim()
+
+                const el = document.querySelector('.panel-userProfile__agancy')
+                if (!el) return
+
+                if (!agencyName) {
+                    el.textContent = ''
+                    el.classList.add('panel-hidden')
+                    return
+                }
+
+                el.textContent = `از آژانس ${agencyName}`
+                el.classList.remove('panel-hidden')
+            } catch (e) {
+                console.error('comgroupAgencySidebarcallback error:', e)
+            }
+        }
+    </script>
+</aside>

@@ -1,3 +1,22 @@
+<basis core="api" name="club_members_user_point" run="atclient"
+    url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total,agency" method="post"
+    body='{
+    "name": "db",
+    "mid": "20",
+    "member": [
+        {
+        "name": "q",
+        "type": "list",
+        "request": "club_members_user_point_view",
+        "pageindex": "{##cms.paging.pageno|(1)##}",
+        "perpage": "0",
+        "rkey": "[##cms.cookie.rkey##]",
+        "lid":"[##cms.query.lid|(1)##]"
+        }
+    ]
+}' content-type="application/json" triggers="cms.search cms.paging" onProcessed="onProcessedClubMembers">
+</basis>
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -17,27 +36,14 @@
         <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
             <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-            <basis core="api" name="club_members_user_point" run="atclient"
-                url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total,agency"
-                method="post" body='{
-                    "name": "db",
-                    "mid": "20",
-                    "member": [
-                        {
-                        "name": "q",
-                        "type": "list",
-                        "request": "club_members_user_point_view",
-                        "pageindex": "{##cms.paging.pageno|(1)##}",
-                        "perpage": "0",
-                        "rkey": "[##cms.cookie.rkey##]",
-                        "lid":"[##cms.query.lid|(1)##]"
-                        }
-                    ]
-                }' content-type="application/json" triggers="cms.search cms.paging"
-                onProcessed="onProcessedClubMembers">
-            </basis>
 
-            <div class="panel-flex-1">
+            <div
+                class="panel-loading__wrap panel-flex panel-flex-col panel-items-center panel-justify-center panel-flex-1 panel-bg-white panel-rounded-2xl">
+                <div class="panel-loading__content"></div>
+                <div class="panel-loading__title">در حال دریافت اطلاعات…</div>
+                <div class="panel-loading__hint">لطفاً چند لحظه صبر کنید</div>
+            </div>
+            <div class="panel-main__content panel-flex-1 panel-hidden">
                 <section class="panel-flex panel-items-center panel-gap-2">
                     <basis core="print" datamembername="cms.total" run="atclient">
                         <layout>
@@ -124,7 +130,7 @@
                     </div>
                     <div class="panel_grid_style">
                         <basis core="component.grid.grid" run="atclient" dataMemberName="cms.list"
-                            options="CustomerClubList">
+                            options="CustomerClubList" onRendered="onRenderedShowContent">
                         </basis>
                     </div>
                 </section>
