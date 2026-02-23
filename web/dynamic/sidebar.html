@@ -14,7 +14,7 @@
                     <span class="default-name"></span><span class="default-family"></span>
                 </h2>
                 <p class="panel-text-xs panel-text-zinc-600 panel-font-medium panel-userProfile__agancy"></p>
-                <p class="panel-flex panel-gap-0.5 panel-text-xs panel-text-zinc-500">موجودی:
+                <p class="panel-flex panel-gap-0.5 panel-text-xs panel-text-zinc-500 panel-mt-2">موجودی:
                     <span>140/000/000</span><span>تومان</span>
                 </p>
             </div>
@@ -182,6 +182,28 @@
                 el.classList.remove('panel-hidden')
             } catch (e) {
                 console.error('comgroupAgencySidebarcallback error:', e)
+            }
+        }
+        window.currencyTitle = "";
+        window.currencyId = "";
+
+        async function onProcessedGetCurrency(args) {
+            try {
+                const responseJson = await args.response.json();
+
+                let row = null;
+
+                if (responseJson && typeof responseJson === "object" && ("id" in responseJson || "title" in responseJson)) {
+                    row = responseJson;
+                }
+
+                window.currencyTitle = (row?.title ?? "").toString();
+                window.currencyId = (row?.id ?? "").toString();
+
+            } catch (e) {
+                console.error(e);
+                window.currencyTitle = "";
+                window.currencyId = "";
             }
         }
     </script>

@@ -3,7 +3,7 @@
 </basis>
 
 <basis core="api" name="api.comgroup_agency_by_user" run="atclient"
-    url="https://basisfly.com/panel/[##cms.cookie.rkey##]" method="post" body='{
+    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "mid": "20",
         "member": [
@@ -24,12 +24,13 @@
     onprocessed="onProcessedUserIdentityInfo">
 </basis>
 
-<basis core="dbsource" source="basisfly" name="db" procedurename="dbsource" run="atclient">
-    <member name="get_unit_currency" query='{
+
+<basis core="api" name="api.comgroup_agency_by_user" run="atclient"
+    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "method":"cms",
         "mid": "20",
         "member":[{ "type":"list",
         "name": "q",
-        "request": "currency_unit_view"}]}' preview="" onProcessed="onProcessedGetCurrency"></member>
+        "request": "currency_unit_view"}]} ' content-type="application/json" onProcessed="onProcessedGetCurrency">
 </basis>

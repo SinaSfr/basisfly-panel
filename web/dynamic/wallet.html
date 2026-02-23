@@ -185,8 +185,9 @@
                                                         class="panel-absolute panel-left-4 panel-text-zinc-400 panel-top-1/2 -panel-translate-y-1/2">ریال</span>
 
                                                 </div>
-                                                <span
-                                                    class="panel-mt-2 panel-text-xs panel-text-red-600 panel-hidden panel-increase-balance__amount-error"></span>
+                                                <div class="panel-message__host panel-w-fit panel-mt-2"></div>
+                                                <!-- <span
+                                                    class="panel-mt-2 panel-text-xs panel-text-red-600 panel-hidden panel-increase-balance__amount-error"></span> -->
                                             </div>
                                             <button
                                                 class="panel-increase-balance__pay-btn panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
@@ -221,7 +222,7 @@
                             <h2 class="panel-text-zinc-900 panel-font-medium">جستجو در تاریخچه تراکنش ها و درخواست
                                 ها
                             </h2>
-                            <form bc-triggers="submit" name="cms.form"
+                            <form id="walletSearchForm" bc-triggers="submit" name="cms.form"
                                 class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
                                 <input type="text" name="factorid" id=""
                                     class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
@@ -279,6 +280,27 @@
                 </div>
             </div>
         </main>
+        <template id="panel-message__template">
+            <div class="panel-successed__message__content panel-hidden">
+                <div
+                    class="panel-flex panel-items-center panel-gap-2 panel-bg-green-200 panel-text-green-700 panel-px-3 panel-py-4 panel-rounded-lg">
+                    <svg width="24" height="24">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-tick"></use>
+                    </svg>
+                    <span class="panel-message__success-text">تکمیل شد</span>
+                </div>
+            </div>
+
+            <div class="panel-failed__message__content panel-hidden">
+                <div
+                    class="panel-flex panel-items-center panel-gap-2 panel-bg-red-200 panel-text-red-700 panel-px-3 panel-py-4 panel-rounded-lg">
+                    <svg width="24" height="24">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-failed"></use>
+                    </svg>
+                    <span class="panel-message__failed-text">به‌روزرسانی ناموفق بود</span>
+                </div>
+            </div>
+        </template>
         <div id="sharedDropdown"
             class="panel-hidden panel-fixed panel-z-50 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-overflow-hidden"
             role="listbox" aria-label="dropdown">
@@ -301,7 +323,64 @@
         type="text/javascript"></script>
 
     <script>
+        function ensureMessages(hostEl) {
+            if (!hostEl) return null;
+            if (hostEl.__messagesReady) return hostEl;
 
+            const tpl = document.getElementById("panel-message__template");
+            if (!tpl) return null;
+
+            hostEl.appendChild(tpl.content.cloneNode(true));
+            hostEl.__messagesReady = true;
+            return hostEl;
+        }
+
+        function resolveHost(fromElOrHost) {
+            if (!fromElOrHost) return document.querySelector(".panel-message__host");
+
+            if (fromElOrHost instanceof Element) {
+                if (fromElOrHost.classList.contains("panel-message__host")) return fromElOrHost;
+                return fromElOrHost.closest(".panel-message__host") || document.querySelector(".panel-message__host");
+            }
+
+            return document.querySelector(".panel-message__host");
+        }
+
+        function showSuccessMessage(fromElOrHost, text = "تکمیل شد") {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            const successWrap = host.querySelector(".panel-successed__message__content");
+            const failedWrap = host.querySelector(".panel-failed__message__content");
+            const span = host.querySelector(".panel-message__success-text");
+
+            failedWrap?.classList.add("panel-hidden");
+            if (span && text != null) span.textContent = String(text);
+            successWrap?.classList.remove("panel-hidden");
+        }
+
+        function showFailedMessage(fromElOrHost, text = "به‌روزرسانی ناموفق بود") {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            const successWrap = host.querySelector(".panel-successed__message__content");
+            const failedWrap = host.querySelector(".panel-failed__message__content");
+            const span = host.querySelector(".panel-message__failed-text");
+
+            successWrap?.classList.add("panel-hidden");
+            if (span && text != null) span.textContent = String(text);
+            failedWrap?.classList.remove("panel-hidden");
+        }
+
+        function hideMessages(fromElOrHost) {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            host.querySelector(".panel-successed__message__content")?.classList.add("panel-hidden");
+            host.querySelector(".panel-failed__message__content")?.classList.add("panel-hidden");
+        }
+    </script>
+    <script>
         window.pricePayment = 0;
 
         (function () {
@@ -319,12 +398,12 @@
                 return root.querySelector(".panel-increase-balance__amount-input");
             }
 
-            function getErrorEl(root) {
-                return root.querySelector(".panel-increase-balance__amount-error");
-            }
-
             function getGateways(root) {
                 return root.querySelector(".panel-increase-balance__gateways");
+            }
+
+            function getMessageHost(root) {
+                return root.querySelector(".panel-message__host");
             }
 
             function normalizeNumber(val) {
@@ -341,13 +420,12 @@
                 if (gateways) gateways.classList.remove("panel-hidden");
             }
 
+            // ✅ جایگزین showError/clearError با پیام Failed + استایل input
             function showError(root, msg) {
                 const amountInput = getAmountInput(root);
-                const errorEl = getErrorEl(root);
-                if (!amountInput || !errorEl) return;
+                if (!amountInput) return;
 
-                errorEl.textContent = msg;
-                errorEl.classList.remove("panel-hidden");
+                showFailedMessage(root, msg);
 
                 amountInput.classList.add("panel-border-red-500");
                 amountInput.classList.remove("panel-border-zinc-200");
@@ -358,20 +436,31 @@
 
             function clearError(root) {
                 const amountInput = getAmountInput(root);
-                const errorEl = getErrorEl(root);
-                if (!amountInput || !errorEl) return;
+                if (!amountInput) return;
 
-                errorEl.textContent = "";
-                errorEl.classList.add("panel-hidden");
+                hideMessages(root);
 
                 amountInput.classList.remove("panel-border-red-500");
                 amountInput.classList.add("panel-border-zinc-200");
                 amountInput.removeAttribute("aria-invalid");
             }
 
+            function failPayment(root, messageText) {
+                showError(root, messageText);
+                window.pricePayment = 0;
+                return;
+            }
+
             function openPopup(root) {
                 const popup = getPopup(root);
                 if (!popup) return;
+
+                clearError(root);
+                hideGateways(root);
+                window.pricePayment = 0;
+
+                const amountInput = getAmountInput(root);
+                if (amountInput) amountInput.value = "";
 
                 popup.classList.remove("panel-hidden");
                 popup.setAttribute("aria-hidden", "false");
@@ -382,15 +471,16 @@
                 const popup = getPopup(root);
                 if (!popup) return;
 
+                clearError(root);
+                hideGateways(root);
+                window.pricePayment = 0;
+
+                const amountInput = getAmountInput(root);
+                if (amountInput) amountInput.value = "";
+
                 popup.classList.add("panel-hidden");
                 popup.setAttribute("aria-hidden", "true");
                 document.body.style.overflow = "";
-            }
-
-            function isPopupOpen(root) {
-                const popup = getPopup(root);
-                if (!popup) return false;
-                return !popup.classList.contains("panel-hidden");
             }
 
             document.addEventListener("click", (e) => {
@@ -398,7 +488,6 @@
                 if (!openBtn) return;
 
                 e.preventDefault();
-
                 const root = getSectionRoot(openBtn);
                 openPopup(root);
             });
@@ -408,7 +497,6 @@
                 if (!closeBtn) return;
 
                 e.preventDefault();
-
                 const root = getSectionRoot(closeBtn);
                 closePopup(root);
             });
@@ -440,7 +528,6 @@
                 if (!closeBtn) return;
 
                 e.preventDefault();
-
                 const root = getSectionRoot(closeBtn);
                 closePopup(root);
             });
@@ -464,7 +551,7 @@
             });
 
             document.addEventListener("click", (e) => {
-                const payBtn = e.target.closest(".panel-increase-balance__pay-btn, .panel-increase-balance-pay-btn");
+                const payBtn = e.target.closest(".panel-increase-balance__pay-btn");
                 if (!payBtn) return;
 
                 const root = getSectionRoot(payBtn);
@@ -476,27 +563,17 @@
                 const cleaned = normalizeNumber(amountInput.value);
 
                 if (!cleaned) {
-                    showError(root, translate("enter_amount"));
-                    window.pricePayment = 0;
-                    return;
+                    return failPayment(root, translate("enter_amount"));
                 }
 
                 if (cleaned.length < 5) {
-                    showError(root, translate("amount_min_5_digits"));
-                    window.pricePayment = 0;
-                    return;
+                    return failPayment(root, translate("amount_min_5_digits"));
                 }
 
                 window.pricePayment = Number(cleaned);
 
-                $bc.setSource("cms.setTrueWebservice", [{
-                    run: true,
-                }]);
-
-                $bc.setSource("cms.price", [{
-                    priceValue: cleaned,
-                }]);
-
+                $bc.setSource("cms.setTrueWebservice", [{ run: true }]);
+                $bc.setSource("cms.price", [{ priceValue: cleaned }]);
 
                 clearError(root);
                 showGateways(root);
@@ -529,28 +606,7 @@
             return s === "" ? fallback : s;
         }
 
-        window.currencyTitle = "";
-        window.currencyId = "";
-
-        async function onProcessedGetCurrency(args) {
-            try {
-                const responseJson = await args.response.json();
-
-                const row =
-                    responseJson?.sources?.find(s => s?.options?.tableName === "db.get_unit_currency")
-                        ?.data?.[0] || null;
-
-                window.currencyTitle = row?.title || "";
-                window.currencyId = row?.id || "";
-
-                console.log(window.currencyTitle);
-
-            } catch (e) {
-                console.error(e);
-                window.currencyTitle = "";
-                window.currencyId = "";
-            }
-        }
+       
 
         function setBcSourceSafe(key, value) {
             if (!window.$bc || typeof $bc.setSource !== "function") {
@@ -560,8 +616,10 @@
             $bc.setSource(key, value);
         }
 
-        function handlePayment(element) {
-            setBcSourceSafe("cms.final-payment", element)
+        function handlePayment(btn, id) {
+            btn.dataset.loading = "true";
+            buttonLoading(btn, true);
+            setBcSourceSafe("cms.final-payment", id);
         }
 
         const generateSixDigitNumber = () => {
@@ -603,7 +661,6 @@
                     value: unit,
                     run: true,
                 });
-                console.log("token", window.currencyTitle);
             } else {
 
             }
@@ -657,7 +714,7 @@
                 },
                 link: {
                     title: "پرداخت",
-                    cellMaker: (row) => `<button onclick="handlePayment(${row?.id})" class="panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">پرداخت </button>`
+                    cellMaker: (row) => `<button onclick="handlePayment(this, ${row?.id})" class="panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">پرداخت </button>`
                 },
 
             });
@@ -714,11 +771,29 @@
 
 
                 } else {
-                    // در صورت عدم وجود url_gateway، نمایش پیام خطا
-                    // const errorDiv = document.createElement('div');
-                    // errorDiv.id = 'text-loading';
-                    // errorDiv.textContent = 'امکان اتصال به درگاه پرداخت الکترونیک وجود ندارد.';
-                    // document.body.appendChild(errorDiv);  // اضافه کردن به body
+                    const paymentBtn = document.querySelector('.panel-handlePayment__btn[data-loading="true"]');
+
+                    if (paymentBtn) {
+                        buttonLoading(paymentBtn, false);
+                        delete paymentBtn.dataset.loading; // یا paymentBtn.dataset.loading = "false"
+                    }
+
+                    const msg = "امکان اتصال به درگاه پرداخت الکترونیک وجود ندارد.";
+
+                    const container = document.querySelector(".panel-online-charging__content");
+                    const host = container?.querySelector(".panel-message__host");
+
+                    // اگر سیستم پیام‌ها هست و host درست پیدا شد
+                    if (host && typeof showFailedMessage === "function" && typeof hideMessages === "function") {
+                        hideMessages(host);
+                        showFailedMessage(host, msg);
+                        return;
+                    }
+
+                    // fallback: UI بزرگ (اگر پیام‌ها نبود یا host نبود)
+                    if (container && !document.getElementById("payment-gateway-error")) {
+                        container.insertAdjacentHTML("beforeend", errorHtml);
+                    }
                 }
             } catch (err) {
                 console.error('tokenCallback=' + err.lineNumber + ',' + err.message);
@@ -726,7 +801,7 @@
         }
 
         async function onProcessedGetReportWallet(args) {
-            let form = document.querySelector('form[name="cms.form"]')
+            let form = document.getElementById('walletSearchForm')
             let btn = form?.querySelector('.panel-submit__btn')
 
             try {
@@ -744,7 +819,6 @@
                 $bc.setSource("cms.report", []);
             } finally {
                 setTimeout(() => buttonLoading(btn, false), 400)
-                if (form) form._submitBtn = null
             }
         }
 
@@ -820,26 +894,44 @@
         }
 
         function buttonLoading(btn, state = true) {
-            if (!btn) return
+            if (!btn) return;
 
             if (state) {
                 // جلوگیری از تکرار
-                if (btn.classList.contains('is-loading')) return
+                if (btn.classList.contains("is-loading")) return;
 
-                btn.classList.add('is-loading')
-                btn.disabled = true
+                btn.classList.add("is-loading");
 
-                // ذخیره متن قبلی
-                btn.dataset.oldText = btn.innerHTML
-
-                btn.innerHTML = '<div class="panel-loading__btn"></div>'
-            } else {
-                btn.classList.remove('is-loading')
-                btn.disabled = false
-
-                if (btn.dataset.oldText) {
-                    btn.innerHTML = btn.dataset.oldText
+                // ذخیره وضعیت قبلی
+                if (btn.dataset.wasDisabled == null) {
+                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
                 }
+
+                // ذخیره محتوا (فقط یک بار)
+                if (btn.dataset.oldText == null) {
+                    btn.dataset.oldText = btn.innerHTML;
+                }
+
+                btn.disabled = true;
+                btn.setAttribute("aria-busy", "true");
+
+                // جایگزینی کامل با لودینگ
+                btn.innerHTML = '<div class="panel-loading__btn"></div>';
+            } else {
+                btn.classList.remove("is-loading");
+                btn.removeAttribute("aria-busy");
+
+                // برگرداندن محتوا
+                if (btn.dataset.oldText != null) {
+                    btn.innerHTML = btn.dataset.oldText;
+                }
+
+                // برگرداندن disabled به حالت قبل
+                btn.disabled = btn.dataset.wasDisabled === "1";
+
+                // پاکسازی
+                delete btn.dataset.oldText;
+                delete btn.dataset.wasDisabled;
             }
         }
         async function callbackWalletSearch(args) {
@@ -951,23 +1043,28 @@
                         title: "توضیحات",
                         filter: false,
                         sort: false,
+                        cssClass: ['panel-w-64'],
                         cellMaker: (row) => {
                             const d = row?.description || {};
-                            let parts = [];
+                            const chips = [];
 
-                            if (d?.desc) parts.push(`<span>${d.desc}</span>`);
-                            if (d?.bankname) parts.push(`<span>${d.bankname}</span>`);
-                            if (d?.refnumber) parts.push(`<span>${d.refnumber}</span>`);
+                            if (d?.desc) chips.push(`<span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5">${d.desc}</span>`);
+                            if (d?.bankname) chips.push(`<span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5">${d.bankname}</span>`);
+                            if (d?.refnumber) chips.push(`<span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5 panel-ltr">${d.refnumber}</span>`);
 
                             if (row?.factorid) {
-                                parts.push(`<span class="panel-text-zinc-500">شماره قرارداد:</span>`);
-                                parts.push(`<span class="panel-font-medium">${row.factorid}</span>`);
+                                chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-50 panel-border panel-border-zinc-200 panel-px-2 panel-py-0.5">
+        <span class="panel-text-zinc-500">شماره قرارداد:</span>
+        <span class="panel-font-medium panel-ml-1">${row.factorid}</span>
+      </span>
+    `);
                             }
 
                             return `
-            <div class="panel-flex panel-flex-wrap panel-gap-1 panel-text-sm">
-              ${parts.join(`<span class="panel-text-zinc-400">/</span>`)}
-            </div>`;
+    <div class="panel-flex panel-flex-wrap panel-gap-2 panel-text-sm">
+      ${chips.join("")}
+    </div>`;
                         }
                     },
 
@@ -1012,13 +1109,15 @@
                 },
 
                 noData: (td) => {
-                    td.innerHTML = `
-        <div class="panel-flex panel-flex-col panel-items-center panel-gap-3 panel-py-10 panel-text-center">
-          <svg width="70" height="70" viewBox="0 0 100 100" class="panel-text-zinc-300">
-            <path d="M50 0C22.4 0 0 22.4 0 50C0 77.6 22.4 100 50 100C77.6 100 100 77.6 100 50C100 22.4 77.6 0 50 0ZM50 90C27.9 90 10 72.1 10 50C10 27.9 27.9 10 50 10C72.1 10 90 27.9 90 50C90 72.1 72.1 90 50 90Z"/>
-          </svg>
-          <p class="panel-text-zinc-500 panel-text-sm">هیچ موردی یافت نشد</p>
-        </div>`;
+                    td.innerHTML = `<div class="noData">
+                       <div class="icon panel-flex panel-justify-center panel-mb-3">
+                            <svg width="70" height="70">
+                                 <use href="/userPanel/images/panel-sprite-icons.svg#icon-no-items"></use>
+                            </svg>
+                        </div>
+                                    <div class="text" style="padding-top: 10px;">
+                                       ${translate('no_items_found')} </div>
+                                </div>`
                 },
 
                 export: [

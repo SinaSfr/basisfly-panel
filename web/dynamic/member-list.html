@@ -54,7 +54,10 @@
 </basis>
 
 <basis core="callback" run="atclient" triggers="api.comgroup_agency_by_user" if="{##api.comgroup_agency_by_user##}"
-    method="comgroupAgencyUserListCallback">    
+    method="comgroupAgencyUserListCallback">
+</basis>
+
+<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form|(false)##}" method="callbackAddUser">
 </basis>
 
 
@@ -115,6 +118,27 @@
                 </div>
             </div>
         </main>
+        <template id="panel-message__template">
+            <div class="panel-successed__message__content panel-hidden">
+                <div
+                    class="panel-flex panel-items-center panel-gap-2 panel-bg-green-200 panel-text-green-700 panel-px-3 panel-py-4 panel-rounded-lg">
+                    <svg width="24" height="24">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-tick"></use>
+                    </svg>
+                    <span class="panel-message__success-text">تکمیل شد</span>
+                </div>
+            </div>
+
+            <div class="panel-failed__message__content panel-hidden">
+                <div
+                    class="panel-flex panel-items-center panel-gap-2 panel-bg-red-200 panel-text-red-700 panel-px-3 panel-py-4 panel-rounded-lg">
+                    <svg width="24" height="24">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-failed"></use>
+                    </svg>
+                    <span class="panel-message__failed-text">به‌روزرسانی ناموفق بود</span>
+                </div>
+            </div>
+        </template>
         <div
             class="userlist__modal panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
             <div
@@ -131,7 +155,8 @@
                     </button>
                 </div>
                 <h3 class="panel-text-zinc-900 panel-mb-6">مشخصات</h3>
-                <form class="userlist__trust-form panel-flex panel-items-center panel-gap-6" method="post" novalidate>
+                <form bc-triggers="submit" name="cms.form"
+                    class="userlist__trust-form panel-flex panel-items-center panel-gap-6" novalidate>
                     <input type="text" name="Username" data-name="@Field"
                         class="userlist__trust-input panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                         placeholder="ایمیل یا شماره تماس" autocomplete="off" />
@@ -141,27 +166,33 @@
                     <input type="hidden" value="[##cms.request.clientip##]" name="Ipaddress" />
                     <input type="hidden" value="1" name="Lid" />
 
-                    <button type="submit"
+                    <button
                         class="userlist__trust-submit panel-flex panel-shrink-0 panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-transition-all panel-duration-300 hover:panel-shadow-xl hover:panel-scale-90">
                         ثبت
                     </button>
                 </form>
 
-                <div class="userlist__trust-message panel-mt-6"></div>
+                <div class="panel-message__host panel-w-fit panel-mt-2"></div>
 
-                <div class="userlist__trust-loading panel-flex panel-items-center panel-justify-center panel-hidden">
-                    <div class="panel-loading__content"></div>
-                </div>
             </div>
         </div>
         <div id="removeUserModal"
-            class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-hidden">
-            <div class="panel-bg-white panel-rounded-2xl panel-w-96
-                panel-p-6 panel-shadow-xl">
+            class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-hidden panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm">
+            <div class="panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
+                <div class="panel-flex panel-items-center panel-justify-between">
+                    <h2 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
+                        حذف کاربر
+                    </h2>
 
-                <h3 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
-                    حذف کاربر
-                </h3>
+                    <button onclick="closeRemoveUserModal()"
+                        class="panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                        aria-label="Close">
+                        <svg width="48" height="48" data-popup-close-btn="" role="button" tabindex="0">
+                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                        </svg>
+                    </button>
+                </div>
+
 
                 <p class="panel-text-sm panel-text-zinc-600 panel-mb-6">
                     آیا از حذف این کاربر مطمئن هستید؟
@@ -170,20 +201,22 @@
                 <input type="hidden" id="removeUserId" />
 
                 <div class="panel-flex panel-justify-end panel-gap-3">
-                    <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
-                           panel-bg-zinc-200 panel-text-zinc-700
-                           hover:panel-bg-zinc-300" onclick="closeRemoveUserModal()">
+                    <button type="button"
+                        class="panel-w-28 panel-h-12 panel-rounded-lg
+                           panel-bg-zinc-200 panel-text-zinc-700 panel-transition-all panel-duration-300 hover:panel-scale-90"
+                        onclick="closeRemoveUserModal()">
                         انصراف
                     </button>
 
-                    <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
-                           panel-bg-red-500 panel-text-white
-                           hover:panel-bg-red-700" onclick="confirmRemoveUser()">
+                    <button type="button"
+                        class="panel-w-28 panel-h-12 panel-rounded-lg
+                           panel-bg-red-500 panel-text-white panel-transition-all panel-duration-300 hover:panel-scale-90"
+                        onclick="confirmRemoveUser(this)">
                         حذف
                     </button>
                 </div>
 
-                <div id="removeUserMsg" class="panel-hidden panel-text-sm panel-rounded-lg panel-p-2 panel-mt-3"></div>
+                <div class="panel-message__host panel-w-fit panel-mt-2"></div>
             </div>
         </div>
     </basis>
@@ -193,91 +226,203 @@
         type="text/javascript"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.querySelector('.userlist__modal')
-            const modalContent = document.querySelector('.userlist__modal-content')
-            const openBtn = document.querySelector('.userlist__modal-open')
-            const closeBtn = document.querySelector('.userlist__modal-close')
+        document.addEventListener("DOMContentLoaded", () => {
+            const modal = document.querySelector(".userlist__modal");
+            const modalContent = document.querySelector(".userlist__modal-content");
+            const openBtn = document.querySelector(".userlist__modal-open");
+            const closeBtn = document.querySelector(".userlist__modal-close");
 
-            if (!modal || !openBtn || !closeBtn) return
+            if (!modal || !openBtn) return;
+
+            function resetMessages() {
+                if (typeof hideMessages === "function") hideMessages(modal);
+            }
+
+            function resetInputs() {
+                const input = modal.querySelector(".userlist__trust-input");
+                if (input) input.value = "";
+            }
 
             function openModal() {
-                modal.classList.remove('panel-hidden')
+                resetMessages();
+                resetInputs();
+                modal.classList.remove("panel-hidden");
             }
 
             function closeModal() {
-                modal.classList.add('panel-hidden')
+                resetMessages();
+                resetInputs();
+                modal.classList.add("panel-hidden");
             }
 
-            openBtn.addEventListener('click', (e) => {
-                e.preventDefault()
-                openModal()
-            })
+            openBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                openModal();
+            });
 
-            closeBtn.addEventListener('click', (e) => {
-                e.preventDefault()
-                closeModal()
-            })
+            if (closeBtn) {
+                closeBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    closeModal();
+                });
+            }
 
-            modal.addEventListener('click', (e) => {
-                if (modalContent && modalContent.contains(e.target)) return
-                closeModal()
-            })
+            // بستن با کلیک بیرون محتوا
+            modal.addEventListener("click", (e) => {
+                if (modalContent && modalContent.contains(e.target)) return;
+                closeModal();
+            });
 
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeModal()
-            })
-        })
+            // بستن با Escape
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") closeModal();
+            });
+        });
     </script>
     <script>
-        let userListloader
-        let userListbtn
-        let userListmsgBox
+        function buttonLoading(btn, state = true) {
+            if (!btn) return;
 
-        function setLoading(isLoading) {
-            if (userListloader) userListloader.classList.toggle('panel-hidden', !isLoading)
-            if (userListbtn) userListbtn.disabled = isLoading
-        }
+            if (state) {
+                // جلوگیری از تکرار
+                if (btn.classList.contains("is-loading")) return;
 
-        function setMessage(html) {
-            if (!userListmsgBox) return
-            userListmsgBox.innerHTML = html || ''
-        }
+                btn.classList.add("is-loading");
 
-        // --- DOMContentLoaded ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const userListForm = document.querySelector('.userlist__trust-form')
-            const userListinput = userListForm?.querySelector('.userlist__trust-input')
-
-            userListloader = document.querySelector('.userlist__trust-loading')
-            userListbtn = userListForm?.querySelector('.userlist__trust-submit')
-            userListmsgBox = document.querySelector('.userlist__trust-message')
-
-            userListForm?.addEventListener('submit', (event) => {
-                event.preventDefault()
-                setMessage('')
-                setLoading(true)
-
-                const username = userListinput?.value?.trim() || ''
-                if (!username) {
-                    setLoading(false)
-                    setMessage('<p class="Error panel-text-red-500">لطفاً ایمیل یا شماره تماس را وارد کنید.</p>')
-                    return
+                // ذخیره وضعیت قبلی
+                if (btn.dataset.wasDisabled == null) {
+                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
                 }
 
-                try {
-                    $bc.setSource("cms.trustUserId", [{
-                        result: username,
-                        run: true,
-                    }])
-
-                } catch (err) {
-                    setLoading(false)
-                    setMessage('<p class="Error panel-text-red-500">خطا در اجرای عملیات.</p>')
-                    console.error(err)
+                // ذخیره محتوا (فقط یک بار)
+                if (btn.dataset.oldText == null) {
+                    btn.dataset.oldText = btn.innerHTML;
                 }
-            })
-        })
+
+                btn.disabled = true;
+                btn.setAttribute("aria-busy", "true");
+
+                // جایگزینی کامل با لودینگ
+                btn.innerHTML = '<div class="panel-loading__btn"></div>';
+            } else {
+                btn.classList.remove("is-loading");
+                btn.removeAttribute("aria-busy");
+
+                // برگرداندن محتوا
+                if (btn.dataset.oldText != null) {
+                    btn.innerHTML = btn.dataset.oldText;
+                }
+
+                // برگرداندن disabled به حالت قبل
+                btn.disabled = btn.dataset.wasDisabled === "1";
+
+                // پاکسازی
+                delete btn.dataset.oldText;
+                delete btn.dataset.wasDisabled;
+            }
+        }
+        function ensureMessages(hostEl) {
+            if (!hostEl) return null;
+            if (hostEl.__messagesReady) return hostEl;
+
+            const tpl = document.getElementById("panel-message__template");
+            if (!tpl) return null;
+
+            hostEl.appendChild(tpl.content.cloneNode(true));
+            hostEl.__messagesReady = true;
+            return hostEl;
+        }
+
+        function resolveHost(fromElOrHost) {
+            // 1) اگر چیزی پاس داده نشد، اولین host صفحه
+            if (!fromElOrHost) return document.querySelector(".panel-message__host");
+
+            // 2) اگر یک Element پاس داده شد
+            if (fromElOrHost instanceof Element) {
+                // اگر خود host بود
+                if (fromElOrHost.classList.contains("panel-message__host")) return fromElOrHost;
+
+                // ✅ اول داخل خودش بگرد (برای وقتی host "داخل" parent است)
+                const inside = fromElOrHost.querySelector?.(".panel-message__host");
+                if (inside) return inside;
+
+                // ✅ بعد اگر داخلش نبود، برو بالا (closest)
+                return fromElOrHost.closest(".panel-message__host") || document.querySelector(".panel-message__host");
+            }
+
+            // 3) fallback
+            return document.querySelector(".panel-message__host");
+        }
+
+        function showSuccessMessage(fromElOrHost, text = "تکمیل شد") {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            const successWrap = host.querySelector(".panel-successed__message__content");
+            const failedWrap = host.querySelector(".panel-failed__message__content");
+            const span = host.querySelector(".panel-message__success-text");
+
+            failedWrap?.classList.add("panel-hidden");
+            if (span && text != null) span.textContent = String(text);
+            successWrap?.classList.remove("panel-hidden");
+        }
+
+        function showFailedMessage(fromElOrHost, text = "به‌روزرسانی ناموفق بود") {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            const successWrap = host.querySelector(".panel-successed__message__content");
+            const failedWrap = host.querySelector(".panel-failed__message__content");
+            const span = host.querySelector(".panel-message__failed-text");
+
+            successWrap?.classList.add("panel-hidden");
+            if (span && text != null) span.textContent = String(text);
+            failedWrap?.classList.remove("panel-hidden");
+        }
+
+        function hideMessages(fromElOrHost) {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            host.querySelector(".panel-successed__message__content")?.classList.add("panel-hidden");
+            host.querySelector(".panel-failed__message__content")?.classList.add("panel-hidden");
+        }
+    </script>
+    <script>
+        function clearMessage(scopeEl) {
+            if (typeof hideMessages === "function") hideMessages(scopeEl);
+        }
+
+        function showError(scopeEl, text) {
+            if (typeof showFailedMessage === "function") showFailedMessage(scopeEl, text);
+        }
+
+        function showSuccess(scopeEl, text) {
+            if (typeof showSuccessMessage === "function") showSuccessMessage(scopeEl, text);
+        }
+        async function callbackAddUser(args) {
+            const userListForm = document.querySelector(".userlist__trust-form");
+            const userListinput = userListForm?.querySelector(".userlist__trust-input");
+            const userListbtn = userListForm?.querySelector(".userlist__trust-submit");
+
+            hideMessages(userListForm);
+
+            const username = userListinput?.value?.trim() || "";
+            if (!username) {
+                showFailedMessage(userListForm, "لطفاً ایمیل یا شماره تماس را وارد کنید.");
+                return;
+            }
+
+            buttonLoading(userListbtn, true);
+
+            try {
+                $bc.setSource("cms.trustUserId", [{ result: username, run: true }]);
+            } catch (err) {
+                buttonLoading(userListbtn, false);
+                showFailedMessage(userListForm, "خطا در اجرای عملیات.");
+                console.error(err);
+            }
+        }
 
         async function onProcessedUserInfo(args) {
             try {
@@ -383,116 +528,136 @@
             }])
         }
         async function onProcessedCounterAdd(args) {
+            const userListForm = document.querySelector(".userlist__trust-form");
+            const btn = userListForm?.querySelector(".userlist__trust-submit");
+
             try {
-                const responseJson = await args.response.json()
+                const responseJson = await args.response.json();
 
-                setLoading(false)
+                // خاموش کردن لودینگ دکمه
+                buttonLoading(btn, false);
 
-                const errorid = responseJson.errorid
-                let message = ''
+                const errorid = Number(responseJson?.errorid || 0);
 
                 switch (errorid) {
-                    case 5:
-                        message = '<p class="success panel-text-green-600">با موفقیت ثبت شد.</p>'
-                        addUsedForId = Number(responseJson.usedforid)
-                        window.usedForId = Number(addUsedForId)
-                        window.usedForAction = "add"
+                    case 5: {
+                        showSuccessMessage(userListForm, "با موفقیت ثبت شد.");
+
+                        addUsedForId = Number(responseJson.usedforid);
+                        window.usedForId = Number(addUsedForId);
+                        window.usedForAction = "add";
+
                         $bc.setSource("cms.refreshCounters", [{
                             userid: addUsedForId
-                        }])
-                        break
-                    case 31:
-                        message = '<p class="Error panel-text-red-500">این کاربر در Trustlogin ثبت نشده است.</p>'
-                        break
-                    case 9:
-                        message = `<p class="Error panel-text-red-500">${responseJson.description || responseJson.message || 'خطای نامشخص رخ داد.'}</p>`
-                        break
-                    case 8:
-                        message = `<p class="Error panel-text-red-500">${responseJson.message || 'خطا در سرویس trust.'}</p>`
-                        break
-                    default:
-                        if (errorid && errorid != 0) {
-                            message = `<p class="Error panel-text-red-500">${responseJson.message || 'خطای نامشخص رخ داد.'}</p>`
+                        }]);
+
+                        break;
+                    }
+
+                    case 31: {
+                        showFailedMessage(userListForm, "این کاربر در Trustlogin ثبت نشده است.");
+                        break;
+                    }
+
+                    case 9: {
+                        showFailedMessage(
+                            userListForm,
+                            responseJson.description || responseJson.message || "خطای نامشخص رخ داد."
+                        );
+                        break;
+                    }
+
+                    case 8: {
+                        showFailedMessage(
+                            userListForm,
+                            responseJson.message || "خطا در سرویس trust."
+                        );
+                        break;
+                    }
+
+                    default: {
+                        if (errorid && errorid !== 0) {
+                            showFailedMessage(userListForm, responseJson.message || "خطای نامشخص رخ داد.");
                         } else {
-                            message = '<p class="success panel-text-green-600">با موفقیت ثبت شد.</p>'
+                            showSuccessMessage(userListForm, "با موفقیت ثبت شد.");
                         }
+                    }
                 }
-
-                const messageEl = document.querySelector('.userlist__trust-message')
-                const inputEl = document.querySelector('.userlist__trust-input')
-
-                messageEl.innerHTML = message
-
-                setTimeout(() => {
-                    messageEl.innerHTML = ''
-                    if (inputEl) inputEl.value = ''
-                }, 3500)
-
             } catch (err) {
-                console.error(err)
-                document.querySelector('.userlist__trust-message').innerHTML =
-                    '<p class="Error panel-text-red-500">خطا در پردازش پاسخ سرور.</p>'
+                buttonLoading(btn, false);
+                showFailedMessage(userListForm, "خطا در پردازش پاسخ سرویس.");
+                console.error(err);
             }
         }
 
-        function setRemoveUserMsg(text, isSuccess) {
-            const el = document.getElementById('removeUserMsg')
-            if (!el) return
-
-            el.classList.remove('panel-hidden')
-            el.classList.toggle('panel-text-green-700', !!isSuccess)
-            el.classList.toggle('panel-bg-green-50', !!isSuccess)
-            el.classList.toggle('panel-text-red-700', !isSuccess)
-            el.classList.toggle('panel-bg-red-50', !isSuccess)
-
-            el.textContent = text
-        }
-
-        function clearRemoveUserMsg() {
-            const el = document.getElementById('removeUserMsg')
-            if (!el) return
-            el.textContent = ''
-            el.classList.add('panel-hidden')
-            el.classList.remove('panel-text-green-600', 'panel-bg-green-50', 'panel-text-red-600', 'panel-bg-red-50')
-        }
-
         function openRemoveUserModal(userid) {
-            selectedUserId = userid
-            document.querySelector('#removeUserId').value = userid
-            clearRemoveUserMsg()
-            document.querySelector('#removeUserModal')?.classList.remove('panel-hidden')
+            selectedUserId = userid;
+            document.querySelector("#removeUserId").value = userid;
+
+            hideMessages(document.querySelector("#removeUserModal"));
+
+            document.querySelector("#removeUserModal")?.classList.remove("panel-hidden");
         }
 
         function closeRemoveUserModal() {
             selectedUserId = null;
-            document.querySelector('#removeUserModal')?.classList.add('panel-hidden');
+            document.querySelector("#removeUserModal")?.classList.add("panel-hidden");
         }
 
-        function confirmRemoveUser() {
-            const removedId = (document.getElementById('removeUserId')?.value || '').trim()
+        function confirmRemoveUser(btn) {
+            const removedId = (document.getElementById("removeUserId")?.value || "").trim();
             if (!removedId) {
-                closeRemoveUserModal()
-                return
+                closeRemoveUserModal();
+                return;
             }
 
-            window.usedForId = Number(removedId)
-            window.usedForAction = "remove"
+            // پیام قبلی پاک
+            hideMessages(document.querySelector("#removeUserModal"));
+
+            // لودینگ روی دکمه تایید
+            if (btn) {
+                btn.dataset.loading = "true";
+                buttonLoading(btn, true);
+            }
+
+            window.usedForId = Number(removedId);
+            window.usedForAction = "remove";
 
             $bc.setSource("cms.refreshCounters", [{
                 userid: removedId,
                 run: true,
-            }])
+            }]);
         }
 
         async function onProcessedDeleteUser(args) {
-            const res = await args.response.json()
-            const ok = Number(res?.errorid) === 1
+            const modal = document.querySelector("#removeUserModal");
 
-            if (ok) {
-                setRemoveUserMsg('حذف با موفقیت انجام شد', true)
-                setTimeout(() => closeRemoveUserModal(), 900)
-            } else {
-                setRemoveUserMsg(res?.message || 'حذف انجام نشد', false)
+            // دکمه‌ای که در حال لودینگ بوده
+            const btn = modal?.querySelector('[data-loading="true"]') || document.querySelector('[data-loading="true"]');
+
+            try {
+                const res = await args.response.json();
+                const ok = Number(res?.errorid) === 1;
+
+                // خاموش کردن لودینگ
+                if (btn) {
+                    buttonLoading(btn, false);
+                    delete btn.dataset.loading;
+                }
+
+                if (ok) {
+                    showSuccessMessage(modal, "حذف با موفقیت انجام شد");
+                    setTimeout(() => closeRemoveUserModal(), 1500);
+                } else {
+                    showFailedMessage(modal, res?.message || "حذف انجام نشد");
+                }
+            } catch (err) {
+                if (btn) {
+                    buttonLoading(btn, false);
+                    delete btn.dataset.loading;
+                }
+                showFailedMessage(modal, "خطا در پردازش پاسخ سرویس");
+                console.error(err);
             }
         }
 
