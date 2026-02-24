@@ -1,8 +1,4 @@
-<basis core="api" name="api.createpage" url="https://basisfly.com/accounting/credit_view/[##cms.cookie.rkey##]"
-    method="post" body='{"userid":"[##db.checkrkey.userid|(0)##]"}' content-type="application/json" run="atclient">
-</basis>
-
-<basis core="api" name="api.comgroup_agency_by_user" run="atclient"
+<basis core="api" name="api.verify_user_credit" run="atclient"
     url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "mid": "20",
@@ -10,7 +6,7 @@
             {
                 "type": "list",
                 "name": "q",
-                "request": "comgroup_agency_by_user"
+                "request": "verify_user_credit"
             }
         ]
     } ' content-type="application/json">
@@ -25,7 +21,7 @@
 </basis>
 
 
-<basis core="api" name="api.comgroup_agency_by_user" run="atclient"
+<basis core="api" name="api.currency_unit_view" run="atclient"
     url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{
         "name": "db",
         "method":"cms",

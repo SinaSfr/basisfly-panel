@@ -1,4 +1,4 @@
-<basis core="api" name="charging_view" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+<basis core="api" name="charging_view" run="atclient" url="https://basisfly.com/panel/main/list/[##cms.cookie.rkey##]"
     method="post" body='{
         "name": "db",
         "mid": "20",
@@ -14,7 +14,7 @@
     if="{##cms.ownerid.run|(false)##}">
 </basis>
 
-<basis core="api" name="charging_view_excel" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
+<basis core="api" name="charging_view_excel" run="atclient" url="https://basisfly.com/panel/main/list[##cms.cookie.rkey##]"
     method="post" body='{##cms.chargingExcel.query##} ' content-type="application/json"
     onProcessed="onProcessedGetExcel" triggers="cms.chargingExcel" if="{##cms.chargingExcel.run|(false)##}">
 </basis>

@@ -2,8 +2,7 @@
     method="callback_source"></basis>
 </basis>
 
-<basis core="callback" run="atclient" triggers="cms.new" if="{##cms.new.run|(false)##}"
-    method="callback_sourcePassnegerNew">
+<basis core="callback" run="atclient" triggers="cms.new" if="{##cms.new##}" method="callback_sourcePassnegerNew">
 </basis>
 
 <basis core="api" name="api.createpage" url="https://basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]"
@@ -93,7 +92,7 @@
                                 جستجو
                             </button>
                         </form>
-                        <button id="openPassengerModal" onclick="openCreatePassengerModal()"
+                        <button id="openPassengerModal"
                             class="panel-button-add-passenger panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-w-40 panel-h-14 panel-border panel-border-solid panel-rounded-xl panel-border-green-700 panel-text-xs panel-text-green-700 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-white">
                             <div class="panel-relative panel-z-10 panel-flex panel-items-center">
                                 <svg width="48" height="48">
@@ -108,174 +107,184 @@
                         <!-- پاپ‌آپ افزودن مسافر -->
                         <div id="passengerModal"
                             class="panel-modal-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
-                            <form bc-triggers="submit" name="cms.new"
+                            <div
                                 class="panel-modal-content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
-                                <input type="hidden" id="object_id" name="object_id" class="data-id" value="">
-                                <div
-                                    class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-5 panel-mb-5">
-                                    <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">افزودن مسافر</h2>
-                                    <button id="closePassengerModal"
-                                        class="panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
-                                        aria-label="Close">
-                                        <svg width="48" height="48">
-                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="panel-modal-body">
-                                    <h3 class="panel-section-title panel-text-zinc-900 panel-mb-6">مشخصات مسافر</h3>
-                                    <div class="panel-input-group panel-flex panel-flex-col panel-gap-6">
-                                        <!-- نام فارسی و نام خانوادگی فارسی -->
-                                        <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
-                                            <input type="text" id="firstNamePersian" name="first_fa"
-                                                class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
-                                                placeholder="نام فارسی">
-                                            <input type="text" id="lastNamePersian" name="last_fa"
-                                                class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
-                                                placeholder="نام خانوادگی فارسی">
-                                        </div>
-                                        <!-- نام لاتین و نام خانوادگی لاتین -->
-                                        <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
-                                            <input type="text" id="firstNameLatin" name="first_en"
-                                                class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
-                                                placeholder="نام لاتین">
-                                            <input type="text" id="lastNameLatin" name="last_en"
-                                                class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
-                                                placeholder="نام خانوادگی لاتین">
-                                        </div>
-                                        <!-- جنسیت و دیگر اطلاعات -->
-                                        <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
-                                            <select name="gender" id="gender"
-                                                class="panel-select panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-text-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer">
-                                                <option value="gender" selected disabled class="panel-hidden">جنسیت
-                                                </option>
-                                                <option value="1">مرد</option>
-                                                <option value="0">زن</option>
-                                            </select>
-                                            <div class="panel-relative panel-w-1/4 panel-h-14">
-                                                <input type="text" id="nationality" name="country"
-                                                    class="panel-input panel-w-full panel-h-full panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
-                                                    placeholder="ملیت">
-                                                <div id="nationalityDropdown"
-                                                    class="panel-absolute panel-hidden panel-z-50 panel-bg-white panel-border panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-w-full panel-max-h-60 panel-overflow-y-auto">
-                                                </div>
+                                <form bc-triggers="submit" name="cms.new">
+                                    <input type="hidden" id="object_id" name="object_id" class="data-id" value="">
+                                    <div
+                                        class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-5 panel-mb-5">
+                                        <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">افزودن مسافر
+                                        </h2>
+                                        <button id="closePassengerModal"
+                                            class="panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                                            aria-label="Close">
+                                            <svg width="48" height="48">
+                                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="panel-modal-body">
+                                        <h3 class="panel-section-title panel-text-zinc-900 panel-mb-6">مشخصات مسافر</h3>
+                                        <div class="panel-input-group panel-flex panel-flex-col panel-gap-6">
+                                            <!-- نام فارسی و نام خانوادگی فارسی -->
+                                            <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                                <input type="text" id="firstNamePersian" name="first_fa"
+                                                    class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                                    placeholder="نام فارسی">
+                                                <input type="text" id="lastNamePersian" name="last_fa"
+                                                    class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                                    placeholder="نام خانوادگی فارسی">
                                             </div>
-                                            <input type="text" id="nationalCode" name="national_code"
-                                                class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
-                                                placeholder="کد ملی">
-                                            <input type="text" id="dobInput" name="birthdate"
-                                                class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
-                                                placeholder="تاریخ تولد" readonly>
-                                        </div>
-                                        <!-- سایر اطلاعات -->
-                                        <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
-                                            <input type="text" id="passportNumber" name="passport_code"
-                                                class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
-                                                placeholder="شماره پاسپورت">
-                                            <input type="text" id="passportExpiryInput" name="passportdate"
-                                                class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
-                                                placeholder="تاریخ انقضای پاسپورت" readonly>
-
-                                        </div>
-                                        <div id="datePopup"
-                                            class="panel-date-popup-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
-                                            <div
-                                                class="panel-date-popup-content panel-bg-white panel-rounded-xl panel-p-6 panel-w-96">
-                                                <!-- عنوان پاپ‌آپ -->
-                                                <div
-                                                    class="panel-flex panel-items-center panel-justify-between panel-mb-4">
-                                                    <h2 class="panel-font-bold panel-text-zinc-900">تایید</h2>
-                                                    <button id="closeDatePopup"
-                                                        class="panel-modal-close-button panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-200 panel-transition-all panel-duration-300">
-                                                        <svg width="48" height="48">
-                                                            <use
-                                                                href="/userPanel/images/panel-sprite-icons.svg#icon-close">
-                                                            </use>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-
-                                                <!-- دکمه‌های انتخاب تاریخ میلادی و شمسی -->
-                                                <div class="panel-flex panel-gap-4 panel-mb-4">
-                                                    <button id="gregorianBtn"
-                                                        class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
-                                                        میلادی</button>
-                                                    <button id="jalaliBtn"
-                                                        class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
-                                                        شمسی</button>
-                                                </div>
-
-                                                <!-- فرم انتخاب تاریخ (روز، ماه، سال) -->
-                                                <div id="dateSelectors" class="panel-flex panel-flex-col panel-gap-4">
-                                                    <div class="panel-flex panel-items-center panel-gap-4">
-                                                        <select id="day"
-                                                            class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
-                                                            <option>روز</option>
-                                                        </select>
-                                                        <select id="month"
-                                                            class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
-                                                            <option>ماه</option>
-                                                        </select>
-                                                        <select id="year"
-                                                            class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
-                                                            <option>سال</option>
-                                                        </select>
+                                            <!-- نام لاتین و نام خانوادگی لاتین -->
+                                            <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                                <input type="text" id="firstNameLatin" name="first_en"
+                                                    class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                                    placeholder="نام لاتین">
+                                                <input type="text" id="lastNameLatin" name="last_en"
+                                                    class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                                    placeholder="نام خانوادگی لاتین">
+                                            </div>
+                                            <!-- جنسیت و دیگر اطلاعات -->
+                                            <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                                <select name="gender" id="gender"
+                                                    class="panel-select panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-text-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                                    <option value="gender" selected disabled class="panel-hidden">جنسیت
+                                                    </option>
+                                                    <option value="1">مرد</option>
+                                                    <option value="0">زن</option>
+                                                </select>
+                                                <div class="panel-relative panel-w-1/4 panel-h-14">
+                                                    <input type="text" id="nationality" name="country"
+                                                        class="panel-input panel-w-full panel-h-full panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                                        placeholder="ملیت">
+                                                    <div id="nationalityDropdown"
+                                                        class="panel-absolute panel-hidden panel-z-50 panel-bg-white panel-border panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-w-full panel-max-h-60 panel-overflow-y-auto">
                                                     </div>
                                                 </div>
-
-                                                <!-- دکمه برای تایید تاریخ انتخاب‌شده -->
-                                                <div
-                                                    class="panel-flex panel-items-center panel-justify-center panel-mt-4">
-                                                    <button id="selectDateBtn"
-                                                        class="panel-btn-submit panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-32 panel-h-10 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mx-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-text-primary-800">
-                                                        <div
-                                                            class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
-                                                            <span>تایید</span>
-                                                        </div>
-                                                        <span
-                                                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
-                                                    </button>
-                                                </div>
+                                                <input type="text" id="nationalCode" name="national_code"
+                                                    class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                                    placeholder="کد ملی">
+                                                <input type="text" id="dobInput" name="birthdate"
+                                                    class="panel-input panel-w-1/4 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                                    placeholder="تاریخ تولد" readonly>
                                             </div>
+                                            <!-- سایر اطلاعات -->
+                                            <div class="panel-input-row panel-flex panel-items-center panel-gap-6">
+                                                <input type="text" id="passportNumber" name="passport_code"
+                                                    class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none"
+                                                    placeholder="شماره پاسپورت">
+                                                <input type="text" id="passportExpiryInput" name="passportdate"
+                                                    class="panel-input panel-flex-1 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none panel-cursor-pointer"
+                                                    placeholder="تاریخ انقضای پاسپورت" readonly>
+
+                                            </div>
+
+                                        </div>
+                                        <!-- دکمه افزودن مسافر -->
+                                        <button id="addPassengerButton"
+                                            class="panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-90">
+                                          ذخیره
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="panel-passengerModal__host">
+                                    <div class="panel-message__host panel-w-fit panel-mt-2"></div>
+                                </div>
+                                <div id="datePopup"
+                                    class="panel-date-popup-overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+                                    <div
+                                        class="panel-date-popup-content panel-bg-white panel-rounded-xl panel-p-6 panel-w-96">
+                                        <!-- عنوان پاپ‌آپ -->
+                                        <div class="panel-flex panel-items-center panel-justify-between panel-mb-4">
+                                            <h2 class="panel-font-bold panel-text-zinc-900">تایید</h2>
+                                            <button id="closeDatePopup"
+                                                class="panel-modal-close-button panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-200 panel-transition-all panel-duration-300">
+                                                <svg width="48" height="48">
+                                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-close">
+                                                    </use>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <!-- دکمه‌های انتخاب تاریخ میلادی و شمسی -->
+                                        <div class="panel-flex panel-gap-4 panel-mb-4">
+                                            <button id="gregorianBtn"
+                                                class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
+                                                میلادی</button>
+                                            <button id="jalaliBtn"
+                                                class="panel-date-btn panel-flex-1 panel-h-12 panel-bg-zinc-200 panel-border panel-border-solid panel-border-zinc-400 panel-rounded-xl panel-transition-all panel-duration-300 hover:panel-bg-primary-800 hover:panel-text-white">تاریخ
+                                                شمسی</button>
+                                        </div>
+
+                                        <!-- فرم انتخاب تاریخ (روز، ماه، سال) -->
+                                        <div id="dateSelectors" class="panel-flex panel-flex-col panel-gap-4">
+                                            <div class="panel-flex panel-items-center panel-gap-4">
+                                                <select id="day"
+                                                    class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                                    <option>روز</option>
+                                                </select>
+                                                <select id="month"
+                                                    class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                                    <option>ماه</option>
+                                                </select>
+                                                <select id="year"
+                                                    class="panel-select panel-w-1/3 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-outline-none panel-cursor-pointer">
+                                                    <option>سال</option>
+                                                </select>
+                                            </div>
+                                            <div class="panel-message__host panel-w-fit panel-mt-2"></div>
+                                        </div>
+
+                                        <!-- دکمه برای تایید تاریخ انتخاب‌شده -->
+                                        <div class="panel-flex panel-items-center panel-justify-center panel-mt-4">
+                                            <button id="selectDateBtn"
+                                                class="panel-btn-submit panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-32 panel-h-10 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mx-auto panel-transition-all panel-duration-300 hover:panel-text-primary-800">
+                                                <div
+                                                    class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
+                                                    <span>تایید</span>
+                                                </div>
+                                                <span
+                                                    class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
+                                            </button>
                                         </div>
                                     </div>
-                                    <!-- دکمه افزودن مسافر -->
-                                    <button id="add-passenger-button"
-                                        class="panel-relative panel-group panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-90">
-                                        <div
-                                            class="panel-relative panel-z-10 panel-flex panel-items-center panel-justify-center">
-                                            <span>افزودن مسافر</span>
-                                        </div>
-                                        <span
-                                            class="panel-absolute panel-w-full panel-inset-0 panel-transition-transform panel-duration-300 panel-h-14 panel-origin-right panel-scale-x-0 panel-bg-white group-hover:panel-scale-x-100"></span>
-                                    </button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </section>
                     <section class="panel-mt-12">
                         <h1 class="panel-text-zinc-900 panel-font-medium panel-mb-6">لیست مسافران</h1>
                         <div class="panel_grid_style panel_grid_passenger passenger-list__scroll-top">
                             <basis core="component.grid.grid" run="atclient" dataMemberName="cms.order"
-                                options="reportItems" onRendered="onRenderedShowContent">
+                                options="passengerList" onRendered="onRenderedShowContent">
                             </basis>
                         </div>
                     </section>
                 </div>
             </div>
         </main>
-
+        <basis core="call" file="userPanel/actionMessage" lid="1"></basis>
     </basis>
+
 
     <!-- Remove Passenger Modal -->
     <div id="removePassengerModal"
-        class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-hidden">
-        <div class="panel-bg-white panel-rounded-2xl panel-w-96
-            panel-p-6 panel-shadow-xl">
+        class="panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
+        <div class="panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
 
-            <h3 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
-                حذف مسافر
-            </h3>
+            <div class="panel-flex panel-items-center panel-justify-between">
+                <h2 class="panel-text-lg panel-font-bold panel-text-zinc-800 panel-mb-3">
+                    حذف مسافر
+                </h2>
+
+                <button onclick="closeRemovePassengerModal()"
+                    class="panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
+                    aria-label="Close">
+                    <svg width="48" height="48" data-popup-close-btn="" role="button" tabindex="0">
+                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-close"></use>
+                    </svg>
+                </button>
+            </div>
 
             <p class="panel-text-sm panel-text-zinc-600 panel-mb-6">
                 آیا از حذف این مسافر مطمئن هستید؟
@@ -284,19 +293,20 @@
             <input type="hidden" id="removePassengerId" />
 
             <div class="panel-flex panel-justify-end panel-gap-3">
-                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
-             panel-bg-zinc-200 panel-text-zinc-700
-             hover:panel-bg-zinc-300" onclick="closeRemovePassengerModal()">
+                <button type="button" class="panel-w-28 panel-h-12 panel-rounded-lg
+                    panel-bg-zinc-200 panel-text-zinc-700 panel-transition-all panel-duration-300 hover:panel-scale-90"
+                    onclick="closeRemovePassengerModal()">
                     انصراف
                 </button>
 
-                <button type="button" class="panel-px-4 panel-py-2 panel-rounded-lg
-             panel-bg-red-500 panel-text-white
-             hover:panel-bg-red-700" onclick="removePassenger()">
+                <button type="button"
+                    class="panel-w-28 panel-h-12 panel-rounded-lg
+                    panel-bg-red-500 panel-text-white panel-overflow-hidden panel-transition-all panel-duration-300 hover:panel-scale-90"
+                    onclick="removePassenger(this)">
                     حذف
                 </button>
             </div>
-
+            <div class="panel-message__host panel-w-fit panel-mt-2"></div>
         </div>
     </div>
 
@@ -305,22 +315,180 @@
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
-
     <script>
+        function buttonLoading(btn, state = true) {
+            if (!btn) return;
+
+            if (state) {
+                // جلوگیری از تکرار
+                if (btn.classList.contains("is-loading")) return;
+
+                btn.classList.add("is-loading");
+
+                // ذخیره وضعیت قبلی
+                if (btn.dataset.wasDisabled == null) {
+                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
+                }
+
+                // ذخیره محتوا (فقط یک بار)
+                if (btn.dataset.oldText == null) {
+                    btn.dataset.oldText = btn.innerHTML;
+                }
+
+                btn.disabled = true;
+                btn.setAttribute("aria-busy", "true");
+
+                // جایگزینی کامل با لودینگ
+                btn.innerHTML = '<div class="panel-loading__btn"></div>';
+            } else {
+                    btn.classList.remove("is-loading");
+                    btn.removeAttribute("aria-busy");
+
+                    if (btn.dataset.oldText != null) {
+                        btn.innerHTML = btn.dataset.oldText;
+                    }
+
+                    btn.disabled = btn.dataset.wasDisabled === "1";
+
+                    delete btn.dataset.oldText;
+                    delete btn.dataset.wasDisabled;
+            }
+        }
+        function ensureMessages(hostEl) {
+            if (!hostEl) return null;
+            if (hostEl.__messagesReady) return hostEl;
+
+            const tpl = document.getElementById("panel-message__template");
+            if (!tpl) return null;
+
+            hostEl.appendChild(tpl.content.cloneNode(true));
+            hostEl.__messagesReady = true;
+            return hostEl;
+        }
+
+        function resolveHost(fromElOrHost) {
+            // 1) اگر چیزی پاس داده نشد، اولین host صفحه
+            if (!fromElOrHost) return document.querySelector(".panel-message__host");
+
+            // 2) اگر یک Element پاس داده شد
+            if (fromElOrHost instanceof Element) {
+                // اگر خود host بود
+                if (fromElOrHost.classList.contains("panel-message__host")) return fromElOrHost;
+
+                // ✅ اول داخل خودش بگرد (برای وقتی host "داخل" parent است)
+                const inside = fromElOrHost.querySelector?.(".panel-message__host");
+                if (inside) return inside;
+
+                // ✅ بعد اگر داخلش نبود، برو بالا (closest)
+                return fromElOrHost.closest(".panel-message__host") || document.querySelector(".panel-message__host");
+            }
+
+            // 3) fallback
+            return document.querySelector(".panel-message__host");
+        }
+
+        function showSuccessMessage(fromElOrHost, text = "تکمیل شد") {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            const successWrap = host.querySelector(".panel-successed__message__content");
+            const failedWrap = host.querySelector(".panel-failed__message__content");
+            const span = host.querySelector(".panel-message__success-text");
+
+            failedWrap?.classList.add("panel-hidden");
+            if (span && text != null) span.textContent = String(text);
+            successWrap?.classList.remove("panel-hidden");
+        }
+
+        function showFailedMessage(fromElOrHost, text = "به‌روزرسانی ناموفق بود") {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            const successWrap = host.querySelector(".panel-successed__message__content");
+            const failedWrap = host.querySelector(".panel-failed__message__content");
+            const span = host.querySelector(".panel-message__failed-text");
+
+            successWrap?.classList.add("panel-hidden");
+            if (span && text != null) span.textContent = String(text);
+            failedWrap?.classList.remove("panel-hidden");
+        }
+
+        function hideMessages(fromElOrHost) {
+            const host = ensureMessages(resolveHost(fromElOrHost));
+            if (!host) return;
+
+            host.querySelector(".panel-successed__message__content")?.classList.add("panel-hidden");
+            host.querySelector(".panel-failed__message__content")?.classList.add("panel-hidden");
+        }
+    </script>
+    <script>
+        window.lastPassengerAction = null
         async function onProcessed_save(args) {
             const response = args.response;
+
+            const removeModal = document.getElementById('removePassengerModal');
+            const passengerModal = document.querySelector('.panel-passengerModal__host');
+
+            // hostهای پیام
+            const passengerHost = passengerModal.querySelector('.panel-message__host');
+            const removeHost = removeModal.querySelector('.panel-message__host');
+
+            // ✅ تعیین host فقط بر اساس آخرین action
+            let hostElement;
+            switch (window.lastPassengerAction) {
+                case 'remove':
+                    hostElement = removeHost;
+                    break;
+                case 'add':
+                case 'edit':
+                default:
+                    hostElement = passengerHost;
+            }
+
+            // پاک کردن پیام قبلی
+            hideMessages(hostElement);
+
             if (response.status === 200) {
                 const responseJson = await response.json();
                 const errorId = parseInt(responseJson.errorid);
+                const description = responseJson.description || "عملیات ناموفق بود";
+
+                if (errorId !== 5) {
+                    showFailedMessage(hostElement, description);
+                } else {
+                    showSuccessMessage(hostElement, description);
+
+
+                }
+            } else {
+                showFailedMessage(hostElement, "خطا در ارتباط با سرور");
             }
+
+            if (window.lastPassengerAction === 'remove') {
+                const removeBtn = document.querySelector('button.is-loading');
+                if (removeBtn) buttonLoading(removeBtn, false);
+                setTimeout(() => {
+                    closeRemovePassengerModal()
+                }, 1500)
+            } else {
+                const addBtn = document.getElementById("addPassengerButton");
+                if (addBtn) buttonLoading(addBtn, false);
+                setTimeout(() => {
+                    document.getElementById('passengerModal').classList.add('panel-hidden');
+                }, 1500)
+            }
+
+
+            // رفرش کانتینر
             const element = document.querySelector('[data-bc-refresh-container]');
             element.querySelector('span').click();
 
-            $bc.setSource("cms.add_passenger", [{
-                "run": false
-            }]);
-        }
+            // توقف source
+            $bc.setSource("cms.add_passenger", [{ run: false }]);
 
+            // ریست گلوبال
+            window.lastPassengerAction = null;
+        }
         async function onProcessed_list(args) {
             try {
                 const response = args.response;
@@ -359,7 +527,8 @@
         async function callback_sourcePassnegerNew(source) {
             // برای هر عنصر در source
             const objectId = document.querySelector('.data-id#object_id').value;
-
+            const addBtn = document.getElementById("addPassengerButton");
+            buttonLoading(addBtn, true);
             // گرفتن مقادیر فرم
             const passengerData = {
                 firstName: document.getElementById('firstNameLatin').value.trim(),
@@ -381,13 +550,12 @@
             }
 
             // ارسال به API
+            window.lastPassengerAction = objectId ? 'edit' : 'add'
             $bc.setSource("cms.add_passenger", [{
                 query: JSON.stringify(passengerData),
                 run: true
             }]);
 
-            // بستن مودال و ریست فرم
-            document.getElementById('passengerModal').classList.add('panel-hidden');
             resetPassengerForm();
         }
 
@@ -428,7 +596,6 @@
         function editObject(row) {
             clearAllHighlights()
             // حالت ویرایش
-            document.getElementById('add-passenger-button').textContent = translate('save_changes')
             document.querySelector('.panel-modal-title').textContent = translate('edit_passenger')
 
             // ذخیره id برای submit
@@ -469,7 +636,10 @@
             document.getElementById('nationality').dataset.id = row.issueCountryId ?? ''
 
             // باز کردن مودال
-            document.getElementById('passengerModal').classList.remove('panel-hidden')
+            const passengerModal = document.getElementById('passengerModal');
+            passengerModal.classList.remove('panel-hidden');
+            const passengerModalHost = document.querySelector('.panel-passengerModal__host');
+            hideMessages(passengerModalHost);
         }
 
         function removeObject(row) {
@@ -479,19 +649,29 @@
         }
 
         function openRemovePassengerModal(passengerId) {
-            document.getElementById('removePassengerId').value = passengerId
-            document
-                .getElementById('removePassengerModal')
-                .classList.remove('panel-hidden')
+            const removeModal = document.getElementById('removePassengerId');
+            const modalParent = document.getElementById('removePassengerModal');
+
+            removeModal.value = passengerId;
+
+            // باز کردن مودال
+            modalParent.classList.remove('panel-hidden');
+
+            // مخفی کردن پیام‌ها در شروع
+            hideMessages(modalParent);
         }
 
         function closeRemovePassengerModal() {
-            document
-                .getElementById('removePassengerModal')
-                .classList.add('panel-hidden')
+            const modalParent = document.getElementById('removePassengerModal');
+
+            // مخفی کردن پیام‌ها قبل از بستن
+            hideMessages(modalParent);
+
+            // بستن مودال
+            modalParent.classList.add('panel-hidden');
         }
 
-        function removePassenger() {
+        function removePassenger(element) {
             const id = (document.getElementById('removePassengerId')?.value || '').trim()
 
             if (!id) {
@@ -499,17 +679,18 @@
                 return
             }
 
+            buttonLoading(element, true);
+
             const json_input = {
                 id: id,
-                delete: "1"
+                delete: "1",
             }
 
+            window.lastPassengerAction = 'remove'
             $bc.setSource("cms.add_passenger", [{
                 query: JSON.stringify(json_input),
-                run: true
+                run: true,
             }])
-
-            closeRemovePassengerModal()
         }
 
         function resetPassengerForm() {
@@ -530,13 +711,21 @@
             document.querySelector('.data-id#object_id').value = ''
 
             document.querySelector('.panel-modal-title').textContent = translate('add_passenger')
-            document.getElementById('add-passenger-button').textContent = translate('add_passenger')
         }
 
-        function openCreatePassengerModal() {
-            resetPassengerForm()
-            document.getElementById('passengerModal').classList.remove('panel-hidden')
-        }
+        (function () {
+            document.addEventListener('DOMContentLoaded', function () {
+                const openButton = document.getElementById('openPassengerModal');
+
+                // اضافه کردن رویداد کلیک به دکمه
+                openButton.addEventListener('click', openCreatePassengerModal);
+            });
+
+            function openCreatePassengerModal() {
+                resetPassengerForm();
+                document.getElementById('passengerModal').classList.remove('panel-hidden');
+            }
+        })();
 
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -599,7 +788,7 @@
         }
 
         var national_code_list = [];
-        var reportItems = {
+        var passengerList = {
             columns: {
                 accountname: {
                     title: "نام مسافر",
@@ -681,11 +870,30 @@
                     title: "شماره پاسپورت",
                     filter: false,
                     sort: false,
+                    cellMaker: (row) => {
+                        const value = row.passportCode ?? '-'
+
+                        return `
+      <p class="panel-text-sm panel-text-zinc-900">
+        ${value && value.trim() !== '' ? value : '-'}
+      </p>
+    `
+                    }
                 },
+
                 passportExpiration: {
                     title: "تاریخ انقضا پاسپورت",
                     filter: false,
                     sort: false,
+                    cellMaker: (row) => {
+                        const value = row.passportExpiration ?? '-'
+
+                        return `
+      <p class="panel-text-sm panel-text-zinc-900">
+        ${value && value.trim() !== '' ? value : '-'}
+      </p>
+    `
+                    }
                 },
                 operation: {
                     title: "عملیات",

@@ -70,6 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
   )
   // فیلد کد ملی
   const numericInputs = document.querySelectorAll('#nationalCode')
+  const passengerModal = document.getElementById('passengerModal')
+  const passengerModalHost = document.querySelector('.panel-passengerModal__host')
+  const openBtn = document.getElementById('openPassengerModal')
+  const closeBtn = document.getElementById('closePassengerModal')
 
   // اعمال Validation برای ورودی‌های فارسی
   persianInputs.forEach((input) => {
@@ -92,26 +96,42 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   })
 
-  // باز کردن پاپ‌آپ
-  if (document.getElementById('openPassengerModal')) {
-    document
-      .getElementById('openPassengerModal')
-      .addEventListener('click', function () {
-        clearAllHighlights()
-        document
-          .getElementById('passengerModal')
-          .classList.remove('panel-hidden')
-      })
+  if (openBtn && passengerModal) {
+    openBtn.addEventListener('click', function () {
+      clearAllHighlights()
+
+      passengerModal.classList.remove('panel-hidden')
+
+      // ✅ مخفی کردن پیام‌ها هنگام باز شدن
+      hideMessages(passengerModalHost)
+    })
   }
 
-  // بستن پاپ‌آپ
-  if (document.getElementById('closePassengerModal')) {
-    document
-      .getElementById('closePassengerModal')
-      .addEventListener('click', function () {
+  // بستن با دکمه
+  if (closeBtn && passengerModal) {
+    closeBtn.addEventListener('click', function () {
+      clearAllHighlights()
+
+      // ✅ مخفی کردن پیام‌ها هنگام بستن
+      hideMessages(passengerModalHost)
+
+      passengerModal.classList.add('panel-hidden')
+    })
+  }
+
+  // ✅ بستن با کلیک روی بک‌دراپ (خارج از باکس داخلی)
+  if (passengerModal) {
+    passengerModal.addEventListener('click', function (e) {
+      // اگر روی خود بک‌دراپ کلیک شد (نه داخل باکس)
+      if (e.target === passengerModal) {
         clearAllHighlights()
-        document.getElementById('passengerModal').classList.add('panel-hidden')
-      })
+
+        // مخفی کردن پیام‌ها
+        hideMessages(passengerModalHost)
+
+        passengerModal.classList.add('panel-hidden')
+      }
+    })
   }
 })
 
@@ -144,8 +164,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const monthSelect = document.getElementById('month')
   const yearSelect = document.getElementById('year')
   const selectDateBtn = document.getElementById('selectDateBtn')
+  const dateContainer = document.getElementById('dateSelectors')
 
-  // اگر هر کدوم از المنت‌های مورد نیاز وجود نداشت، کل اسکریپت اجرا نشه
   if (
     !openDobPopupButton ||
     !openPassportExpiryPopupButton ||
@@ -161,89 +181,91 @@ document.addEventListener('DOMContentLoaded', function () {
     return
   }
 
-  let currentDateType = 'gregorian' // پیش‌فرض میلادی
-  let targetInputField = null // این برای مشخص کردن اینکه تاریخ مربوط به کدام فیلد است
+  let currentDateType = 'gregorian'
+  let targetInputField = null
 
-  // تاریخ‌های میلادی
-  const gregorianDates = {
-    months: [
-      translate('january'),
-      translate('february'),
-      translate('march'),
-      translate('april'),
-      translate('may'),
-      translate('june'),
-      translate('july'),
-      translate('august'),
-      translate('september'),
-      translate('october'),
-      translate('november'),
-      translate('december'),
-    ],
-    days: Array.from({ length: 31 }, (_, i) => i + 1),
-    years: Array.from({ length: 100 }, (_, i) => 1923 + i),
+  // =============================
+  // ===== گرفتن سال فعلی ========
+  // =============================
+
+  function getCurrentGregorianYear() {
+    return new Date().getFullYear()
   }
 
-  const jalaliDates = {
-    months: [
-      translate('farvardin'),
-      translate('ordibehesht'),
-      translate('khordad'),
-      translate('tir'),
-      translate('mordad'),
-      translate('shahrivar'),
-      translate('mehr'),
-      translate('aban'),
-      translate('azar'),
-      translate('dey'),
-      translate('bahman'),
-      translate('esfand'),
-    ],
-    days: Array.from({ length: 31 }, (_, i) => i + 1),
-    years: Array.from({ length: 100 }, (_, i) => 1400 + i),
+  function getCurrentJalaliYear() {
+    const today = new Date()
+    return today.getFullYear() - 621
   }
 
-  // باز کردن پاپ‌آپ تاریخ تولد
+  function generateYearRange(start, end) {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+  }
+
+  // =============================
+  // ===== داده‌های ماه ==========
+  // =============================
+
+  const gregorianMonths = [
+    translate('january'),
+    translate('february'),
+    translate('march'),
+    translate('april'),
+    translate('may'),
+    translate('june'),
+    translate('july'),
+    translate('august'),
+    translate('september'),
+    translate('october'),
+    translate('november'),
+    translate('december'),
+  ]
+
+  const jalaliMonths = [
+    translate('farvardin'),
+    translate('ordibehesht'),
+    translate('khordad'),
+    translate('tir'),
+    translate('mordad'),
+    translate('shahrivar'),
+    translate('mehr'),
+    translate('aban'),
+    translate('azar'),
+    translate('dey'),
+    translate('bahman'),
+    translate('esfand'),
+  ]
+
+  // =============================
+  // ===== باز کردن popup ========
+  // =============================
+
+  function openDatePopup(mode, inputId) {
+    targetInputField = inputId
+    currentDateType = 'gregorian'
+    datePopup.dataset.mode = mode
+
+    // پاک کردن پیام‌ها هنگام باز شدن
+    hideMessages(datePopup)
+
+    datePopup.classList.remove('panel-hidden')
+    setActiveDateType()
+    updateDateSelectors()
+  }
+
   openDobPopupButton.addEventListener('focus', () => {
-    targetInputField = 'dobInput'
-    currentDateType = 'gregorian'
-    datePopup.classList.remove('panel-hidden')
-    setActiveDateType()
-    updateDateSelectors()
+    openDatePopup('dob', 'dobInput')
   })
 
-  // باز کردن پاپ‌آپ تاریخ انقضای پاسپورت
   openPassportExpiryPopupButton.addEventListener('focus', () => {
-    targetInputField = 'passportExpiryInput'
-    currentDateType = 'gregorian'
-    datePopup.classList.remove('panel-hidden')
-    setActiveDateType()
-    updateDateSelectors()
+    openDatePopup('passport', 'passportExpiryInput')
   })
 
-  function setActiveDateType() {
-    if (currentDateType === 'gregorian') {
-      // Gregorian فعال
-      gregorianB
-
-      tn.classList.add('panel-bg-primary-800', 'panel-text-white')
-      gregorianBtn.classList.remove('panel-bg-zinc-200')
-
-      jalaliBtn.classList.remove('panel-bg-primary-800', 'panel-text-white')
-      jalaliBtn.classList.add('panel-bg-zinc-200')
-    } else {
-      // Jalali فعال
-      jalaliBtn.classList.add('panel-bg-primary-800', 'panel-text-white')
-      jalaliBtn.classList.remove('panel-bg-zinc-200')
-
-      gregorianBtn.classList.remove('panel-bg-primary-800', 'panel-text-white')
-      gregorianBtn.classList.add('panel-bg-zinc-200')
-    }
-  }
-
-  // بستن پاپ‌آپ
   function closeDatePopup() {
+    // پاک کردن پیام‌ها هنگام بسته شدن
+    hideMessages(datePopup)
+
     datePopup.classList.add('panel-hidden')
+
     if (targetInputField) {
       document.getElementById(targetInputField).blur()
     }
@@ -252,12 +274,13 @@ document.addEventListener('DOMContentLoaded', function () {
   closeDatePopupButton.addEventListener('click', closeDatePopup)
 
   datePopup.addEventListener('click', (e) => {
-    if (e.target === datePopup) {
-      closeDatePopup()
-    }
+    if (e.target === datePopup) closeDatePopup()
   })
 
-  // سوئیچ بین تاریخ میلادی و شمسی
+  // =============================
+  // ===== سوییچ تقویم ===========
+  // =============================
+
   gregorianBtn.addEventListener('click', () => {
     currentDateType = 'gregorian'
     setActiveDateType()
@@ -270,42 +293,56 @@ document.addEventListener('DOMContentLoaded', function () {
     updateDateSelectors()
   })
 
+  function setActiveDateType() {
+    if (currentDateType === 'gregorian') {
+      gregorianBtn.classList.add('panel-bg-primary-800', 'panel-text-white')
+      gregorianBtn.classList.remove('panel-bg-zinc-200')
+
+      jalaliBtn.classList.remove('panel-bg-primary-800', 'panel-text-white')
+      jalaliBtn.classList.add('panel-bg-zinc-200')
+    } else {
+      jalaliBtn.classList.add('panel-bg-primary-800', 'panel-text-white')
+      jalaliBtn.classList.remove('panel-bg-zinc-200')
+
+      gregorianBtn.classList.remove('panel-bg-primary-800', 'panel-text-white')
+      gregorianBtn.classList.add('panel-bg-zinc-200')
+    }
+  }
+
+  // =============================
+  // ===== تعداد روزهای ماه ======
+  // =============================
+
   function getGregorianMonthDays(year, month) {
     if (month === 2) {
-      // ساده: فعلاً 29 مجاز (بدون محاسبه سال کبیسه)
-      return 29
+      const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
+      return isLeap ? 29 : 28
     }
-
     return [4, 6, 9, 11].includes(month) ? 30 : 31
   }
 
   function getJalaliMonthDays(month) {
     if (month <= 6) return 31
     if (month <= 11) return 30
-    return 29 // اسفند (فعلاً بدون کبیسه)
+    return 29
   }
 
   function updateDaysByMonth() {
     const month = parseInt(monthSelect.value)
     const year = parseInt(yearSelect.value)
 
-    // اگر ماه انتخاب نشده → روز غیرفعال و placeholder کوتاه
     if (!month) {
       daySelect.innerHTML = '<option value="">روز</option>'
       daySelect.disabled = true
       return
     }
 
-    // وقتی ماه انتخاب شد → روز فعال
     daySelect.disabled = false
 
-    let maxDays = 31
-
-    if (currentDateType === 'gregorian') {
-      maxDays = getGregorianMonthDays(year, month)
-    } else {
-      maxDays = getJalaliMonthDays(month)
-    }
+    let maxDays =
+      currentDateType === 'gregorian'
+        ? getGregorianMonthDays(year, month)
+        : getJalaliMonthDays(month)
 
     const currentDay = daySelect.value
 
@@ -318,73 +355,88 @@ document.addEventListener('DOMContentLoaded', function () {
       daySelect.appendChild(option)
     }
 
-    // اگر روز قبلی بزرگ‌تر از max بود ریست کن
     if (currentDay > maxDays) {
       daySelect.value = ''
     } else {
       daySelect.value = currentDay
     }
   }
-  // به‌روزرسانی انتخاب‌های تاریخ
+
+  monthSelect.addEventListener('change', updateDaysByMonth)
+  yearSelect.addEventListener('change', updateDaysByMonth)
+
+  // =============================
+  // ===== تولید سال‌ها ==========
+  // =============================
+
   function updateDateSelectors() {
-    let dates
+    const mode = datePopup.dataset.mode
+    const currentGregorianYear = getCurrentGregorianYear()
+    const currentJalaliYear = getCurrentJalaliYear()
+
+    let startYear, endYear
+
     if (currentDateType === 'gregorian') {
-      dates = gregorianDates
+      if (mode === 'dob') {
+        startYear = 1926
+        endYear = currentGregorianYear
+      } else {
+        startYear = currentGregorianYear
+        endYear = currentGregorianYear + 10
+      }
     } else {
-      dates = jalaliDates
+      if (mode === 'dob') {
+        startYear = 1305
+        endYear = currentJalaliYear
+      } else {
+        startYear = currentJalaliYear
+        endYear = currentJalaliYear + 10
+      }
     }
 
-    // ماه‌ها
+    const years = generateYearRange(startYear, endYear)
+
+    const months =
+      currentDateType === 'gregorian' ? gregorianMonths : jalaliMonths
+
     monthSelect.innerHTML = `<option value="">${translate('month')}</option>`
-    dates.months.forEach((month, index) => {
+    months.forEach((month, index) => {
       const option = document.createElement('option')
       option.value = index + 1
       option.textContent = month
       monthSelect.appendChild(option)
     })
 
-    // سال‌ها
     yearSelect.innerHTML = `<option value="">${translate('year')}</option>`
-    dates.years.forEach((year) => {
+    years.forEach((year) => {
       const option = document.createElement('option')
       option.value = year
       option.textContent = year
       yearSelect.appendChild(option)
     })
 
-    // روزها
-    updateDaysByMonth()
-
-    // ریست انتخاب‌ها
-    daySelect.value = ''
-    monthSelect.value = ''
-    yearSelect.value = ''
+    daySelect.innerHTML = '<option value="">روز</option>'
+    daySelect.disabled = true
   }
+
+  // =============================
+  // ===== انتخاب تاریخ ==========
+  // =============================
 
   function pad(num) {
     return num.toString().padStart(2, '0')
   }
 
-  // انتخاب تاریخ
   selectDateBtn.addEventListener('click', () => {
     const day = daySelect.value
     const month = monthSelect.value
     const year = yearSelect.value
 
-    // کانتینر خطا
-    const dateContainer = document.getElementById('dateSelectors')
-    let errorEl = dateContainer.querySelector('.date-error')
-
-    // اگر قبلاً خطا بود، پاکش کن
-    if (errorEl) errorEl.remove()
+    // پاک کردن پیام‌های قبلی
+    hideMessages(dateContainer)
 
     if (!day || !month || !year) {
-      // ایجاد المنت خطا
-      errorEl = document.createElement('div')
-      errorEl.className =
-        'date-error panel-text-red-600 panel-text-sm panel-mt-2'
-      errorEl.textContent = translate('select_complete_date') // کلید ترجمه
-      dateContainer.appendChild(errorEl)
+      showFailedMessage(dateContainer, translate('select_complete_date'))
       return
     }
 
@@ -398,8 +450,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     closeDatePopup()
   })
-  monthSelect.addEventListener('change', updateDaysByMonth)
-  yearSelect.addEventListener('change', updateDaysByMonth)
 })
 document.addEventListener('DOMContentLoaded', () => {
   const nationalityInput = document.getElementById('nationality')
@@ -467,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
   nationalityInput.addEventListener('input', () => {
     const value = nationalityInput.value.trim()
 
-    if (value.length < 2) return
+    if (value.length < 3) return
 
     nationalityDropdown.classList.remove('panel-hidden')
     nationalityDropdown.innerHTML =
@@ -508,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ----- بررسی فیلدهای اجباری برای مسافر -----
 document.addEventListener('DOMContentLoaded', function () {
-  const addPassengerBtn = document.getElementById('add-passenger-button')
+  const addPassengerBtn = document.getElementById('addPassengerButton')
 
   if (addPassengerBtn) {
     addPassengerBtn.addEventListener('click', function (e) {
@@ -1701,8 +1751,7 @@ const generateDynamicFields = (type) => {
 
   function chargingOnline() {
     return {
-      multi_excel: 'report_charging_online',
-      excel_type: 'charging_online',
+      excel: 'report_charging_online',
       filters: getFilters(type),
       db: 'cms.chargingExcel',
       name: 'db',
@@ -1727,7 +1776,6 @@ const generateDynamicFields = (type) => {
       return el ? String(el.value ?? '').trim() : ''
     }
 
-
     return {
       multi_excel: 'report_wallet_document',
       excel_type: 'accounting',
@@ -1737,7 +1785,6 @@ const generateDynamicFields = (type) => {
       doctype: getVal('input[name="doctypeid"]'),
       fromdate: getVal('.fdate-string'),
       todate: getVal('.tdate-string'),
-      userid: 1005239,
     }
   }
 

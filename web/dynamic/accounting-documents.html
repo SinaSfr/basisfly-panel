@@ -66,7 +66,7 @@
                     <section class="panel-bg-white panel-rounded-2xl panel-px-3 panel-py-6">
                         <h2 class="panel-text-zinc-900 panel-font-medium">جستجوی تراکنش
                         </h2>
-                        <form id="searchAccountingDocument" bc-triggers="submit" name="cms.form"
+                        <form id="accountingDocumentForm" bc-triggers="submit" name="cms.form"
                             class="panel-flex panel-items-center panel-gap-1 panel-justify-between panel-mt-4">
                             <input id="accountingFactoridInput" type="text" name="factorid" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                    focus:panel-shadow-md
@@ -93,7 +93,7 @@
                                 </svg>
                             </div>
                             <button
-                                class="panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                                class="panel-form__btn panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105"
                                 aria-label="جستجو">
                                 <svg width="24" height="24" class="panel-text-white">
                                     <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
@@ -231,7 +231,8 @@
                                 options="creditItems" onRendered="onRenderedShowContent"></basis>
                         </div>
 
-                        <div id="panelHasExcel" class="panel_grid_style panel-report__excel" data-panel="report" data-run="1">
+                        <div id="panelHasExcel" class="panel_grid_style panel-report__excel" data-panel="report"
+                            data-run="1">
                             <basis core="component.grid.grid" run="atclient" dataMemberName="cms.report"
                                 options="reportItems" onRendered="onRenderedShowContent"></basis>
                         </div>
@@ -244,6 +245,49 @@
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
+    <script>
+        function buttonLoading(btn, state = true) {
+            if (!btn) return;
+
+            if (state) {
+                // جلوگیری از تکرار
+                if (btn.classList.contains("is-loading")) return;
+
+                btn.classList.add("is-loading");
+
+                // ذخیره وضعیت قبلی
+                if (btn.dataset.wasDisabled == null) {
+                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
+                }
+
+                // ذخیره محتوا (فقط یک بار)
+                if (btn.dataset.oldText == null) {
+                    btn.dataset.oldText = btn.innerHTML;
+                }
+
+                btn.disabled = true;
+                btn.setAttribute("aria-busy", "true");
+
+                // جایگزینی کامل با لودینگ
+                btn.innerHTML = '<div class="panel-loading__btn"></div>';
+            } else {
+                btn.classList.remove("is-loading");
+                btn.removeAttribute("aria-busy");
+
+                // برگرداندن محتوا
+                if (btn.dataset.oldText != null) {
+                    btn.innerHTML = btn.dataset.oldText;
+                }
+
+                // برگرداندن disabled به حالت قبل
+                btn.disabled = btn.dataset.wasDisabled === "1";
+
+                // پاکسازی
+                delete btn.dataset.oldText;
+                delete btn.dataset.wasDisabled;
+            }
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tabs = document.querySelectorAll('.panel-tab[data-target]')
@@ -331,9 +375,14 @@
                     }
                 };
 
-
                 $bc.setSource("cms.total", totalView);
 
+                const formContainer = document.querySelector("#accountingDocumentForm");
+                const formBtn = formContainer?.querySelector(".panel-form__btn");  // استفاده از querySelector به جای closest
+
+                if (formBtn) {
+                    buttonLoading(formBtn, false);  // فقط زمانی که دکمه پیدا شد لودینگ خاموش می‌شود
+                }
             } catch (e) {
                 console.error(e);
                 $bc.setSource("cms.report", []);
@@ -432,7 +481,9 @@
 
 
         async function callbackDocumentSearch() {
-
+            const formContainer = getEl("#accountingDocumentForm")
+            const formBtn = formContainer.querySelector(".panel-form__btn")
+            buttonLoading(formBtn, true)
             function getEl(selector) {
                 return document.querySelector(selector);
             }
@@ -468,7 +519,6 @@
                 todate: end_date,
             };
 
-            console.log(main_json);
 
             $bc.setSource("cms.search", main_json);
         }
@@ -727,9 +777,8 @@
 
                         const formatted = new Intl.NumberFormat(locale).format(value);
 
-                        return `<p class="is-separated panel-ltr panel-w-24 panel-text-right panel-font-medium">${formatted}</p>`;
+                        return `<p class="is-separated panel-ltr panel-text-center panel-w-24 panel-text-right panel-font-medium">${formatted}</p>`;
                     }
-
                 }
 
             },
