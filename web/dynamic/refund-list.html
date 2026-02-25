@@ -48,9 +48,8 @@
     }' onprocessed="onProcessedCloseRefund">
 </basis>
 
-<basis core="api" name="invoice_refund_save" url="https://basisfly.com/panel/main/update/[##cms.cms.rkey##]"
-    method="post" content-type="application/json" run="atclient" triggers="cms.save" if="{##cms.save.run|(false)##}"
-    body='{ 
+<basis core="api" name="invoice_refund_save" url="https://basisfly.com/panel/main/update/[##cms.cookie.rkey##]"
+    method="post" content-type="application/json" run="atclient" body='{ 
       "name": "db", 
       "mid": "20",
       "member":
@@ -59,16 +58,16 @@
               "type":"list",
               "name": "q", 
               "request": "invoice_refund_save", 
-              "username": "Arash Saeidi",
-              "invoicetype": "1",
+              "username": "{##cms.username.value##}",
+              "invoicetype": "{##cms.invoiceType.value##}",
               "query":{##cms.save.query##}
 
           }
       ]
-  }' onprocessed="onProcessed_save">
+  }' triggers="cms.save" if="{##cms.save.run|(false)##}">
 </basis>
 
-<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form.run|(false)##}" method="callback_save">
+<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form##}" method="callback_save">
 </basis>
 
 
@@ -90,7 +89,7 @@
     <basis core="call" file="Client_CheckRkey.inc"></basis>
 
     <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]=0">
-        <p style="text-align:center;font-family:tahoma">شما مجاز به دسترسی به این صفحه نمی باشید</p>
+        <basis core="call" file="userPanel/admin/warning" lid="1"></basis>
     </basis>
 
     <basis core="group" name="checkrkey" if="[##db.checkrkey.userid|(0)##]<> 0">
@@ -99,11 +98,8 @@
             <div class="panel-flex panel-gap-2 panel-mx-auto max-xl:panel-w-[97%] xl:panel-max-w-7xl panel-mt-14">
                 <basis core="call" file="userPanel/sidebar" lid="1" pageindexid="1"></basis>
 
-                <div class="panel-loading__wrap panel-flex panel-flex-col panel-items-center panel-justify-center panel-flex-1 panel-bg-white panel-rounded-2xl">
-                    <div class="panel-loading__content"></div>
-                    <div class="panel-loading__title">در حال دریافت اطلاعات…</div>
-                    <div class="panel-loading__hint">لطفاً چند لحظه صبر کنید</div>
-                </div>
+                <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
+
                 <div class="panel-main__content panel-flex-1 panel-hidden">
                     <section class="panel-bg-white panel-rounded-2xl panel-py-6 panel-px-3">
                         <h1 class="panel-font-bold panel-mb-3">درخواست پشتیبانی</h1>
@@ -143,9 +139,9 @@
                                 <input type="hidden" name="run" class="check-run" value="false" />
                                 <input type="hidden" name="_root.oid" value="{##cms.edit.id##}" />
                                 <input type="hidden" class="userid-whoIs-logined" name="_root.userid"
-                                    value="[##cms.checkrkey.userid|(0)##]" />
+                                    value="[##db.checkrkey.userid|(0)##]" />
                                 <input type="hidden" class="username-whoIs-logined" name="_root.username"
-                                    value="{##cms.userinfo.username##}" />
+                                    value="{##cms.username.value##}" />
 
                                 <div
                                     class="refund-search__header panel-modal-header panel-flex panel-items-center panel-justify-between panel-mb-5">
@@ -172,7 +168,7 @@
                                         <script type="text/template">
                                     <div class="refund-search__column panel-w-1/2 panel-mb-10"
                                          data-userid="@res.userid@" data-close="@res.close@" data-user_name="@res.user_name@">
-                                        <div class="panel-flex panel-items-center panel-gap-3 panel-text-sm">
+                                        <div class="panel-flex panel-items-center panel-gap-3 panel-text-sm panel-mb-4">
                                             <span>@res.user_name@</span>
                                             <span class="panel-text-gray-300">•</span>
                                             <div class="panel-flex panel-items-center panel-gap-1">
@@ -197,12 +193,12 @@
                                 </basis>
 
                                 <div class="refund-search__column panel-w-1/2 refund-search__response">
-                                    <div class="refund-search__response-username user-name"></div>
+                                    <h2 class="refund-search__response-username user-name"></h2>
                                     <input type="hidden" class="refund-search__response-id id" data-name="" value="" />
                                     <input type="hidden" class="refund-search__response-userid userid" data-name=""
                                         value="[##db.checkrkey.userid|(0)##]" />
 
-                                    <h3 class="panel-text-zinc-900 panel-mb-6">درخواست جدید</h3>
+                                    <h3 class="panel-text-zinc-900 panel-mb-4">درخواست جدید</h3>
 
                                     <textarea
                                         class="panel-w-full panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-pt-4 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
@@ -241,7 +237,7 @@
             if (!modalOverlay || !modalContent || !closeModalButton) return;
 
             const closeModal = () => {
-                modalOverlay.classList.add('panel-hidden');  
+                modalOverlay.classList.add('panel-hidden');
             };
 
             closeModalButton.addEventListener('click', closeModal);
@@ -326,13 +322,28 @@
         }
 
         async function callback_sourceRefundItem(args) {
+            const n = document.querySelector('.user-profile-header .default-name')?.textContent?.trim()
+            const f = document.querySelector('.user-profile-header .default-family')?.textContent?.trim()
+            const username = (n && f) ? `${n} ${f}` : ""
+
             const resultJson = args.source?.rows;
             if (!resultJson?.length) return;
 
             const firstItem = resultJson[0];
+
             const result = firstItem?.requests?.result;
             const passengerList = firstItem?.requests?.form?.[0]?.passengerlist ?? [];
 
+            const invoiceType = result?.[0]?.res?.invoicetype ?? "";
+
+            $bc.setSource("cms.username", [{
+                value: username,
+                run: true,
+            }])
+            $bc.setSource("cms.invoiceType", [{
+                value: invoiceType,
+                run: true,
+            }]);
 
             $bc.setSource("refresh.RefundItemResult", result);
 
@@ -346,6 +357,7 @@
                 }
             }
         }
+
 
         async function set_text_area(text) {
             if (text) return String(text).replace(/<break>/g, '\n')

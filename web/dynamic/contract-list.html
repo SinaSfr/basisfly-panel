@@ -25,9 +25,8 @@
 
 <basis core="api" name="api.excelBooking" run="atclient"
     url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post"
-    body='{##cms.bookingExcel.query##}' content-type="application/json"
-    triggers="cms.search cms.paging cms.bookingExcel" if="{##cms.bookingExcel.run|(false)##}"
-    onprocessed="onProcessedGetExcel">
+    body='{##cms.bookingExcel.query##}' content-type="application/json" triggers="cms.paging cms.bookingExcel"
+    if="{##cms.bookingExcel.run|(false)##}" onprocessed="onProcessedGetExcel">
 </basis>
 
 <basis core="api" name="search_item" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
@@ -104,7 +103,7 @@
                                         placeholder="جستجو بر اساس شماره رفرنس" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
                                 focus:panel-shadow-md panel-transition panel-duration-300">
                                     <button
-                                        class="panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                                        class="panel-contractSearch__btn panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
                                         aria-label="جستجو">
                                         <svg width="24" height="24" class="panel-text-white">
                                             <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
@@ -392,7 +391,7 @@
                                         </div>
                                     </section>
                                     <button
-                                        class="panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">
+                                        class="panel-contractSearch__btn panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">
                                         مشاهده نتایج
                                     </button>
                                 </form>
@@ -435,6 +434,47 @@
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
     <script>
+        function buttonLoading(btn, state = true) {
+            if (!btn) return;
+
+            if (state) {
+                // جلوگیری از تکرار
+                if (btn.classList.contains("is-loading")) return;
+
+                btn.classList.add("is-loading");
+
+                // ذخیره وضعیت قبلی
+                if (btn.dataset.wasDisabled == null) {
+                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
+                }
+
+                // ذخیره محتوا (فقط یک بار)
+                if (btn.dataset.oldText == null) {
+                    btn.dataset.oldText = btn.innerHTML;
+                }
+
+                btn.disabled = true;
+                btn.setAttribute("aria-busy", "true");
+
+                // جایگزینی کامل با لودینگ
+                btn.innerHTML = '<div class="panel-loading__btn"></div>';
+            } else {
+                if (btn.dataset.oldText == null) return;
+
+                btn.classList.remove("is-loading");
+                btn.removeAttribute("aria-busy");
+
+                if (btn.dataset.oldText != null) {
+                    btn.innerHTML = btn.dataset.oldText;
+                }
+
+                btn.disabled = btn.dataset.wasDisabled === "1";
+
+                delete btn.dataset.oldText;
+                delete btn.dataset.wasDisabled;
+            }
+        }
+
         function padJalaliDate(dateString) {
             if (!dateString) return '';
 
@@ -480,7 +520,6 @@
             }
         }
         async function callback_sourceInvoiceList(source) {
-            console.log(source);
 
             const toStr = (v) => (v == null ? '' : String(v));
 

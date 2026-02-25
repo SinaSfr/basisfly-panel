@@ -5,6 +5,9 @@
 <basis core="callback" run="atclient" triggers="cms.new" if="{##cms.new##}" method="callback_sourcePassnegerNew">
 </basis>
 
+<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form##}" method="callbackPassengerSearch">
+</basis>
+
 <basis core="api" name="api.createpage" url="https://basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]"
     method="post" body='{
 "member" : [
@@ -78,7 +81,8 @@
                 <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
                 <div class="panel-main__content panel-flex-1 panel-hidden panel-bg-white panel-rounded-2xl panel-p-6">
                     <section class="panel-flex panel-justify-between">
-                        <form class="passenger-list__search panel-flex panel-items-center panel-gap-2 panel-mb-0">
+                        <form bc-triggers="submit" name="cms.form"
+                            class="passenger-list__search panel-flex panel-items-center panel-gap-2 panel-mb-0">
                             <input type="text" name="name" id="passengerSearchName"
                                 class="passenger-list__search-name panel-w-60 panel-h-14 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white focus:panel-shadow-md panel-transition panel-duration-300"
                                 placeholder="نام مسافر :" />
@@ -183,7 +187,7 @@
                                         <!-- دکمه افزودن مسافر -->
                                         <button id="addPassengerButton"
                                             class="panel-overflow-hidden panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-14 panel-z-10 panel-bg-primary-800 panel-text-white panel-rounded-xl panel-text-sm panel-font-medium panel-border panel-border-solid panel-border-primary-800 panel-mr-auto panel-mt-5 panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-90">
-                                          ذخیره
+                                            ذخیره
                                         </button>
                                     </div>
                                 </form>
@@ -254,7 +258,7 @@
                     </section>
                     <section class="panel-mt-12">
                         <h1 class="panel-text-zinc-900 panel-font-medium panel-mb-6">لیست مسافران</h1>
-                        <div class="panel_grid_style panel_grid_passenger passenger-list__scroll-top">
+                        <div class="panel_grid_style panel_grid_passenger">
                             <basis core="component.grid.grid" run="atclient" dataMemberName="cms.order"
                                 options="passengerList" onRendered="onRenderedShowContent">
                             </basis>
@@ -341,17 +345,19 @@
                 // جایگزینی کامل با لودینگ
                 btn.innerHTML = '<div class="panel-loading__btn"></div>';
             } else {
-                    btn.classList.remove("is-loading");
-                    btn.removeAttribute("aria-busy");
+                if (btn.dataset.oldText == null) return;
 
-                    if (btn.dataset.oldText != null) {
-                        btn.innerHTML = btn.dataset.oldText;
-                    }
+                btn.classList.remove("is-loading");
+                btn.removeAttribute("aria-busy");
 
-                    btn.disabled = btn.dataset.wasDisabled === "1";
+                if (btn.dataset.oldText != null) {
+                    btn.innerHTML = btn.dataset.oldText;
+                }
 
-                    delete btn.dataset.oldText;
-                    delete btn.dataset.wasDisabled;
+                btn.disabled = btn.dataset.wasDisabled === "1";
+
+                delete btn.dataset.oldText;
+                delete btn.dataset.wasDisabled;
             }
         }
         function ensureMessages(hostEl) {
@@ -457,8 +463,6 @@
                     showFailedMessage(hostElement, description);
                 } else {
                     showSuccessMessage(hostElement, description);
-
-
                 }
             } else {
                 showFailedMessage(hostElement, "خطا در ارتباط با سرور");
@@ -490,12 +494,17 @@
             window.lastPassengerAction = null;
         }
         async function onProcessed_list(args) {
+            const passengerListForm = document.querySelector('.passenger-list__search')
+            const passengerListFormBtn =
+            passengerListForm.querySelector('.passenger-list__search-submit')
             try {
                 const response = args.response;
                 const responseJson = await response.json();
                 const data = responseJson;
 
                 $bc.setSource("cms.order", data);
+                buttonLoading(passengerListFormBtn, false)
+
             } catch (e) {
                 $bc.setSource("cms.order", []);
             }
@@ -728,7 +737,7 @@
         })();
 
 
-        document.addEventListener('DOMContentLoaded', () => {
+        async function callbackPassengerSearch(args) {
             const passengerListForm = document.querySelector('.passenger-list__search')
             if (!passengerListForm) return
 
@@ -736,23 +745,22 @@
                 passengerListForm.querySelector('#passengerSearchName') || passengerListForm.querySelector('.passenger-list__search-name')
             const passengerListFormCode =
                 passengerListForm.querySelector('#passengerSearchCode') || passengerListForm.querySelector('.passenger-list__search-code')
+            const passengerListFormBtn =
+                passengerListForm.querySelector('.passenger-list__search-submit')
 
-            passengerListForm.addEventListener('submit', (event) => {
-                event.preventDefault()
+            const main_json = buildPassengerSearchQuery(passengerListFormName, passengerListFormCode)
 
-                const main_json = buildPassengerSearchQuery(passengerListFormName, passengerListFormCode)
-                scrollToPassengerListTop()
+            if (!window.$bc || typeof window.$bc.setSource !== 'function') return
 
-                if (!window.$bc || typeof window.$bc.setSource !== 'function') return
+            buttonLoading(passengerListFormBtn, true)
+            window.$bc.setSource('cms.passengerlist', [
+                {
+                    query: JSON.stringify(main_json),
+                    run: true,
+                },
+            ])
+        }
 
-                window.$bc.setSource('cms.passengerlist', [
-                    {
-                        query: JSON.stringify(main_json),
-                        run: true,
-                    },
-                ])
-            })
-        })
 
         async function onProcessedCompanyOwnerid(args) {
             const responseJson = await args.response.json();
@@ -780,12 +788,6 @@
             return t ? t : ''
         }
 
-        function scrollToPassengerListTop() {
-            const target = document.querySelector('.passenger-list__scroll-top') || document.querySelector('.ScrollTop')
-            if (!target) return
-
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
 
         var national_code_list = [];
         var passengerList = {

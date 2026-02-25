@@ -9,11 +9,9 @@
                 "request": "verify_user_credit"
             }
         ]
-    } ' content-type="application/json">
+    } ' content-type="application/json" onProcessed="onProcessedVerifyUserCredit">
 </basis>
-<basis core="callback" run="atclient" triggers="api.comgroup_agency_by_user" if="{##api.comgroup_agency_by_user##}"
-    method="comgroupAgencySidebarcallback">
-</basis>
+
 
 <basis core="api" name="api.useridentityinfo" run="atclient"
     url="https://api.trust-login.com/[##cms.cookie.rkey##]/useridentityinfo" method="get"

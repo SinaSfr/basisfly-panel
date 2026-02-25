@@ -14,20 +14,10 @@
     if="{##cms.ownerid.run|(false)##}">
 </basis>
 
-<basis core="api" name="charging_view_excel" run="atclient" url="https://basisfly.com/panel/main/list[##cms.cookie.rkey##]"
-    method="post" body='{##cms.chargingExcel.query##} ' content-type="application/json"
-    onProcessed="onProcessedGetExcel" triggers="cms.chargingExcel" if="{##cms.chargingExcel.run|(false)##}">
-</basis>
-
-<basis core="api" name="allow_online_charging" run="atclient"
-    url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]" method="post" body='{ 
-        "name": "db",
-        "mid": "20",
-        "member":[{ 
-        "name": "q", 
-        "type":"list",
-        "request": "allow_online_charging"
-        }]} ' content-type="application/json" onProcessed="onProcessedAllowOnlineCharging">
+<basis core="api" name="charging_view_excel" run="atclient"
+    url="https://basisfly.com/panel/main/list/[##cms.cookie.rkey##]" method="post" body='{##cms.chargingExcel.query##} '
+    content-type="application/json" onProcessed="onProcessedGetExcel" triggers="cms.chargingExcel"
+    if="{##cms.chargingExcel.run|(false)##}">
 </basis>
 
 <basis core="api" name="currency_conversion" run="atclient" url="https://basisfly.com/panel/main/[##cms.cookie.rkey##]"
@@ -135,22 +125,33 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
-                                    <div class="panel-flex panel-items-center panel-gap-1">
-                                        <span
-                                            class="panel-wallet-amount panel-text-4xl panel-font-bold panel-text-zinc-900"
-                                            data-amount="422,340,000">422,340,000</span>
-                                        <span class="panel-font-medium panel-text-zinc-900">تومان</span>
-                                    </div>
-
-                                    <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
-                                         panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
-                                        aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount="">
-                                        <svg width="24" height="24" class="panel-text-zinc-900">
-                                            <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
-                                        </svg>
-                                    </button>
-                                </div>
+                                <basis core="print" datamembername="cms.credit" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
+                                            <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
+                                                <div class="panel-flex panel-items-center panel-gap-1">
+                                                   @child
+                                                    <span class="panel-font-medium panel-text-zinc-900">ریال</span>
+                                                </div>
+            
+                                                <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
+                                                     panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
+                                                    aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount="">
+                                                    <svg width="24" height="24" class="panel-text-zinc-900">
+                                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                </script>
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
+                                            <span
+                                            class="panel-credit__amount panel-text-4xl panel-font-bold panel-text-zinc-900"
+                                            data-amount="@Remaining_credit@">@Remaining_credit@</span>
+                                    </script>
+                                    </face>
+                                </basis>
                             </div>
                             <div class="panel-flex-1 panel-flex panel-gap-3">
                                 <basis core="print" datamembername="cms.credit" run="atclient">
@@ -216,7 +217,7 @@
                                             </svg>
                                         </span>
                                         <div class="panel-flex panel-flex-col panel-justify-between">
-                                            <span class="panel-text-xs panel-text-zinc-900">مانده (ریال)</span>
+                                            <span class="panel-text-xs panel-text-zinc-900">اعتبار کل (ریال)</span>
                                             @child
                                         </div>
                                     </div>
@@ -224,7 +225,7 @@
                                     </layout>
                                     <face>
                                         <script type="text/template">
-                                        <span class="panel-text-zinc-900 panel-font-bold">@Remaining_credit@</span>
+                                        <span class="panel-text-zinc-900 panel-font-bold">@total_credit@</span>
                                     </script>
                                     </face>
                                 </basis>
@@ -628,57 +629,6 @@
             return s === "" ? fallback : s;
         }
 
-        window.currencyTitle = "";
-        window.currencyId = "";
-
-        async function onProcessedGetCurrency(args) {
-            try {
-                const responseJson = await args.response.json();
-
-                let row = null;
-
-                if (responseJson && typeof responseJson === "object" && ("id" in responseJson || "title" in responseJson)) {
-                    row = responseJson;
-                }
-
-                window.currencyTitle = (row?.title ?? "").toString();
-                window.currencyId = (row?.id ?? "").toString();
-
-            } catch (e) {
-                console.error(e);
-                window.currencyTitle = "";
-                window.currencyId = "";
-            }
-        }
-        async function onProcessedAllowOnlineCharging(args) {
-            try {
-                const responseJson = await args.response.json();
-
-                const ownerid = responseJson?.result?.ownerid;
-                const credit = responseJson?.credit ?? {};
-
-
-
-                $bc.setSource("cms.ownerid", [{
-                    reciverownerid: ownerid,
-                    run: true,
-                }]);
-
-                $bc.setSource("cms.credit", {
-                    total_credit: formatNumber(credit.total_credit),
-                    debtor: formatNumber(credit.debtor),
-                    creditor: formatNumber(credit.creditor),
-                    Remaining_credit: formatNumber(credit.Remaining_credit),
-                });
-
-            } catch (e) {
-                console.log(e);
-
-                $bc.setSource("cms.ownerid", []);
-                $bc.setSource("cms.credit", {});
-            }
-        }
-
         function setBcSourceSafe(key, value) {
             if (!window.$bc || typeof $bc.setSource !== "function") {
                 console.warn("$bc.setSource is not available");
@@ -769,16 +719,16 @@
             try {
                 const responseJson = await args.response.json();
 
-                const rawList = Array.isArray(responseJson) ? responseJson : [];
+                const sources = Array.isArray(responseJson?.sources) ? responseJson.sources : [];
 
+                const ordersSource = sources.find(s => s?.options?.tableName === "db.orders");
+                const rawList = Array.isArray(ordersSource?.data) ? ordersSource.data : [];
 
                 const list = rawList
                     .filter(item => item?.charging)
                     .map(item => item.charging);
 
-
                 $bc.setSource("cms.list", list);
-
             } catch (e) {
                 console.log(e);
                 $bc.setSource("cms.list", []);

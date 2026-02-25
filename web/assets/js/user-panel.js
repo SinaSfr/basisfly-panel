@@ -18,7 +18,7 @@ const translate = (text) =>
 })()
 ;(() => {
   const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
-  const panelWalletAmount = document.querySelector('.panel-wallet-amount')
+  const panelWalletAmount = document.querySelector('.panel-credit__amount')
   if (!visibilityAmountBtn || !panelWalletAmount) return
 
   const original =
@@ -960,7 +960,7 @@ async function onProcessedSearch_item(args) {
     ====================== */
     if (json?.sources) {
       const refundSearchSource = json.sources.find(
-        (source) => source?.options?.tableName === 'cms.invoice_refund_view',
+        (source) => source?.options?.tableName === 'db.invoice_refund_view',
       )
 
       if (refundSearchSource?.data) {
@@ -1294,7 +1294,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('sharedDropdown:dataUpdated', () => {
     if (!activeKey || !isOpen()) return
-
     const data = store.get()
 
     if (activeKey === 'refund_search') {
@@ -1558,7 +1557,6 @@ async function onProcessedGetExcel(args) {
   try {
     const response = args.response
     const responseJson = await response.json()
-    console.log(responseJson)
     var link = document.createElement('a')
     document.body.appendChild(link)
     link.setAttribute('type', 'hidden')
@@ -1642,7 +1640,6 @@ function getFilters(type) {
     }
   } else if (type === 'chargingOnline') {
     return {
-      'charging.index': 'ردیف',
       'charging.docID': 'شماره سند',
       'charging.accountname': 'نام پرداخت کننده',
       'charging.price': 'مبلغ پرداختی',
@@ -1689,7 +1686,7 @@ const generateDynamicFields = (type) => {
     const fdateEl = getEl('.fdate-string')
     const tdateEl = getEl('.tdate-string')
     return {
-      accnumber: getValue('.accnumber') || '',
+      accnumber: getValue('input[name="doctypeid"]') || '',
       factorid: getValue('#accountingFactoridInput'),
       fromdate: jalaliToGregorian(fdateEl?.value),
       todate: jalaliToGregorian(tdateEl?.value),
@@ -1701,6 +1698,29 @@ const generateDynamicFields = (type) => {
   }
 
   function invoiceList() {
+    const basedate = getValue('input[name="_root.date.basedate"]')
+    const begindate = getValue('.fdate-string')
+    const enddate = getValue('.tdate-string')
+    const factorid = getValue('input[name="_root.factorid"]')
+    const refnumber = getValue('input[name="_root.refnumber"]')
+  
+    const isEmpty = v => v == null || v === "" || v === "0"
+  
+    const hasSearch =
+      !isEmpty(basedate) ||
+      !isEmpty(begindate) ||
+      !isEmpty(enddate) ||
+      !isEmpty(factorid) ||
+      !isEmpty(refnumber)
+  
+    const search = hasSearch
+      ? {
+          date: { basedate, begindate, enddate },
+          factorid,
+          refnumber,
+        }
+      : ""
+  
     return {
       name: 'db',
       mid: '20',
@@ -1716,15 +1736,7 @@ const generateDynamicFields = (type) => {
           productid: '',
           couponCode: '',
           hotelid: '',
-          search: {
-            date: {
-              basedate: getValue('input[name="_root.date.basedate"]'),
-              begindate: getValue('.fdate-string'),
-              enddate: getValue('.tdate-string'),
-            },
-            factorid: getValue('input[name="_root.factorid"]'),
-            refnumber: getValue('input[name="_root.refnumber"]'),
-          },
+          search,
           deleted: '0',
           pageindex: '1',
           perpage: '20',
@@ -1741,7 +1753,7 @@ const generateDynamicFields = (type) => {
       factorid: getValue('#accountingFactoridInput'),
       fromdate: jalaliToGregorian(fdateEl?.value),
       todate: jalaliToGregorian(tdateEl?.value),
-      accnumber: getValue('.status') || '',
+      accnumber: getValue('input[name="doctypeid"]') || '',
       multi_excel: 'report_document_List',
       excel_type: 'accounting_document',
       filters: getFilters(type),
@@ -1805,8 +1817,6 @@ const generateDynamicFields = (type) => {
 
 async function downloadExcel(type) {
   const dynamicFields = generateDynamicFields(type)
-
-  console.log(dynamicFields)
 
   const main_json = {
     ...dynamicFields,

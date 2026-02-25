@@ -104,11 +104,11 @@
                 <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
 
                 <div class="panel-main__content panel-flex-1 panel-hidden">
-                    <div
-                        class="panel-relative panel-flex panel-justify-between panel-bg-white panel-rounded-2xl panel-p-6">
-                        <img src="/userPanel/images/pattern.png" class="panel-absolute panel-right-0 panel-top-0"
-                            alt="pattern" width="597" height="180" loading="lazy">
-                        <section class="panel-relative panel-z-10">
+                    <div class="panel-relative panel-bg-white panel-rounded-2xl panel-p-6">
+                        <img src="/userPanel/images/pattern.png"
+                            class="panel-absolute panel-right-0 panel-top-0 panel-h-full" alt="pattern" width="597"
+                            height="180" loading="lazy">
+                        <section class="panel-relative panel-flex panel-justify-between">
                             <div class="panel-flex panel-items-center panel-gap-3">
                                 <span class="panel-bg-zinc-100 panel-rounded-lg">
                                     <svg width="48" height="48" class="panel-text-zinc-900">
@@ -122,23 +122,6 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
-                                <div class="panel-flex panel-items-center panel-gap-1">
-                                    <span class="panel-wallet-amount panel-text-4xl panel-font-bold panel-text-zinc-900"
-                                        data-amount="422,340,000">422,340,000</span>
-                                    <span class="panel-font-medium panel-text-zinc-900">تومان</span>
-                                </div>
-
-                                <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
-                                     panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
-                                    aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount>
-                                    <svg width="24" height="24" class="panel-text-zinc-900">
-                                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
-                                    </svg>
-                                </button>
-                            </div>
-                        </section>
-                        <section>
                             <button
                                 class="panel-increase-balance__open-btn panel-relative panel-group panel-overflow-hidden panel-z-10 panel-flex panel-w-40 panel-h-12 panel-border panel-border-solid panel-rounded-xl panel-border-green-700 panel-text-xs panel-text-green-700 panel-mr-auto panel-transition-all panel-duration-300 hover:panel-text-white ">
                                 <div class="panel-relative panel-z-10 panel-flex panel-items-center">
@@ -214,7 +197,112 @@
                                 </div>
                             </div>
                         </section>
+                        <section class="panel-relative panel-flex panel-gap-4 panel-items-end panel-z-10 panel-mt-7">
+                            <basis core="print" datamembername="cms.credit" run="atclient">
+                                <layout>
+                                    <script type="text/template">
+                                        <div class="panel-flex panel-items-center panel-gap-4 panel-mt-7">
+                                            <div class="panel-flex panel-items-center panel-gap-1">
+                                               @child
+                                                <span class="panel-font-medium panel-text-zinc-900">ریال</span>
+                                            </div>
+        
+                                            <button type="button" class="panel-flex panel-items-center panel-justify-center panel-w-12 panel-h-12 panel-bg-zinc-100 panel-rounded-lg
+                                                 panel-transition-all panel-duration-200 hover:panel-bg-zinc-200"
+                                                aria-label="نمایش/مخفی کردن موجودی" aria-pressed="false" data-toggle-amount="">
+                                                <svg width="24" height="24" class="panel-text-zinc-900">
+                                                    <use href="/userPanel/images/panel-sprite-icons.svg#icon-eye"></use>
+                                                </svg>
+                                            </button>
+                                        </div>
+                            </script>
+                                </layout>
+                                <face>
+                                    <script type="text/template">
+                                        <span
+                                        class="panel-credit__amount panel-text-4xl panel-font-bold panel-text-zinc-900"
+                                        data-amount="@Remaining_credit@">@Remaining_credit@</span>
+                                </script>
+                                </face>
+                            </basis>
+                            <div class="panel-flex-1 panel-flex panel-gap-4">
+                                <basis core="print" datamembername="cms.credit" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
+                                    <div
+                                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                        <span
+                                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                            <svg width="31" height="31">
+                                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-star"></use>
+                                            </svg>
+                                        </span>
+                                        <div class="panel-flex panel-flex-col panel-justify-between">
+                                            <span class="panel-text-xs panel-text-zinc-900">بدهکاری (ریال)</span>
+                                            @child
+                                        </div>
+                                    </div>
+                                </script>
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
+                                        <span class="panel-text-red-500 panel-font-bold">@debtor@</span>
+                                    </script>
+                                    </face>
+                                </basis>
 
+                                <basis core="print" datamembername="cms.credit" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
+                                    <div
+                                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                        <span
+                                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                            <svg width="31" height="31">
+                                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-ticket"></use>
+                                            </svg>
+                                        </span>
+                                        <div class="panel-flex panel-flex-col panel-justify-between">
+                                            <span class="panel-text-xs panel-text-zinc-900">بستنکار ( ریال )</span>
+                                            @child
+                                        </div>
+                                    </div>
+                                </script>
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
+                                        <span class="panel-text-green-600 panel-font-bold">@creditor@</span>
+                                    </script>
+                                    </face>
+                                </basis>
+
+                                <basis core="print" datamembername="cms.credit" run="atclient">
+                                    <layout>
+                                        <script type="text/template">
+                                    <div
+                                        class="panel-flex-1 panel-flex panel-items-stretch panel-gap-2 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-p-3">
+                                        <span
+                                            class="panel-flex panel-items-center panel-justify-center panel-bg-zinc-100 panel-rounded-xl panel-w-12 panel-h-12">
+                                            <svg width="31" height="31">
+                                                <use href="/userPanel/images/panel-sprite-icons.svg#icon-all-point">
+                                                </use>
+                                            </svg>
+                                        </span>
+                                        <div class="panel-flex panel-flex-col panel-justify-between">
+                                            <span class="panel-text-xs panel-text-zinc-900">اعتبار کل (ریال)</span>
+                                            @child
+                                        </div>
+                                    </div>
+                                </script>
+                                    </layout>
+                                    <face>
+                                        <script type="text/template">
+                                        <span class="panel-text-zinc-900 panel-font-bold">@total_credit@</span>
+                                    </script>
+                                    </face>
+                                </basis>
+                            </div>
+                        </section>
                     </div>
                     <div class=" panel-bg-white panel-rounded-2xl panel-p-6 panel-mt-3">
                         <section class="panel-w-full">
@@ -605,7 +693,7 @@
             return s === "" ? fallback : s;
         }
 
-       
+
 
         function setBcSourceSafe(key, value) {
             if (!window.$bc || typeof $bc.setSource !== "function") {
@@ -1126,7 +1214,7 @@
                     }
                 ],
                 mode: "grid",
-                pageCount: false
+                pageCount: 5
             };
         }
 

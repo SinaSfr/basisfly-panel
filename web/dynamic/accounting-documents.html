@@ -17,7 +17,7 @@
     url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]" method="post" body='{
 "lid": 1,
 "factorid": "{##cms.search.factorid##}",
-"accnumber": "{##cms.search.accnumber##}",
+"doctype": "{##cms.search.doctype##}",
 "fromdate": "{##cms.search.fromdate##}",
 "todate": "{##cms.search.todate##}"
 }' content-type="application/json" run="atclient" triggers="cms.search" onProcessed="onProcessedReportDoc">
@@ -33,6 +33,10 @@
 <basis core="api" name="credit-excel" url="https://basisfly.com/accounting/get_report-document/[##cms.cookie.rkey##]"
     method="post" body='{##cms.creditExcel.query##}' content-type="application/json" run="atclient"
     triggers="cms.creditExcel" if="{##cms.creditExcel.run|(false)##}" OnProcessed="onProcessedGetExcel"></basis>
+
+<basis core="api" name="api.doctype" url="https://basisfly.com/accounting/doctypename" method="post" body='{"lid":"1"}'
+    content-type="application/json" run="atclient" onProcessed="onProcessedSearch_item">
+</basis>
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -71,10 +75,11 @@
                             <input id="accountingFactoridInput" type="text" name="factorid" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                    focus:panel-shadow-md
                                    panel-transition panel-duration-300" placeholder="شماره قرارداد:">
-                            <div class="panel-relative">
-                                <input type="text" name="_root.doctype" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
+                            <div class="panel-relative" data-dd-key="doctype">
+                                <input data-dd-input type="text" name="_root.doctype" id="" class="panel-w-72 panel-h-12 panel-bg-zinc-100 panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-placeholder-zinc-400 panel-rounded-xl panel-outline-none  focus:panel-border-primary-800 focus:panel-bg-white
                                 focus:panel-shadow-md
                                 panel-transition panel-duration-300" placeholder="عنوان سند:">
+                                <input type="hidden" name="doctypeid" value="">
                                 <svg width="48" height="48"
                                     class="panel-absolute panel-left-2 panel-top-0 panel-text-zinc-500">
                                     <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down"></use>
@@ -93,7 +98,7 @@
                                 </svg>
                             </div>
                             <button
-                                class="panel-form__btn panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105"
+                                class="panel-form__btn panel-w-12 panel-h-12 panel-flex panel-items-center panel-justify-center panel-overflow-hidden panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105"
                                 aria-label="جستجو">
                                 <svg width="24" height="24" class="panel-text-white">
                                     <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
@@ -227,7 +232,7 @@
                         </div>
 
                         <div class="panel_grid_style panel-credit__excel panel-hidden" data-panel="credit" data-run="0">
-                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.credit"
+                            <basis core="component.grid.grid" run="atclient" dataMemberName="cms.creditList"
                                 options="creditItems" onRendered="onRenderedShowContent"></basis>
                         </div>
 
@@ -240,6 +245,20 @@
                 </div>
             </div>
         </main>
+        <div id="sharedDropdown"
+            class="panel-hidden panel-fixed panel-z-50 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-overflow-hidden"
+            role="listbox" aria-label="dropdown">
+
+
+            <div class="panel-p-3 panel-border-b panel-border-solid panel-border-zinc-200">
+                <input id="sharedDropdownSearch" type="text"
+                    class="panel-w-full panel-h-12 panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white panel-transition panel-duration-300"
+                    placeholder="جستجو..." />
+            </div>
+
+
+            <div id="sharedDropdownList" class="panel-max-h-40 panel-overflow-y-auto panel-p-2"></div>
+        </div>
     </basis>
     <!-- Footer-->
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
@@ -350,8 +369,6 @@
                 const credit =
                     responseJson?.sources?.find(s => s?.options?.tableName === "db.credit")?.data || [];
 
-                $bc.setSource("cms.report", Array.isArray(report) ? report : []);
-                $bc.setSource("cms.credit", Array.isArray(credit) ? credit : []);
 
                 const totalData =
                     responseJson?.sources?.find(s => s?.options?.tableName === "db.total")?.data || [];
@@ -375,18 +392,20 @@
                     }
                 };
 
+                $bc.setSource("cms.report", Array.isArray(report) ? report : []);
+                $bc.setSource("cms.creditList", Array.isArray(credit) ? credit : []);
                 $bc.setSource("cms.total", totalView);
 
                 const formContainer = document.querySelector("#accountingDocumentForm");
-                const formBtn = formContainer?.querySelector(".panel-form__btn");  // استفاده از querySelector به جای closest
+                const formBtn = formContainer?.querySelector(".panel-form__btn");  
 
                 if (formBtn) {
-                    buttonLoading(formBtn, false);  // فقط زمانی که دکمه پیدا شد لودینگ خاموش می‌شود
+                    buttonLoading(formBtn, false); 
                 }
             } catch (e) {
                 console.error(e);
                 $bc.setSource("cms.report", []);
-                $bc.setSource("cms.credit", []);
+                $bc.setSource("cms.creditList", []);
                 $bc.setSource("cms.total", { info: {} });
             }
         }
@@ -514,7 +533,7 @@
             const main_json = {
                 lid: 1,
                 factorid: getValue("#accountingFactoridInput"),
-                accnumber: getValue(".accnumber") || '',
+                doctype: getValue('input[name="doctypeid"]') || '',
                 fromdate: start_date,
                 todate: end_date,
             };
@@ -596,24 +615,51 @@
                     title: "توضیحات",
                     filter: false,
                     sort: false,
+                    cssClass: ['panel-w-52'],
                     cellMaker: (row, data, td) => {
-                        if (!row?.description) return '';
+                        const d = row?.description || {};
+                        const chips = [];
 
-                        let description = '';
-
-                        if (row.description.desc) {
-                            description += `<span>${row.description.desc}</span>`;
+                        if (d?.desc) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5">
+        ${d.desc}
+      </span>
+    `);
                         }
 
-                        if (row.description.bankname) {
-                            description += `<span> / ${row.description.bankname}</span>`;
+                        if (d?.bankname) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5">
+        ${d.bankname}
+      </span>
+    `);
                         }
 
-                        if (row.description.refnumber) {
-                            description += `<span> / ${row.description.refnumber}</span>`;
+                        if (d?.refnumber) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5 panel-ltr">
+        ${d.refnumber}
+      </span>
+    `);
                         }
 
-                        return description;
+                        if (row?.factorid) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-50 panel-border panel-border-zinc-200 panel-px-2 panel-py-0.5">
+        <span class="panel-text-zinc-500">شماره قرارداد:</span>
+        <span class="panel-font-medium panel-ml-1">${row.factorid}</span>
+      </span>
+    `);
+                        }
+
+                        if (!chips.length) return '';
+
+                        return `
+    <div class="panel-flex panel-flex-wrap panel-justify-center panel-gap-2 panel-text-sm">
+      ${chips.join("")}
+    </div>
+  `;
                     }
                 },
                 date: {
@@ -663,7 +709,8 @@
                     tooltip: "دانلود اکسل"
                 }
             ],
-            mode: "grid"
+            mode: "grid",
+            pageCount: 5
         };
 
 
@@ -731,25 +778,51 @@
                     title: "توضیحات",
                     filter: false,
                     sort: false,
+                    cssClass: ['panel-w-52'],
                     cellMaker: (row, data, td) => {
+                        const d = row?.description || {};
+                        const chips = [];
 
-                        const d = row?.description;
-                        if (!d) return '';
-
-                        let description = '';
-
-                        if (d.desc) {
-                            description += `<span>${d.desc}</span>`;
-                        }
-                        if (d.bankname) {
-                            description += `<span> / ${d.bankname}</span>`;
-                        }
-                        if (d.refnumber) {
-                            description += `<span> / ${d.refnumber}</span>`;
+                        if (d?.desc) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5">
+        ${d.desc}
+      </span>
+    `);
                         }
 
-                        return description;
+                        if (d?.bankname) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5">
+        ${d.bankname}
+      </span>
+    `);
+                        }
 
+                        if (d?.refnumber) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-100 panel-px-2 panel-py-0.5 panel-ltr">
+        ${d.refnumber}
+      </span>
+    `);
+                        }
+
+                        if (row?.factorid) {
+                            chips.push(`
+      <span class="panel-rounded-lg panel-bg-zinc-50 panel-border panel-border-zinc-200 panel-px-2 panel-py-0.5">
+        <span class="panel-text-zinc-500">شماره قرارداد:</span>
+        <span class="panel-font-medium panel-ml-1">${row.factorid}</span>
+      </span>
+    `);
+                        }
+
+                        if (!chips.length) return '';
+
+                        return `
+    <div class="panel-flex panel-flex-wrap panel-justify-center panel-gap-2 panel-text-sm">
+      ${chips.join("")}
+    </div>
+  `;
                     }
 
 
@@ -818,7 +891,7 @@
                 }
             ],
             mode: "grid",
-            pageCount: false
+            pageCount: 5
         };
 
 

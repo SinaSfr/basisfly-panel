@@ -1290,7 +1290,7 @@ main {
 }
 
 .panel_grid_style [data-bc-grid="d1"] table[data-bc-table] tbody td {
-  padding: 12px 0 !important;
+  padding: 12px 4px !important;
 }
 
 .panel_grid_style [data-bc-grid="d1"] table[data-bc-table] tbody td:first-child {

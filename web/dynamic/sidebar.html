@@ -14,9 +14,20 @@
                     <span class="default-name"></span><span class="default-family"></span>
                 </h2>
                 <p class="panel-text-xs panel-text-zinc-600 panel-font-medium panel-userProfile__agancy"></p>
+
                 <p class="panel-flex panel-gap-0.5 panel-text-xs panel-text-zinc-500 panel-mt-2">موجودی:
-                    <span>140/000/000</span><span>تومان</span>
+                    <basis core="print" datamembername="cms.credit" run="atclient">
+                        <face>
+                            <script type="text/template">
+                                <span>@Remaining_credit@</span>
+                            </script>
+                        </face>
+                    </basis>
+                    <span class="panel-currency__title"></span>
                 </p>
+
+
+
             </div>
         </div>
         <div
@@ -157,33 +168,6 @@
         }
     </script>
     <script>
-        async function comgroupAgencySidebarcallback(args) {
-            try {
-                let rows =
-                    args?.source?.rows ||
-                    args?.source?._rows ||
-                    args?.source?.source?.rows ||
-                    args?.source?.source?._rows ||
-                    null
-
-                const item = Array.isArray(rows) && rows.length ? rows[0] : null
-                const agencyName = String(item?.agency?.name ?? '').trim()
-
-                const el = document.querySelector('.panel-userProfile__agancy')
-                if (!el) return
-
-                if (!agencyName) {
-                    el.textContent = ''
-                    el.classList.add('panel-hidden')
-                    return
-                }
-
-                el.textContent = `از آژانس ${agencyName}`
-                el.classList.remove('panel-hidden')
-            } catch (e) {
-                console.error('comgroupAgencySidebarcallback error:', e)
-            }
-        }
         window.currencyTitle = "";
         window.currencyId = "";
 
@@ -192,18 +176,75 @@
                 const responseJson = await args.response.json();
 
                 let row = null;
-
                 if (responseJson && typeof responseJson === "object" && ("id" in responseJson || "title" in responseJson)) {
                     row = responseJson;
                 }
 
                 window.currencyTitle = (row?.title ?? "").toString();
                 window.currencyId = (row?.id ?? "").toString();
+                document.querySelectorAll('.panel-currency__title').forEach((el) => {
+                    el.textContent = window.currencyTitle;
+                });
 
             } catch (e) {
                 console.error(e);
                 window.currencyTitle = "";
                 window.currencyId = "";
+
+                document.querySelectorAll('.panel-currency__title').forEach((el) => {
+                    el.textContent = "";
+                });
+            }
+        }
+
+
+        async function onProcessedVerifyUserCredit(args) {
+            const formatNumber = (val) => {
+                const num = Number(val ?? 0) || 0;
+                return Intl.NumberFormat().format(num);
+            };
+            try {
+                const responseJson = await args.response.json();
+                const rawList = Array.isArray(responseJson) ? responseJson : [];
+                const item = rawList[0] || {};
+
+                const agencyOwnerid = item?.agency?.id;
+                const agencyName = String(item?.agency?.name ?? '').trim();
+                const credit = item?.credit ?? {};
+
+                $bc.setSource("cms.ownerid", [{
+                    reciverownerid: agencyOwnerid,
+                    run: true,
+                }]);
+                $bc.setSource("cms.credit", {
+                    total_credit: formatNumber(credit.total_credit),
+                    debtor: formatNumber(credit.debtor),
+                    creditor: formatNumber(credit.creditor),
+                    Remaining_credit: formatNumber(credit.Remaining_credit),
+                });
+
+                // --- agency name render (replaces comgroupAgencySidebarcallback) ---
+                const el = document.querySelector('.panel-userProfile__agancy');
+                if (el) {
+                    if (!agencyName) {
+                        el.textContent = '';
+                        el.classList.add('panel-hidden');
+                    } else {
+                        el.textContent = `از آژانس ${agencyName}`;
+                        el.classList.remove('panel-hidden');
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+                $bc.setSource("cms.ownerid", []);
+                $bc.setSource("cms.credit", {});
+
+                // optional: hide agency on error too
+                const el = document.querySelector('.panel-userProfile__agancy');
+                if (el) {
+                    el.textContent = '';
+                    el.classList.add('panel-hidden');
+                }
             }
         }
     </script>
