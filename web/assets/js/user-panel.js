@@ -1,22 +1,327 @@
-let translations = {}
-let currentLanguage = document.documentElement.lang || 'fa'
-const loadTranslations = async () => {
-  try {
-    const res = await fetch(`/userPanel/json/translations?lid=1`)
-    translations = await res.json()
-    currentLanguageTranslate = currentLanguage
-  } catch (e) {
-    console.error('Failed to load translations')
+/******************************************************************
+ * Helper Functions for UI Feedback and Date Handling
+ * 
+ * This section contains utility functions used for:
+ * 1. Managing button loading states (`buttonLoading`)
+ * 2. Showing success/failure messages in panels (`showSuccessMessage`, `showFailedMessage`, `hideMessages`)
+ * 3. Ensuring message hosts exist (`ensureMessages`, `resolveHost`)
+ * 4. Working with Jalali (Persian) dates (`padJalaliDate`, `jalaliToGregorian`, `replaceSlashWithDash`)
+ * 
+ * These functions are reusable helpers to make UI interactions
+ * and date manipulations consistent across the application.
+ ******************************************************************/
+
+/**
+ * Toggle a button's loading state
+ * @param {HTMLElement} btn - The button element
+ * @param {boolean} state - true to show loading, false to restore original
+ */
+function buttonLoading(btn, state = true) {
+  if (!btn) return;
+
+  if (state) {
+    // Prevent repeated loading state
+    if (btn.classList.contains("is-loading")) return;
+
+    btn.classList.add("is-loading");
+
+    // Store previous disabled state (if not stored yet)
+    if (btn.dataset.wasDisabled == null) {
+      btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
+    }
+
+    // Store original content (only once)
+    if (btn.dataset.oldText == null) {
+      btn.dataset.oldText = btn.innerHTML;
+    }
+
+    btn.disabled = true;
+    btn.setAttribute("aria-busy", "true");
+
+    // Replace content with loading spinner
+    btn.innerHTML = '<div class="panel-loading__btn"></div>';
+  } else {
+    // Restore button to original state
+    if (btn.dataset.oldText == null) return;
+
+    btn.classList.remove("is-loading");
+    btn.removeAttribute("aria-busy");
+
+    if (btn.dataset.oldText != null) btn.innerHTML = btn.dataset.oldText;
+
+    btn.disabled = btn.dataset.wasDisabled === "1";
+
+    delete btn.dataset.oldText;
+    delete btn.dataset.wasDisabled;
   }
 }
 
-const translate = (text) =>
-  translations[text]?.[currentLanguageTranslate] || text
+/**
+* Ensure the host element for messages exists.
+* If it doesn't exist, clone it from a template.
+* @param {HTMLElement} hostEl - The host element to attach messages to
+* @returns {HTMLElement|null} The host element or null if not found
+*/
+function ensureMessages(hostEl) {
+  if (!hostEl) return null;
+  if (hostEl.__messagesReady) return hostEl;
 
-;(async () => {
-  await loadTranslations()
-})()
-;(() => {
+  const tpl = document.getElementById("panel-message__template");
+  if (!tpl) return null;
+
+  hostEl.appendChild(tpl.content.cloneNode(true));
+  hostEl.__messagesReady = true;
+  return hostEl;
+}
+
+/**
+* Resolve the proper host element for showing messages
+* @param {HTMLElement} fromElOrHost - Element that contains or is the host
+* @returns {HTMLElement|undefined} The resolved host element
+*/
+function resolveHost(fromElOrHost) {
+  if (fromElOrHost instanceof Element) {
+    if (fromElOrHost.classList.contains("panel-message__host")) return fromElOrHost;
+    const inside = fromElOrHost.querySelector?.(".panel-message__host");
+    if (inside) return inside;
+  }
+}
+
+/**
+* Show a success message in a panel
+* @param {HTMLElement} fromElOrHost - Element or host where message will appear
+* @param {string} text - Optional message text (default: translated 'completed')
+*/
+function showSuccessMessage(fromElOrHost, text = translate('completed')) {
+  const host = ensureMessages(resolveHost(fromElOrHost));
+  if (!host) return;
+
+  const successWrap = host.querySelector(".panel-successed__message__content");
+  const failedWrap = host.querySelector(".panel-failed__message__content");
+  const span = host.querySelector(".panel-message__success-text");
+
+  // Hide failure, show success
+  failedWrap?.classList.add("panel-hidden");
+  if (span && text != null) span.textContent = String(text);
+  successWrap?.classList.remove("panel-hidden");
+}
+
+/**
+* Show a failed message in a panel
+* @param {HTMLElement} fromElOrHost - Element or host where message will appear
+* @param {string} text - Optional message text (default: translated 'update_failed')
+*/
+function showFailedMessage(fromElOrHost, text = translate('update_failed')) {
+  const host = ensureMessages(resolveHost(fromElOrHost));
+  if (!host) return;
+
+  const successWrap = host.querySelector(".panel-successed__message__content");
+  const failedWrap = host.querySelector(".panel-failed__message__content");
+  const span = host.querySelector(".panel-message__failed-text");
+
+  // Hide success, show failure
+  successWrap?.classList.add("panel-hidden");
+  if (span && text != null) span.textContent = String(text);
+  failedWrap?.classList.remove("panel-hidden");
+}
+
+/**
+* Hide both success and failed messages in a panel
+* @param {HTMLElement} fromElOrHost - Element or host where messages exist
+*/
+function hideMessages(fromElOrHost) {
+  const host = ensureMessages(resolveHost(fromElOrHost));
+  if (!host) return;
+
+  host.querySelector(".panel-successed__message__content")?.classList.add("panel-hidden");
+  host.querySelector(".panel-failed__message__content")?.classList.add("panel-hidden");
+}
+
+/**
+* Pad a Jalali (Persian) date string to format YYYY/MM/DD
+* @param {string} dateString - Input date string (e.g., 1402/1/5)
+* @returns {string} Padded date string (e.g., 1402/01/05)
+*/
+function padJalaliDate(dateString) {
+  if (!dateString) return '';
+
+  const parts = dateString.split('/');
+  if (parts.length !== 3) return dateString;
+
+  let [y, m, d] = parts;
+
+  m = String(parseInt(m)).padStart(2, '0');
+  d = String(parseInt(d)).padStart(2, '0');
+
+  return `${y}/${m}/${d}`;
+}
+
+/**
+* Convert a Jalali date string to Gregorian (YYYY-MM-DD)
+* @param {string} dateString - Jalali date string (e.g., 1402/01/05)
+* @returns {string} Gregorian date string (e.g., 2023-03-25)
+*/
+function jalaliToGregorian(dateString) {
+  if (!dateString) return '';
+
+  const parts = dateString.split('/');
+  if (parts.length !== 3) return '';
+
+  let jy = parseInt(parts[0]);
+  let jm = parseInt(parts[1]);
+  let jd = parseInt(parts[2]);
+
+  // Conversion algorithm
+  jy += 1595;
+  let days = -355668 + (365 * jy) +
+    Math.floor(jy / 33) * 8 +
+    Math.floor(((jy % 33) + 3) / 4) +
+    jd +
+    (jm < 7 ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+
+  let gy = 400 * Math.floor(days / 146097);
+  days %= 146097;
+
+  if (days > 36524) {
+    gy += 100 * Math.floor(--days / 36524);
+    days %= 36524;
+    if (days >= 365) days++;
+  }
+
+  gy += 4 * Math.floor(days / 1461);
+  days %= 1461;
+
+  if (days > 365) {
+    gy += Math.floor((days - 1) / 365);
+    days = (days - 1) % 365;
+  }
+
+  let gd = days + 1;
+
+  const months = [
+    0, 31,
+    (gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0 ? 29 : 28,
+    31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+  ];
+
+  let gm;
+  for (gm = 1; gm <= 12 && gd > months[gm]; gm++) {
+    gd -= months[gm];
+  }
+
+  return `${gy}-${String(gm).padStart(2, '0')}-${String(gd).padStart(2, '0')}`;
+}
+
+/**
+* Replace slashes "/" in a date string with dashes "-"
+* @param {string} dateString - Input date string
+* @returns {string} Date string with "-" instead of "/"
+*/
+function replaceSlashWithDash(dateString) {
+  if (!dateString) return '';
+  return dateString.replace(/\//g, '-');
+}
+
+/******************************************************************
+ * Datepicker Initialization and Input Setup
+ *
+ * This section handles:
+ * 1. Default settings for the datepicker widget (`datepickerHasRangesSetting`)
+ * 2. Adding placeholders to all date-picker input fields (`OnRenderedSetDatePickerPH`)
+ *
+ * The goal is to ensure consistent UI/UX for date selection across the app,
+ * including localized text and optional date range support.
+ ******************************************************************/
+
+// Initialize default datepicker settings if not already defined
+if (typeof datepickerHasRangesSetting === "undefined") {
+  var datepickerHasRangesSetting = {
+    dateProvider: "basisCalendar",   // Source of dates (custom calendar backend)
+    displayNote: false,               // Whether to show extra notes on calendar
+    culture: "fa",                    // Primary culture for display (Persian)
+    secondCulture: "en",              // Secondary culture (English)
+    lid: 1,                            // Language ID (likely used internally)
+    todayButton: true,                // Show "Today" button in the calendar
+    rangeDates: true,                 // Enable selecting date ranges
+    // rangeDatesSeparated: true,     // Optional: separate start/end inputs (commented out)
+    type: "click",                    // How calendar opens (click-triggered)
+    mode: "desktop",                  // Desktop mode styling
+    style: "[##cms.cms.cdn##]/booking/css/datepicker.ui.min.css", // Path to CSS file
+  }
+};
+
+/**
+* Setup date-picker input fields after rendering
+* Adds placeholder text and any other required attributes
+*/
+async function OnRenderedSetDatePickerPH() {
+  // Select all input elements that should use the datepicker
+  const datePickerInputs = document.querySelectorAll(".date-picker-input");
+
+  if (datePickerInputs) {
+    // Loop through each input and add placeholder
+    datePickerInputs.forEach((datePickerInput) => {
+      datePickerInput.setAttribute("placeholder", translate('select_date')); // Localized placeholder
+    })
+  }
+};
+
+// 🔹 Translation system for the panel
+// Handles loading translations, providing sync and async translation functions
+
+const translateState = {
+  // Store all loaded translations as { key: { fa: "...", en: "..." } }
+  translations: {},
+
+  // Current language, fallback to 'fa' if not set in <html lang="">
+  lang: (document.documentElement.lang || 'fa').split('-')[0],
+
+  // Whether translations have finished loading
+  ready: false,
+
+  // Promise that resolves when translations finish loading (to avoid duplicate fetches)
+  readyPromise: null
+};
+
+// ⭐ Load translations from server (async)
+const loadTranslations = async () => {
+  // Return existing promise if already loading
+  if (translateState.readyPromise) return translateState.readyPromise;
+
+  // Store the loading promise
+  translateState.readyPromise = (async () => {
+    try {
+      // Fetch translation JSON from server
+      const res = await fetch(`/userPanel/json/translations?lid=1`, { cache: "force-cache" });
+
+      // Parse JSON and store
+      translateState.translations = await res.json();
+      translateState.ready = true;
+    } catch (e) {
+      console.error("Failed to load translations", e);
+    }
+  })();
+
+  return translateState.readyPromise;
+};
+
+// ⭐ Translate a key synchronously (safe, returns key if not loaded yet)
+const translate = (key) => {
+  if (!translateState.ready) return key;
+  // Return translation for current language, fallback to key if missing
+  return translateState.translations[key]?.[translateState.lang] || key;
+};
+
+// ⭐ Translate a key asynchronously (waits for translations to load if needed)
+const translateAsync = async (key) => {
+  await loadTranslations();
+  return translateState.translations[key]?.[translateState.lang] || key;
+};
+
+// ⭐ Auto load translations immediately on script load
+loadTranslations();
+
+; (() => {
   const visibilityAmountBtn = document.querySelector('[data-toggle-amount]')
   const panelWalletAmount = document.querySelector('.panel-credit__amount')
   if (!visibilityAmountBtn || !panelWalletAmount) return
@@ -521,13 +826,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nationalityDropdown.classList.remove('panel-hidden')
     nationalityDropdown.innerHTML =
-      '<div class="panel-w-full panel-h-12"><span class="loader panel-flex panel-mx-auto"></span></div>'
+      '<div class="panel-w-full panel-h-12"><span class="panel-loading__btn panel-flex panel-mx-auto"></span></div>'
 
     $bc.setSource('cms.autoSearch', [
       {
         term: value,
-        type: 'کشور',
-        lang: 'fa',
+        type: translate('country'),
+        lang: translateState.lang,
         run: true,
       },
     ])
@@ -714,7 +1019,7 @@ function clearAllHighlights() {
 }
 
 //------------------------Advanced Search --------------------------
-;(() => {
+; (() => {
   const openBtn = document.getElementById('btnOpenAdvancedSearch')
   const modalId =
     openBtn?.getAttribute('data-modal-open') || 'advancedContractSearch'
@@ -755,47 +1060,47 @@ function clearAllHighlights() {
   })
 })()
 
-//----------------clear advanced search---------------------
-;(() => {
-  const modal = document.getElementById('advancedContractSearch')
-  const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
+  //----------------clear advanced search---------------------
+  ; (() => {
+    const modal = document.getElementById('advancedContractSearch')
+    const clearBtn = document.getElementById('btnClearAdvancedSearchFilters')
 
-  if (!modal || !clearBtn) return
+    if (!modal || !clearBtn) return
 
-  const clearAdvancedSearchFilters = () => {
-    const scope = modal
+    const clearAdvancedSearchFilters = () => {
+      const scope = modal
 
-    scope
-      .querySelectorAll(
-        'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
-      )
-      .forEach((el) => {
+      scope
+        .querySelectorAll(
+          'input[type="text"], input[type="search"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"]',
+        )
+        .forEach((el) => {
+          el.value = ''
+          el.dispatchEvent(new Event('input', { bubbles: true }))
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope
+        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+        .forEach((el) => {
+          el.checked = false
+          el.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+      scope.querySelectorAll('textarea').forEach((el) => {
         el.value = ''
         el.dispatchEvent(new Event('input', { bubbles: true }))
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
 
-    scope
-      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-      .forEach((el) => {
-        el.checked = false
+      scope.querySelectorAll('select').forEach((el) => {
+        el.selectedIndex = 0
         el.dispatchEvent(new Event('change', { bubbles: true }))
       })
+    }
 
-    scope.querySelectorAll('textarea').forEach((el) => {
-      el.value = ''
-      el.dispatchEvent(new Event('input', { bubbles: true }))
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-
-    scope.querySelectorAll('select').forEach((el) => {
-      el.selectedIndex = 0
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-  }
-
-  clearBtn.addEventListener('click', clearAdvancedSearchFilters)
-})()
+    clearBtn.addEventListener('click', clearAdvancedSearchFilters)
+  })()
 
 // ----------dropdown menu (advanced search)--------------
 /* =========================================================
@@ -1049,26 +1354,26 @@ document.addEventListener('DOMContentLoaded', () => {
     },
 
     status: {
-      ph: translate('status'),
+      ph: translate('status_placeholder'),
       items: [
-        { value: '0', label: translate('contract') },
-        { value: '1', label: translate('pre_contract') },
+        { value: '0', label: 'contract' },
+        { value: '1', label: 'pre_contract' },
       ],
     },
 
     tag: {
       ph: translate('tag'),
       items: [
-        { value: '', label: translate('all_contracts') },
-        { value: '0', label: translate('unsettled_contracts') },
-        { value: '1', label: translate('online_settled_contracts') },
-        { value: '3', label: translate('edited_contracts') },
-        { value: '4', label: translate('canceled_contracts') },
-        { value: '7', label: translate('not_canceled_contracts') },
-        { value: '2', label: translate('unsettled_finance_approved') },
-        { value: '5', label: translate('finance_settled_contracts') },
-        { value: '6', label: translate('credit_payment_contracts') },
-        { value: '8', label: translate('credit_payment_finance_settled') },
+        { value: '', label: 'all_contracts' },
+        { value: '0', label: 'unsettled_contracts' },
+        { value: '1', label: 'online_settled_contracts' },
+        { value: '3', label: 'edited_contracts' },
+        { value: '4', label: 'canceled_contracts' },
+        { value: '7', label: 'not_canceled_contracts' },
+        { value: '2', label: 'unsettled_finance_approved' },
+        { value: '5', label: 'finance_settled_contracts' },
+        { value: '6', label: 'credit_payment_contracts' },
+        { value: '8', label: 'credit_payment_finance_settled' },
       ],
     },
 
@@ -1129,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.setAttribute('role', 'option')
       btn.dataset.value = toStr(item.value)
       btn.dataset.label = toStr(item.label)
-      btn.textContent = toStr(item.label)
+      btn.textContent = translate(toStr(item.label))
       frag.appendChild(btn)
     })
 
@@ -1338,7 +1643,7 @@ const watchSchemaReady = ({
 
   if (isReady()) {
     applyReadyState()
-    return () => {}
+    return () => { }
   }
 
   const container = document.querySelector(containerSelector)
@@ -1703,24 +2008,24 @@ const generateDynamicFields = (type) => {
     const enddate = getValue('.tdate-string')
     const factorid = getValue('input[name="_root.factorid"]')
     const refnumber = getValue('input[name="_root.refnumber"]')
-  
+
     const isEmpty = v => v == null || v === "" || v === "0"
-  
+
     const hasSearch =
       !isEmpty(basedate) ||
       !isEmpty(begindate) ||
       !isEmpty(enddate) ||
       !isEmpty(factorid) ||
       !isEmpty(refnumber)
-  
+
     const search = hasSearch
       ? {
-          date: { basedate, begindate, enddate },
-          factorid,
-          refnumber,
-        }
+        date: { basedate, begindate, enddate },
+        factorid,
+        refnumber,
+      }
       : ""
-  
+
     return {
       name: 'db',
       mid: '20',

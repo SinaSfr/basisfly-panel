@@ -304,6 +304,11 @@
         "fa": "نام کشور",
         "ar": "اسم الدولة"
     },
+    "country": {
+        "fa": "کشور",
+        "en": "country",
+        "ar": "دولة"
+    },
     "city_name": {
         "en": "City Name",
         "fa": "نام شهر",
@@ -314,7 +319,7 @@
         "fa": "نام هتل",
         "ar": "اسم الفندق"
     },
-    "Available": {
+    "available": {
         "en": "Available",
         "fa": "در دسترس",
         "ar": "متاح"
@@ -358,5 +363,280 @@
         "en": "The operation failed",
         "fa": "عملیات با خطا انجام شد",
         "ar": "فشلت العملية"
+    },
+    "completed": {
+        "en": "Completed",
+        "fa": "تکمیل شد",
+        "ar": "اكتمل"
+    },
+    "update_failed": {
+        "en": "Update failed",
+        "fa": "به‌روزرسانی ناموفق بود",
+        "ar": "فشل التحديث"
+    },
+    "enter_contract_number": {
+        "en": "Please enter contract number",
+        "fa": "لطفا شماره قرارداد را وارد نمایید",
+        "ar": "يرجى إدخال رقم العقد"
+    },
+    "select_date": {
+        "en": "Select date",
+        "fa": "تاریخ را انتخاب کنید",
+        "ar": "اختر التاريخ"
+    },
+    "in_progress": {
+        "en": "In progress",
+        "fa": "در دست اقدام",
+        "ar": "قيد المعالجة"
+    },
+    "approved": {
+        "en": "Approved",
+        "fa": "تایید شد",
+        "ar": "تمت الموافقة"
+    },
+    "rejected": {
+        "en": "Rejected",
+        "fa": "تایید نشد",
+        "ar": "مرفوض"
+    },
+    "account_details": {
+        "en": "Account Details",
+        "fa": "مشخصات",
+        "ar": "البيانات"
+    },
+    "contract_number": {
+        "en": "Contract Number",
+        "fa": "شماره قرارداد",
+        "ar": "رقم العقد"
+    },
+    "purchase_from": {
+        "en": "Purchase from",
+        "fa": "خرید از",
+        "ar": "شراء من"
+    },
+    "purchase_supplier": {
+        "en": "Purchase Supplier",
+        "fa": "خرید تامین کننده",
+        "ar": "شراء من المورد"
+    },
+    "origin_destination": {
+        "en": "Origin-Destination",
+        "fa": "مبدا-مقصد",
+        "ar": "المصدر-الوجهة"
+    },
+    "round_trip_date": {
+        "en": "Round Trip Date",
+        "fa": "تاریخ رفت و برگشت",
+        "ar": "تاريخ الذهاب والعودة"
+    },
+    "depart": {
+        "en": "Depart",
+        "fa": "رفت",
+        "ar": "الذهاب"
+    },
+    "return": {
+        "en": "Return",
+        "fa": "برگشت",
+        "ar": "العودة"
+    },
+    "depart_date": {
+        "en": "Depart Date",
+        "fa": "تاریخ رفت",
+        "ar": "تاريخ الذهاب"
+    },
+    "return_date": {
+        "en": "Return Date",
+        "fa": "تاریخ برگشت",
+        "ar": "تاريخ العودة"
+    },
+    "ticket_not_issued": {
+        "en": "Ticket not issued",
+        "fa": "عدم صدور بلیط",
+        "ar": "لم يتم إصدار التذكرة"
+    },
+    "hotel_not_issued": {
+        "en": "Hotel not issued",
+        "fa": "عدم صدور هتل",
+        "ar": "لم يتم إصدار الفندق"
+    },
+    "insurance_not_issued": {
+        "en": "Insurance not issued",
+        "fa": "عدم صدور بیمه",
+        "ar": "لم يتم إصدار التأمين"
+    },
+    "check_with_supplier": {
+        "en": "Please check with supplier",
+        "fa": "لطفا حتما صدور یا عدم صدور را از تامین کننده پیگیری کنید",
+        "ar": "يرجى التأكد مع المورد"
+    },
+    "services_refnumber": {
+        "en": "Services / Refnumber",
+        "fa": "خدمات / Refnumber",
+        "ar": "الخدمات / رقم المرجع"
+    },
+    "amount_ Rial": {
+        "en": "Amount (Rial)",
+        "fa": "مبلغ (ریال)",
+        "ar": "المبلغ (ريال)"
+    },
+    "label_unsettled": {
+        "en": "Unsettled",
+        "fa": "تسویه نشده",
+        "ar": "غير مسوى"
+    },
+    "label_settled": {
+        "en": "Settled",
+        "fa": "تسویه شده",
+        "ar": "مسوى"
+    },
+    "label_unsettled_finance": {
+        "en": "Unsettled - Finance approved",
+        "fa": "تسویه نشده با تایید مالی",
+        "ar": "غير مسوى بموافقة المالية"
+    },
+    "label_edited": {
+        "en": "Edited",
+        "fa": "ویرایش شده",
+        "ar": "معدّل"
+    },
+    "label_canceled": {
+        "en": "Canceled",
+        "fa": "ابطال شده",
+        "ar": "ملغاة"
+    },
+    "label_credit": {
+        "en": "Credit Payment",
+        "fa": "پرداخت اعتباری",
+        "ar": "الدفع الائتماني"
+    },
+    "label_credit_finance_settled": {
+        "en": "Credit Payment - settled by finance",
+        "fa": "پرداخت اعتباری-تسویه شده توسط مالی",
+        "ar": "الدفع الائتماني - مسوى من قبل المالية"
+    },
+    "status_placeholder": {
+        "en": "Status",
+        "fa": "وضعیت",
+        "ar": "الحالة"
+    },
+    "status_pending": {
+        "en": "Pending",
+        "fa": "در انتظار",
+        "ar": "قيد الانتظار"
+    },
+    "status_not_issued": {
+        "en": "Not Issued",
+        "fa": "صادر نشده",
+        "ar": "لم يصدر"
+    },
+    "status_issued": {
+        "en": "Issued",
+        "fa": "صادر شده",
+        "ar": "تم الإصدار"
+    },
+    "operation": {
+        "en": "Operation",
+        "fa": "عملیات",
+        "ar": "العملية"
+    },
+    "passengers_adult": {
+        "en": "Adults",
+        "fa": "بزرگسال",
+        "ar": "بالغين"
+    },
+    "passengers_child": {
+        "en": "Children",
+        "fa": "کودک",
+        "ar": "أطفال"
+    },
+    "passengers_infant": {
+        "en": "Infants",
+        "fa": "نوزاد",
+        "ar": "رضع"
+    },
+    "contract_shamsi": {
+        "en": "Contract Shamsi",
+        "fa": "تاریخ شمسی قرارداد",
+        "ar": "تاريخ العقد شمسي"
+    },
+    "contract_miladi": {
+        "en": "Contract Gregorian",
+        "fa": "تاریخ میلادی قرارداد",
+        "ar": "تاريخ العقد ميلادي"
+    },
+    "contract_hour": {
+        "en": "Contract Hour",
+        "fa": "ساعت قرارداد",
+        "ar": "ساعة العقد"
+    },
+    "download_excel": {
+        "en": "Download Excel",
+        "fa": "دانلود اکسل",
+        "ar": "تحميل إكسل"
+    },
+    "enter_email_or_phone": {
+        "en": "Please enter email or phone number.",
+        "fa": "لطفاً ایمیل یا شماره تماس را وارد کنید.",
+        "ar": "يرجى إدخال البريد الإلكتروني أو رقم الهاتف."
+    },
+    "operation_execution_error": {
+        "en": "Error executing operation.",
+        "fa": "خطا در اجرای عملیات.",
+        "ar": "خطأ في تنفيذ العملية."
+    },
+    "not_admin": {
+        "en": "You do not have administrator access",
+        "fa": "شما دسترسی ادمین ندارید",
+        "ar": "ليس لديك صلاحية المشرف"
+    },
+    "success_registered": {
+        "en": "Registered successfully",
+        "fa": "با موفقیت ثبت شد",
+        "ar": "تم التسجيل بنجاح"
+    },
+    "trust_user_not_registered": {
+        "en": "This user is not registered in Trustlogin",
+        "fa": "این کاربر در Trustlogin ثبت نشده است",
+        "ar": "هذا المستخدم غير مسجل في Trustlogin"
+    },
+    "unknown_error": {
+        "en": "An unknown error occurred",
+        "fa": "خطای نامشخص رخ داد",
+        "ar": "حدث خطأ غير معروف"
+    },
+    "trust_service_error": {
+        "en": "Trust service error",
+        "fa": "خطا در سرویس Trust",
+        "ar": "خطأ في خدمة Trust"
+    },
+    "service_response_processing_error": {
+        "en": "Error processing service response",
+        "fa": "خطا در پردازش پاسخ سرویس",
+        "ar": "خطأ في معالجة استجابة الخدمة"
+    },
+    "delete_success": {
+        "en": "Deleted successfully",
+        "fa": "حذف با موفقیت انجام شد",
+        "ar": "تم الحذف بنجاح"
+    },
+    "delete_failed": {
+        "en": "Delete failed",
+        "fa": "حذف انجام نشد",
+        "ar": "فشل الحذف"
+    },
+    "payment_gateway_unavailable": {
+        "en": "Unable to connect to the electronic payment gateway.",
+        "fa": "امکان اتصال به درگاه پرداخت الکترونیک وجود ندارد.",
+        "ar": "تعذر الاتصال ببوابة الدفع الإلكتروني."
+    },
+    "server_connection_error": {
+        "en": "Server connection error",
+        "fa": "خطا در ارتباط با سرور",
+        "ar": "خطأ في الاتصال بالخادم"
+    },
+    "from_agency": {
+        "en": "From agency",
+        "fa": "از آژانس",
+        "ar": "من الوكالة"
     }
 }

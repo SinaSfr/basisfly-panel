@@ -203,6 +203,7 @@
                 const num = Number(val ?? 0) || 0;
                 return Intl.NumberFormat().format(num);
             };
+            
             try {
                 const responseJson = await args.response.json();
                 const rawList = Array.isArray(responseJson) ? responseJson : [];
@@ -230,7 +231,7 @@
                         el.textContent = '';
                         el.classList.add('panel-hidden');
                     } else {
-                        el.textContent = `از آژانس ${agencyName}`;
+                        el.textContent = translate("from_agency") + " " + agencyName;
                         el.classList.remove('panel-hidden');
                     }
                 }

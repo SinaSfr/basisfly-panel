@@ -5,7 +5,7 @@
 <basis core="callback" run="atclient" triggers="cms.new" if="{##cms.new##}" method="callback_sourcePassnegerNew">
 </basis>
 
-<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form##}" method="callbackPassengerSearch">
+<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form##}" method="passengerSearchCallback">
 </basis>
 
 <basis core="api" name="api.createpage" url="https://basisfly.com/panel/main/cms/passengers-list/[##cms.cookie.rkey##]"
@@ -119,7 +119,7 @@
                                         class="panel-modal-header panel-flex panel-items-center panel-justify-between panel-border-b panel-border-solid panel-border-zinc-200 panel-pb-5 panel-mb-5">
                                         <h2 class="panel-modal-title panel-font-bold panel-text-zinc-900">افزودن مسافر
                                         </h2>
-                                        <button id="closePassengerModal"
+                                        <button type="button" id="closePassengerModal"
                                             class="panel-modal-close-button panel-w-12 panel-h-12 panel-rounded-full panel-flex panel-items-center panel-justify-center panel-text-zinc-600 hover:panel-bg-zinc-100 panel-transition-all panel-duration-300"
                                             aria-label="Close">
                                             <svg width="48" height="48">
@@ -319,114 +319,7 @@
     <basis core="call" file="footer.inc" lid="1" pageindex="[##cms.cms.pageindex|(1)##]"></basis>
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
-    <script>
-        function buttonLoading(btn, state = true) {
-            if (!btn) return;
 
-            if (state) {
-                // جلوگیری از تکرار
-                if (btn.classList.contains("is-loading")) return;
-
-                btn.classList.add("is-loading");
-
-                // ذخیره وضعیت قبلی
-                if (btn.dataset.wasDisabled == null) {
-                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
-                }
-
-                // ذخیره محتوا (فقط یک بار)
-                if (btn.dataset.oldText == null) {
-                    btn.dataset.oldText = btn.innerHTML;
-                }
-
-                btn.disabled = true;
-                btn.setAttribute("aria-busy", "true");
-
-                // جایگزینی کامل با لودینگ
-                btn.innerHTML = '<div class="panel-loading__btn"></div>';
-            } else {
-                if (btn.dataset.oldText == null) return;
-
-                btn.classList.remove("is-loading");
-                btn.removeAttribute("aria-busy");
-
-                if (btn.dataset.oldText != null) {
-                    btn.innerHTML = btn.dataset.oldText;
-                }
-
-                btn.disabled = btn.dataset.wasDisabled === "1";
-
-                delete btn.dataset.oldText;
-                delete btn.dataset.wasDisabled;
-            }
-        }
-        function ensureMessages(hostEl) {
-            if (!hostEl) return null;
-            if (hostEl.__messagesReady) return hostEl;
-
-            const tpl = document.getElementById("panel-message__template");
-            if (!tpl) return null;
-
-            hostEl.appendChild(tpl.content.cloneNode(true));
-            hostEl.__messagesReady = true;
-            return hostEl;
-        }
-
-        function resolveHost(fromElOrHost) {
-            // 1) اگر چیزی پاس داده نشد، اولین host صفحه
-            if (!fromElOrHost) return document.querySelector(".panel-message__host");
-
-            // 2) اگر یک Element پاس داده شد
-            if (fromElOrHost instanceof Element) {
-                // اگر خود host بود
-                if (fromElOrHost.classList.contains("panel-message__host")) return fromElOrHost;
-
-                // ✅ اول داخل خودش بگرد (برای وقتی host "داخل" parent است)
-                const inside = fromElOrHost.querySelector?.(".panel-message__host");
-                if (inside) return inside;
-
-                // ✅ بعد اگر داخلش نبود، برو بالا (closest)
-                return fromElOrHost.closest(".panel-message__host") || document.querySelector(".panel-message__host");
-            }
-
-            // 3) fallback
-            return document.querySelector(".panel-message__host");
-        }
-
-        function showSuccessMessage(fromElOrHost, text = "تکمیل شد") {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            const successWrap = host.querySelector(".panel-successed__message__content");
-            const failedWrap = host.querySelector(".panel-failed__message__content");
-            const span = host.querySelector(".panel-message__success-text");
-
-            failedWrap?.classList.add("panel-hidden");
-            if (span && text != null) span.textContent = String(text);
-            successWrap?.classList.remove("panel-hidden");
-        }
-
-        function showFailedMessage(fromElOrHost, text = "به‌روزرسانی ناموفق بود") {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            const successWrap = host.querySelector(".panel-successed__message__content");
-            const failedWrap = host.querySelector(".panel-failed__message__content");
-            const span = host.querySelector(".panel-message__failed-text");
-
-            successWrap?.classList.add("panel-hidden");
-            if (span && text != null) span.textContent = String(text);
-            failedWrap?.classList.remove("panel-hidden");
-        }
-
-        function hideMessages(fromElOrHost) {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            host.querySelector(".panel-successed__message__content")?.classList.add("panel-hidden");
-            host.querySelector(".panel-failed__message__content")?.classList.add("panel-hidden");
-        }
-    </script>
     <script>
         window.lastPassengerAction = null
         async function onProcessed_save(args) {
@@ -457,7 +350,7 @@
             if (response.status === 200) {
                 const responseJson = await response.json();
                 const errorId = parseInt(responseJson.errorid);
-                const description = responseJson.description || "عملیات ناموفق بود";
+                const description = responseJson.description || translate("operation_failed");
 
                 if (errorId !== 5) {
                     showFailedMessage(hostElement, description);
@@ -465,7 +358,7 @@
                     showSuccessMessage(hostElement, description);
                 }
             } else {
-                showFailedMessage(hostElement, "خطا در ارتباط با سرور");
+                showFailedMessage(hostElement, translate("server_connection_error"));
             }
 
             if (window.lastPassengerAction === 'remove') {
@@ -496,7 +389,7 @@
         async function onProcessed_list(args) {
             const passengerListForm = document.querySelector('.passenger-list__search')
             const passengerListFormBtn =
-            passengerListForm.querySelector('.passenger-list__search-submit')
+                passengerListForm.querySelector('.passenger-list__search-submit')
             try {
                 const response = args.response;
                 const responseJson = await response.json();
@@ -737,7 +630,7 @@
         })();
 
 
-        async function callbackPassengerSearch(args) {
+        async function passengerSearchCallback(args) {
             const passengerListForm = document.querySelector('.passenger-list__search')
             if (!passengerListForm) return
 
@@ -969,7 +862,7 @@
                                 </div>`
             },
             mode: "grid",
-            pageCount: false,
+            pageCount: 5,
             refresh: true,
             refreshSourceId: "list.refresh",
         };

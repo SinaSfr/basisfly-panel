@@ -6,7 +6,7 @@
             "name": "q", 
             "type":"list",
             "request": "find_user_list"
-        }]} ' content-type="application/json" onProcessed="onProcessedFindUserList" triggers="cms.refreshCounters">
+        }]} ' content-type="application/json" onProcessed="onProcessedFindUserList" triggers="cms.operationUsers">
 </basis>
 
 
@@ -45,19 +45,16 @@
                 "type": "scalar",
                 "name": "q",
                 "request": "agency_delete_user",
-                "agency_userid": "{##cms.refreshCounters.userid##}",
+                "agency_userid": "{##cms.operationUsers.userid##}",
                 "groupid": "{##cms.userProfile.comgroupid##}"
             }
         ]
-    } ' content-type="application/json" onProcessed="onProcessedDeleteUser" triggers="cms.refreshCounters"
-    if="{##cms.refreshCounters.run|(false)##}">
+    } ' content-type="application/json" onProcessed="onProcessedDeleteUser" triggers="cms.operationUsers"
+    if="{##cms.operationUsers.run|(false)##}">
 </basis>
 
-<basis core="callback" run="atclient" triggers="api.comgroup_agency_by_user" if="{##api.comgroup_agency_by_user##}"
-    method="comgroupAgencyUserListCallback">
-</basis>
 
-<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form|(false)##}" method="callbackAddUser">
+<basis core="callback" run="atclient" triggers="cms.form" if="{##cms.form##}" method="addUserCallback">
 </basis>
 
 
@@ -225,181 +222,68 @@
         type="text/javascript"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const modal = document.querySelector(".userlist__modal");
-            const modalContent = document.querySelector(".userlist__modal-content");
-            const openBtn = document.querySelector(".userlist__modal-open");
-            const closeBtn = document.querySelector(".userlist__modal-close");
+        (function () {
+            document.addEventListener("DOMContentLoaded", () => {
+                const modal = document.querySelector(".userlist__modal");
+                const modalContent = document.querySelector(".userlist__modal-content");
+                const openBtn = document.querySelector(".userlist__modal-open");
+                const closeBtn = document.querySelector(".userlist__modal-close");
 
-            if (!modal || !openBtn) return;
+                if (!modal || !openBtn) return;
 
-            function resetMessages() {
-                if (typeof hideMessages === "function") hideMessages(modal);
-            }
+                // 🔹 Reset any messages inside the modal
+                function resetMessages() {
+                    if (typeof hideMessages === "function") hideMessages(modal);
+                }
 
-            function resetInputs() {
-                const input = modal.querySelector(".userlist__trust-input");
-                if (input) input.value = "";
-            }
+                // 🔹 Reset input fields inside the modal
+                function resetInputs() {
+                    const input = modal.querySelector(".userlist__trust-input");
+                    if (input) input.value = "";
+                }
 
-            function openModal() {
-                resetMessages();
-                resetInputs();
-                modal.classList.remove("panel-hidden");
-            }
+                // 🔹 Open modal
+                function openModal() {
+                    resetMessages();
+                    resetInputs();
+                    modal.classList.remove("panel-hidden");
+                }
 
-            function closeModal() {
-                resetMessages();
-                resetInputs();
-                modal.classList.add("panel-hidden");
-            }
+                // 🔹 Close modal
+                function closeModal() {
+                    resetMessages();
+                    resetInputs();
+                    modal.classList.add("panel-hidden");
+                }
 
-            openBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                openModal();
-            });
-
-            if (closeBtn) {
-                closeBtn.addEventListener("click", (e) => {
+                // 🔹 Event listeners
+                openBtn.addEventListener("click", (e) => {
                     e.preventDefault();
+                    openModal();
+                });
+
+                if (closeBtn) {
+                    closeBtn.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        closeModal();
+                    });
+                }
+
+                // 🔹 Close modal when clicking outside content
+                modal.addEventListener("click", (e) => {
+                    if (modalContent && modalContent.contains(e.target)) return;
                     closeModal();
                 });
-            }
 
-            // بستن با کلیک بیرون محتوا
-            modal.addEventListener("click", (e) => {
-                if (modalContent && modalContent.contains(e.target)) return;
-                closeModal();
+                // 🔹 Close modal with Escape key
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") closeModal();
+                });
             });
-
-            // بستن با Escape
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape") closeModal();
-            });
-        });
+        })();
     </script>
     <script>
-        function buttonLoading(btn, state = true) {
-            if (!btn) return;
-
-            if (state) {
-                // جلوگیری از تکرار
-                if (btn.classList.contains("is-loading")) return;
-
-                btn.classList.add("is-loading");
-
-                // ذخیره وضعیت قبلی
-                if (btn.dataset.wasDisabled == null) {
-                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
-                }
-
-                // ذخیره محتوا (فقط یک بار)
-                if (btn.dataset.oldText == null) {
-                    btn.dataset.oldText = btn.innerHTML;
-                }
-
-                btn.disabled = true;
-                btn.setAttribute("aria-busy", "true");
-
-                // جایگزینی کامل با لودینگ
-                btn.innerHTML = '<div class="panel-loading__btn"></div>';
-            } else {
-                btn.classList.remove("is-loading");
-                btn.removeAttribute("aria-busy");
-
-                // برگرداندن محتوا
-                if (btn.dataset.oldText != null) {
-                    btn.innerHTML = btn.dataset.oldText;
-                }
-
-                // برگرداندن disabled به حالت قبل
-                btn.disabled = btn.dataset.wasDisabled === "1";
-
-                // پاکسازی
-                delete btn.dataset.oldText;
-                delete btn.dataset.wasDisabled;
-            }
-        }
-        function ensureMessages(hostEl) {
-            if (!hostEl) return null;
-            if (hostEl.__messagesReady) return hostEl;
-
-            const tpl = document.getElementById("panel-message__template");
-            if (!tpl) return null;
-
-            hostEl.appendChild(tpl.content.cloneNode(true));
-            hostEl.__messagesReady = true;
-            return hostEl;
-        }
-
-        function resolveHost(fromElOrHost) {
-            // 1) اگر چیزی پاس داده نشد، اولین host صفحه
-            if (!fromElOrHost) return document.querySelector(".panel-message__host");
-
-            // 2) اگر یک Element پاس داده شد
-            if (fromElOrHost instanceof Element) {
-                // اگر خود host بود
-                if (fromElOrHost.classList.contains("panel-message__host")) return fromElOrHost;
-
-                // ✅ اول داخل خودش بگرد (برای وقتی host "داخل" parent است)
-                const inside = fromElOrHost.querySelector?.(".panel-message__host");
-                if (inside) return inside;
-
-                // ✅ بعد اگر داخلش نبود، برو بالا (closest)
-                return fromElOrHost.closest(".panel-message__host") || document.querySelector(".panel-message__host");
-            }
-
-            // 3) fallback
-            return document.querySelector(".panel-message__host");
-        }
-
-        function showSuccessMessage(fromElOrHost, text = "تکمیل شد") {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            const successWrap = host.querySelector(".panel-successed__message__content");
-            const failedWrap = host.querySelector(".panel-failed__message__content");
-            const span = host.querySelector(".panel-message__success-text");
-
-            failedWrap?.classList.add("panel-hidden");
-            if (span && text != null) span.textContent = String(text);
-            successWrap?.classList.remove("panel-hidden");
-        }
-
-        function showFailedMessage(fromElOrHost, text = "به‌روزرسانی ناموفق بود") {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            const successWrap = host.querySelector(".panel-successed__message__content");
-            const failedWrap = host.querySelector(".panel-failed__message__content");
-            const span = host.querySelector(".panel-message__failed-text");
-
-            successWrap?.classList.add("panel-hidden");
-            if (span && text != null) span.textContent = String(text);
-            failedWrap?.classList.remove("panel-hidden");
-        }
-
-        function hideMessages(fromElOrHost) {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            host.querySelector(".panel-successed__message__content")?.classList.add("panel-hidden");
-            host.querySelector(".panel-failed__message__content")?.classList.add("panel-hidden");
-        }
-    </script>
-    <script>
-        function clearMessage(scopeEl) {
-            if (typeof hideMessages === "function") hideMessages(scopeEl);
-        }
-
-        function showError(scopeEl, text) {
-            if (typeof showFailedMessage === "function") showFailedMessage(scopeEl, text);
-        }
-
-        function showSuccess(scopeEl, text) {
-            if (typeof showSuccessMessage === "function") showSuccessMessage(scopeEl, text);
-        }
-        async function callbackAddUser(args) {
+        async function addUserCallback(args) {
             const userListForm = document.querySelector(".userlist__trust-form");
             const userListinput = userListForm?.querySelector(".userlist__trust-input");
             const userListbtn = userListForm?.querySelector(".userlist__trust-submit");
@@ -408,7 +292,7 @@
 
             const username = userListinput?.value?.trim() || "";
             if (!username) {
-                showFailedMessage(userListForm, "لطفاً ایمیل یا شماره تماس را وارد کنید.");
+                showFailedMessage(userListForm, translate("enter_email_or_phone"));
                 return;
             }
 
@@ -418,7 +302,7 @@
                 $bc.setSource("cms.trustUserId", [{ result: username, run: true }]);
             } catch (err) {
                 buttonLoading(userListbtn, false);
-                showFailedMessage(userListForm, "خطا در اجرای عملیات.");
+                showFailedMessage(userListForm, translate("operation_execution_error"));
                 console.error(err);
             }
         }
@@ -437,44 +321,8 @@
             }
         }
 
-        async function comgroupAgencyUserListCallback(args) {
-            try {
-
-                let rows = null
-
-                if (args?.source) {
-                    rows =
-                        args.source.rows ||
-                        args.source._rows ||
-                        args.source.source?.rows ||
-                        args.source.source?._rows ||
-                        null
-                }
-
-                const item = Array.isArray(rows) && rows.length ? rows[0] : null
-                const title = String(item?.title ?? '').trim()
-                const agencyName = String(item?.agency?.name ?? '').trim()
-
-                const el = document.getElementById('comgroupAgencyText')
-                if (!el) return
-
-                if (!title && !agencyName) {
-                    el.textContent = ''
-                    el.classList.add('panel-hidden')
-                    return
-                }
-
-                el.textContent = agencyName
-                    ? `گروه کمیسیونی ${title} آژانس ${agencyName}`
-                    : `گروه کمیسیونی ${title}`
-
-                el.classList.remove('panel-hidden')
-            } catch (e) {
-                console.error('comgroupAgencyUserListCallback error:', e)
-            }
-        }
-        window.usedForId = Number("{##cms.refreshCounters.userid##}")
-        window.usedForAction = "{##cms.refreshCounters.action##}"
+        window.usedForId = Number("{##cms.operationUsers.userid##}")
+        window.usedForAction = "{##cms.operationUsers.action##}"
 
         async function onProcessedFindUserList(args) {
             const responseJson = await args.response.json()
@@ -489,7 +337,7 @@
                 if (container) {
                     container.innerHTML = `
             <div class="panel-memberlist__error panel-text-red-600 panel-bg-red-100 panel-text-center panel-rounded-lg panel-p-3 panel-mb-3">
-                شما ادمین نیستید
+                 ${translate("not_admin")}
             </div>
         `
                 }
@@ -540,13 +388,13 @@
 
                 switch (errorid) {
                     case 5: {
-                        showSuccessMessage(userListForm, "با موفقیت ثبت شد.");
+                        showSuccessMessage(userListForm, translate("success_registered"));
 
                         addUsedForId = Number(responseJson.usedforid);
                         window.usedForId = Number(addUsedForId);
                         window.usedForAction = "add";
 
-                        $bc.setSource("cms.refreshCounters", [{
+                        $bc.setSource("cms.operationUsers", [{
                             userid: addUsedForId
                         }]);
 
@@ -554,14 +402,14 @@
                     }
 
                     case 31: {
-                        showFailedMessage(userListForm, "این کاربر در Trustlogin ثبت نشده است.");
+                        showFailedMessage(userListForm, translate("trust_user_not_registered"));
                         break;
                     }
 
                     case 9: {
                         showFailedMessage(
                             userListForm,
-                            responseJson.description || responseJson.message || "خطای نامشخص رخ داد."
+                            responseJson.description || responseJson.message || translate("unknown_error")
                         );
                         break;
                     }
@@ -569,22 +417,22 @@
                     case 8: {
                         showFailedMessage(
                             userListForm,
-                            responseJson.message || "خطا در سرویس trust."
+                            responseJson.message || translate("trust_service_error")
                         );
                         break;
                     }
 
                     default: {
                         if (errorid && errorid !== 0) {
-                            showFailedMessage(userListForm, responseJson.message || "خطای نامشخص رخ داد.");
+                            showFailedMessage(userListForm, responseJson.message || translate("unknown_error"));
                         } else {
-                            showSuccessMessage(userListForm, "با موفقیت ثبت شد.");
+                            showSuccessMessage(userListForm, translate("success_registered"));
                         }
                     }
                 }
             } catch (err) {
                 buttonLoading(btn, false);
-                showFailedMessage(userListForm, "خطا در پردازش پاسخ سرویس.");
+                showFailedMessage(userListForm, translate("service_response_processing_error"));
                 console.error(err);
             }
         }
@@ -622,7 +470,7 @@
             window.usedForId = Number(removedId);
             window.usedForAction = "remove";
 
-            $bc.setSource("cms.refreshCounters", [{
+            $bc.setSource("cms.operationUsers", [{
                 userid: removedId,
                 run: true,
             }]);
@@ -645,17 +493,17 @@
                 }
 
                 if (ok) {
-                    showSuccessMessage(modal, "حذف با موفقیت انجام شد");
+                    showSuccessMessage(modal, translate("delete_success"));
                     setTimeout(() => closeRemoveUserModal(), 1500);
                 } else {
-                    showFailedMessage(modal, res?.message || "حذف انجام نشد");
+                    showFailedMessage(modal, res?.message || translate("delete_failed"));
                 }
             } catch (err) {
                 if (btn) {
                     buttonLoading(btn, false);
                     delete btn.dataset.loading;
                 }
-                showFailedMessage(modal, "خطا در پردازش پاسخ سرویس");
+                showFailedMessage(modal, translate("service_response_processing_error"));
                 console.error(err);
             }
         }
@@ -757,7 +605,7 @@
             },
 
             mode: "grid",
-            pageCount: false
+            pageCount: 5
         }
 
     </script>

@@ -1,5 +1,6 @@
 <basis core="callback" run="atclient" method="setPage" triggers="list.refresh"></basis>
-<basis core="callback" run="atclient" triggers="cms.form" method="callback_sourceInvoiceList">
+<basis core="callback" run="atclient" triggers="cms.traveldateform cms.contractdateform"
+    method="invoiceListSearchCallback">
 </basis>
 <basis core="api" name="api.booking" run="atclient"
     url="https://basisfly.com/panel/main/multi-list/[##cms.cookie.rkey##]?question=list,total" method="post" body='{
@@ -20,7 +21,7 @@
             "perpage": "20"
         }
     ]
-}' content-type="application/json" triggers="cms.search cms.paging" onProcessed="onProcessedInvoice_list">
+}' content-type="application/json" triggers="cms.search cms.paging" onProcessed="onProcessedInvoicelist">
 </basis>
 
 <basis core="api" name="api.excelBooking" run="atclient"
@@ -74,8 +75,7 @@
                 <basis core="call" file="userPanel/dom/loading" lid="1"></basis>
                 <div class="panel-main__content panel-hidden panel-flex-1 panel-bg-white panel-rounded-2xl panel-p-6">
                     <div class="panel-flex panel-items-end panel-justify-between">
-                        <form bc-triggers="submit" name="cms.form" onsubmit="submit_form_invoice(this,event)"
-                            class="panel-mb-0">
+                        <form bc-triggers="submit" name="cms.contractdateform" class="panel-mb-0">
                             <div class="panel-flex panel-items-center panel-gap-3">
                                 <h2 class="panel-text-zinc-900 panel-font-medium">جستجو براساس تاریخ قرارداد</h2>
                                 <input type="hidden" name="_root.date.basedate" value="0">
@@ -85,7 +85,8 @@
                                         <input type="hidden" class="fdate-string" name="_root.date.begindate">
                                         <input type="hidden" class="tdate-string" name="_root.date.enddate">
                                         <basis core="component.calendar.datepicker" name="datepicker" run="atclient"
-                                            options="datepickerHasRangesSetting" OnRendered="OnRenderedStorage"></basis>
+                                            options="datepickerHasRangesSetting" OnRendered="OnRenderedSetDatePickerPH">
+                                        </basis>
                                         <svg width="48" height="48"
                                             class="panel-absolute panel-left-2 panel-top-1 panel-text-zinc-500">
                                             <use href="/userPanel/images/panel-sprite-icons.svg#icon-chevron-down">
@@ -103,7 +104,7 @@
                                         placeholder="جستجو بر اساس شماره رفرنس" class="panel-bg-zinc-100 panel-rounded-xl panel-border panel-border-solid panel-border-zinc-200 panel-px-4 panel-w-60 panel-h-14 panel-placeholder-zinc-400 panel-outline-none focus:panel-border-primary-800 focus:panel-bg-white
                                 focus:panel-shadow-md panel-transition panel-duration-300">
                                     <button
-                                        class="panel-contractSearch__btn panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105   "
+                                        class="panel-contractSearch__btn panel-w-14 panel-h-14 panel-flex panel-items-center panel-justify-center panel-bg-primary-800 panel-rounded-lg panel-overflow-hidden panel-transition-all panel-duration-300 hover:panel-shadow-lg hover:panel-scale-105"
                                         aria-label="جستجو">
                                         <svg width="24" height="24" class="panel-text-white">
                                             <use href="/userPanel/images/panel-sprite-icons.svg#icon-search"></use>
@@ -111,6 +112,7 @@
                                     </button>
                                 </div>
                             </div>
+                            <div class="panel-message__host panel-w-fit panel-mt-2"></div>
                         </form>
                         <section>
                             <button id="btnOpenAdvancedSearch" type="button" data-modal-open="advancedContractSearch"
@@ -123,8 +125,8 @@
                                 aria-modal="true" aria-hidden="true" aria-labelledby="advancedSearchTitle"
                                 class="panel-modal__overlay panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden">
 
-                                <form bc-triggers="submit" name="cms.form" onsubmit="submit_form_invoice(this,event)"
-                                    id="advancedContractSearchContent" data-modal-content="advanced-search"
+                                <form bc-triggers="submit" name="cms.traveldateform" id="advancedContractSearchContent"
+                                    data-modal-content="advanced-search"
                                     class="panel-modal__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-4xl panel-w-full panel-mx-auto">
 
                                     <section
@@ -178,7 +180,7 @@
                                                     <input type="hidden" class="tdate-string" name="_root.date.enddate">
                                                     <basis core="component.calendar.datepicker" name="datepicker"
                                                         run="atclient" options="datepickerHasRangesSetting"
-                                                        OnRendered="OnRenderedStorage">
+                                                        OnRendered="OnRenderedSetDatePickerPH">
                                                     </basis>
                                                 </div>
 
@@ -391,7 +393,7 @@
                                         </div>
                                     </section>
                                     <button
-                                        class="panel-contractSearch__btn panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">
+                                        class="panel-contractSearch__btn panel-flex panel-items-center panel-justify-center panel-w-40 panel-h-12 panel-font-medium panel-text-sm panel-rounded-xl panel-bg-primary-800 panel-text-white panel-mr-auto panel-overflow-hidden panel-transition-all panel-duration-300 panel-mt-5 hover:panel-shadow-xl hover:panel-scale-90">
                                         مشاهده نتایج
                                     </button>
                                 </form>
@@ -414,6 +416,7 @@
                 </div>
             </div>
         </main>
+        <basis core="call" file="userPanel/actionMessage" lid="1"></basis>
         <div id="sharedDropdown"
             class="panel-hidden panel-fixed panel-z-50 panel-bg-white panel-border panel-border-solid panel-border-zinc-200 panel-rounded-xl panel-shadow-lg panel-overflow-hidden"
             role="listbox" aria-label="dropdown">
@@ -434,69 +437,7 @@
     <script src="[##cms.cms.cdn##]/userPanel/js/user-panel.js?ver=[##cms.cms.date2##][##cms.cms.time2##]"
         type="text/javascript"></script>
     <script>
-        function buttonLoading(btn, state = true) {
-            if (!btn) return;
-
-            if (state) {
-                // جلوگیری از تکرار
-                if (btn.classList.contains("is-loading")) return;
-
-                btn.classList.add("is-loading");
-
-                // ذخیره وضعیت قبلی
-                if (btn.dataset.wasDisabled == null) {
-                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
-                }
-
-                // ذخیره محتوا (فقط یک بار)
-                if (btn.dataset.oldText == null) {
-                    btn.dataset.oldText = btn.innerHTML;
-                }
-
-                btn.disabled = true;
-                btn.setAttribute("aria-busy", "true");
-
-                // جایگزینی کامل با لودینگ
-                btn.innerHTML = '<div class="panel-loading__btn"></div>';
-            } else {
-                if (btn.dataset.oldText == null) return;
-
-                btn.classList.remove("is-loading");
-                btn.removeAttribute("aria-busy");
-
-                if (btn.dataset.oldText != null) {
-                    btn.innerHTML = btn.dataset.oldText;
-                }
-
-                btn.disabled = btn.dataset.wasDisabled === "1";
-
-                delete btn.dataset.oldText;
-                delete btn.dataset.wasDisabled;
-            }
-        }
-
-        function padJalaliDate(dateString) {
-            if (!dateString) return '';
-
-            const parts = dateString.split('/');
-            if (parts.length !== 3) return dateString;
-
-            let [y, m, d] = parts;
-
-            m = String(parseInt(m)).padStart(2, '0');
-            d = String(parseInt(d)).padStart(2, '0');
-
-            return `${y}/${m}/${d}`;
-        }
-
-
-        // 2️⃣ تبدیل / به -
-        function replaceSlashWithDash(dateString) {
-            if (!dateString) return '';
-            return dateString.replace(/\//g, '-');
-        }
-
-        async function onProcessedInvoice_list(args) {
+        async function onProcessedInvoicelist(args) {
             try {
                 const response = args.response;
                 const responseJson = await response.json();
@@ -506,12 +447,31 @@
                 const options = src?.options || {};
 
                 const totalInvoice = Number(options?.extra?.total);
-                const totalInvoiceSafe = Number.isFinite(totalInvoice) ? totalInvoice : (Array.isArray(data) ? data.length : 0);
+                const totalInvoiceSafe = Number.isFinite(totalInvoice)
+                    ? totalInvoice
+                    : (Array.isArray(data) ? data.length : 0);
 
                 const totalInvoiceEl = document.querySelector(".panel-all__invoice");
                 if (totalInvoiceEl) totalInvoiceEl.textContent = `(${totalInvoiceSafe})`;
 
                 $bc.setSource("cms.list", data, options);
+
+                // ⭐ loading off
+                const btn = document.querySelector('.panel-contractSearch__btn[data-loading="1"]');
+                if (btn) {
+                    buttonLoading(btn, false);
+                    delete btn.dataset.loading;
+                }
+
+                // ⭐ close modal after 200ms if open
+                const modal = document.getElementById("advancedContractSearch");
+                if (modal && !modal.classList.contains("panel-hidden")) {
+                    setTimeout(() => {
+                        modal.classList.add("panel-hidden");
+                        modal.setAttribute("aria-hidden", "true");
+                    }, 200);
+                }
+
             } catch (e) {
                 const totalEl = document.querySelector(".panel-all__invoice");
                 if (totalEl) totalEl.textContent = `(0)`;
@@ -519,15 +479,57 @@
                 $bc.setSource("cms.list", [], get_option("cms.list"));
             }
         }
-        async function callback_sourceInvoiceList(source) {
+        async function invoiceListSearchCallback(source) {
+
 
             const toStr = (v) => (v == null ? '' : String(v));
+            // 🔵 فرم جاری از روی source id
+            const formEl = document.querySelector(`[name="${source?.source?._id}"]`);
+            const formElBtn = formEl.querySelector(".panel-contractSearch__btn")
+            const fdateInput = formEl.querySelector(".fdate-string");
+            const tdateInput = formEl.querySelector(".tdate-string");
 
-            for (const element of source.source.rows) {
+            const datePickers = formEl.querySelectorAll(".date-picker-input");
+            let fdate = "";
+            let tdate = "";
+
+            datePickers.forEach(dp => {
+                if (dp.getAttribute("data-datepicker-sstring")) {
+                    fdate = dp.getAttribute("data-datepicker-sstring");
+                }
+                if (dp.getAttribute("data-datepicker-to-sstring")) {
+                    tdate = dp.getAttribute("data-datepicker-to-sstring");
+                }
+            });
+            if (fdateInput) fdateInput.value = fdate;
+            if (tdateInput) tdateInput.value = tdate;
+            for (const element of source.source._rows) {   // ⚠ اینجا rows نیست → _rows
+
                 const root = element?._root;
                 if (!root) continue;
 
+
+                /* ------------------------------
+                   🔵 validation factorid
+                ------------------------------ */
+                if (source?.source?._id === "cms.contractdateform") {
+                    if (!root.factorid || String(root.factorid).trim() === '') {
+                        showFailedMessage(formEl, translate('enter_contract_number'));
+                        return;
+                    }
+                }
+
+                hideMessages(formEl);
+
+                buttonLoading(formElBtn, true)
+                formElBtn.dataset.loading = "1";
+
+                /* ------------------------------
+                   🔵 date logic
+                ------------------------------ */
                 if (root?.date) {
+                    if (fdate) root.date.begindate = fdate;
+                    if (tdate) root.date.enddate = tdate;
                     const paddedBegin = padJalaliDate(toStr(root.date.begindate));
                     const paddedEnd = padJalaliDate(toStr(root.date.enddate));
 
@@ -535,6 +537,9 @@
                     root.date.enddate = replaceSlashWithDash(paddedEnd);
                 }
 
+                /* ------------------------------
+                   🔵 account cleanup
+                ------------------------------ */
                 if (root?.account?.accountinfo?.length > 0) {
                     const first = root.account.accountinfo[0];
                     if ((first?.id ?? '') === '') {
@@ -545,9 +550,7 @@
                         }
                     }
                 }
-
-                console.log(JSON.stringify(root));
-
+                console.log("hello")
                 $bc.setSource('cms.search', [
                     {
                         search: JSON.stringify(root),
@@ -557,44 +560,7 @@
             }
         }
 
-        if (typeof datepickerHasRangesSetting === "undefined") {
-            var datepickerHasRangesSetting = {
-                dateProvider: "basisCalendar",
-                displayNote: false,
-                culture: "fa",
-                secondCulture: "en",
-                lid: 1,
-                todayButton: true,
-                rangeDates: true,
-                type: "click",
-                // rangeDatesSeparated: true,
-                mode: "desktop",
-                style: "[##cms.cms.cdn##]/booking/css/datepicker.ui.min.css",
-            }
-        };
-        function submit_form_invoice(element, event) {
-            element.querySelectorAll(".date-picker-input").forEach(e => {
-                if (element.querySelector(".fdate-string")) {
-                    element.querySelector(".fdate-string").value = e.getAttribute("data-datepicker-sstring");
-                }
-                if (element.querySelector(".tdate-string")) {
-                    if (element.querySelector(".tdate-string")) {
-                        element.querySelector(".tdate-string").value = e.getAttribute("data-datepicker-to-sstring");
-                    }
 
-                }
-            });
-        };
-
-        async function OnRenderedStorage() {
-            const datePickerInputs = document.querySelectorAll(".date-picker-input");
-            if (datePickerInputs) {
-                datePickerInputs.forEach((datePickerInput) => {
-                    datePickerInput.setAttribute("placeholder", "تاریخ را انتخاب کنید");
-                })
-            }
-
-        };
 
         async function setPage(args) {
             main_perpage = args.source.rows[0].pageSize;
@@ -607,7 +573,7 @@
             };
             $bc.setSource("cms.paging", [json]);
         }
-        function set_bold_row(row) {
+        function setBoldRow(row) {
             // if opened form panel karbari >> 2 else in basispanel >> 1
             if (row.read == 0 || row.read == "2") {
                 return " unread-invoice";
@@ -615,14 +581,34 @@
 
             return "";
         }
-        function set_warning(msg) {
-            return `<span class="space" data-widget-header-btn-tooltip-right="${msg}" data-sys-tooltip-warning="">
-              <svg width="35" height="35" class="!panel-text-red-500">
-                        <use href="/userPanel/images/panel-sprite-icons.svg#icon-fill-warning"></use>
-                    </svg>
-                </span>`;
+        function setWarning(msg) {
+            if (!msg) return '';
+
+            const escAttr = (v) =>
+                String(v ?? '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+
+            const warningSvg = `
+      <svg width="35" height="35" class="!panel-text-red-500">
+        <use href="/userPanel/images/panel-sprite-icons.svg#icon-fill-warning"></use>
+      </svg>
+    `;
+
+            return `
+      <span
+        class="invoice-error-icon panel-inline-flex panel-items-center panel-justify-center panel-cursor-help"
+        data-widget-header-btn-tooltip="${escAttr(msg)}"
+        data-sys-tooltip=""
+        data-tooltip-variant="warning"
+      >
+        ${warningSvg}
+      </span>
+    `;
         }
-        function seprator_default_value(value) {
+        function sepratorDefaultValue(value) {
             const floatValue = Number(value);
             if (!Number.isNaN(floatValue) && Number.isFinite(floatValue)) {
                 return new Intl.NumberFormat().format(floatValue);
@@ -649,13 +635,13 @@
                 return [];
             }
         }
-        function return_services(data) {
+        function returnServices(data) {
             const status_code = {
-                "1": "در دست اقدام",
-                "2": "تایید شد",
-                "3": "تایید نشد",
-                "33": "تایید شد",
-                "4": "Available",
+                "1": "in_progress",
+                "2": "approved",
+                "3": "rejected",
+                "33": "approved",
+                "4": "available",
             };
 
             const valid_sids = new Set(["6", "4", "3", "13", "11"]);
@@ -821,28 +807,14 @@
             filter: "row",
             columns: {
                 accountName: {
-                    title: "مشخصات",
+                    title: translate("account_details"),
                     filter: false,
                     sort: false,
                     source: row => `${row.account?.accountName ?? ''}`,
                     cellMaker: (row, data, td) => {
-
-                        const bold = set_bold_row(row) || '';
+                        const bold = setBoldRow(row) || '';
                         const name = row.account?.accountName ?? '—';
                         const contractId = row.id?.id ?? '';
-
-                        const warningSvg = `
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10.6279 3.35309C11.9877 2.59902 13.7174 3.09447 14.4773 4.44209L21.746 17.0572C21.906 17.4338 21.976 17.7399 21.996 18.058C22.036 18.8012 21.776 19.5236 21.2661 20.0795C20.7562 20.6334 20.0663 20.9604 19.3164 21H4.6789C4.36896 20.9812 4.05901 20.9108 3.76906 20.8018C2.3193 20.2172 1.61942 18.5723 2.20932 17.1464L9.52809 4.43317C9.77804 3.98628 10.158 3.60082 10.6279 3.35309ZM11.9977 15.2726C11.5178 15.2726 11.1178 15.669 11.1178 16.1456C11.1178 16.6202 11.5178 17.0176 11.9977 17.0176C12.4776 17.0176 12.8675 16.6202 12.8675 16.1347C12.8675 15.66 12.4776 15.2726 11.9977 15.2726ZM11.9977 9.09039C11.5178 9.09039 11.1178 9.47585 11.1178 9.95248V12.7557C11.1178 13.2314 11.5178 13.6287 11.9977 13.6287C12.4776 13.6287 12.8675 13.2314 12.8675 12.7557V9.95248C12.8675 9.47585 12.4776 9.09039 11.9977 9.09039Z" fill="#EF4444"/>
-      </svg>
-    `;
-
-                        const escAttr = (v) =>
-                            String(v ?? '')
-                                .replace(/&/g, '&amp;')
-                                .replace(/"/g, '&quot;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;');
 
                         const getErrorText = (r) => {
                             if (String(r?.error?.eid ?? '') !== '1') return '';
@@ -856,24 +828,14 @@
                                 return false;
                             };
 
-                            if (hasTid('2')) return 'عدم صدور بلیط';
-                            if (hasTid('3')) return 'عدم صدور هتل';
-                            if (hasTid('5')) return 'عدم صدور بیمه';
-                            return 'لطفا حتما صدور یا عدم صدور را از تامین کننده پیگیری کنید';
+                            if (hasTid('2')) return translate('ticket_not_issued');
+                            if (hasTid('3')) return translate('hotel_not_issued');
+                            if (hasTid('5')) return translate('insurance_not_issued');
+                            return translate('check_with_supplier');
                         };
 
                         const warnText = getErrorText(row);
-                        const warningIconHtml = warnText
-                            ? `
-        <span
-          class="invoice-error-icon panel-inline-flex panel-items-center panel-justify-center panel-cursor-help"
-          data-widget-header-btn-tooltip="${escAttr(warnText)}"
-          data-sys-tooltip=""  data-tooltip-variant="warning"
-        >
-          ${warningSvg}
-        </span>
-      `
-                            : '';
+                        const warningIconHtml = setWarning(warnText); // ✅ use the sprite version
 
                         let html = `
       <div class="${bold} panel-flex panel-flex-col panel-gap-1">
@@ -883,30 +845,22 @@
         </div>
 
         <div class="accountName-sub panel-mt-1 panel-text-right">
-          <span class="!panel-text-zinc-500">شماره قرارداد:</span>
+          <span class="!panel-text-zinc-500">${translate("contract_number")}:</span>
           <span class="en-numbers invoice-id">${contractId}</span>
         </div>
       </div>
     `;
 
-                        if (row.account?.hasOwnProperty('engine')) {
-                            html += `<div class="accountName-invoice-list${bold}">(خرید از ${row.account.engine})</div>`;
-                        } else if (row.account?.hasOwnProperty('supplier')) {
-                            if (row.account.supplier == '1') {
-                                html += `<div class="accountName-invoice-list${bold}">(خرید تامین کننده)</div>`;
-                            }
-                        }
-
                         return html;
                     }
                 },
                 cityName: {
-                    title: "مبدا-مقصد",
+                    title: translate("origin_destination"),
                     filter: false,
                     sort: false,
                     source: row => `${row.city.cityName}`,
                     cellMaker: (row, data, td) => {
-                        var result = `<span class="${set_bold_row(row)}">${row.city.cityName} </span>`;
+                        var result = `<span class="${setBoldRow(row)}">${row.city.cityName} </span>`;
                         if (row.city.tourName) {
                             result += `<br><span>${row.city.tourName}</span>`;
                         }
@@ -914,7 +868,7 @@
                     }
                 },
                 date: {
-                    title: "تاریخ رفت و برگشت",
+                    title: translate("round_trip_date"),
                     filter: false,
                     sort: false,
                     source: row => {
@@ -942,18 +896,18 @@
                             const beginText = Array.isArray(begin)
                                 ? begin.map(fmtPlain).filter(Boolean).join(" | ")
                                 : fmtPlain(begin);
-                            if (beginText) parts.push(`رفت: ${beginText}`);
+                            if (beginText) parts.push(`${translate("depart")}: ${beginText}`);
                         }
 
                         if (hasValid(end)) {
                             const endText = fmtPlain(end);
-                            if (endText) parts.push(`برگشت: ${endText}`);
+                            if (endText) parts.push(`${translate("return")}: ${endText}`);
                         }
 
                         return parts.join(" ").trim();
                     },
                     cellMaker: (row, data, td) => {
-                        const bold = set_bold_row(row) || '';
+                        const bold = setBoldRow(row) || '';
                         const unread = row.read === 0 ? " unread-invoice" : "";
 
                         const begin = row.travelDate?.begindate;
@@ -1023,12 +977,12 @@
                     }
                 },
                 service: {
-                    title: "خدمات / Refnumber",
+                    title: translate("services_refnumber"),
                     filter: false,
                     sort: false,
                     source: row => `${row.services?.service ?? ''}`,
                     cellMaker: (row, data, td) => {
-                        const baseHtml = return_services(row);
+                        const baseHtml = returnServices(row);
 
                         const refRaw = row.webservices?.[0]?.webservices?.ws_refnumber ?? '';
                         const refText = String(refRaw).replace(/<[^>]*>/g, '').trim();
@@ -1060,7 +1014,7 @@
                     }
                 },
                 invoiceprice: {
-                    title: "مبلغ (ریال)",
+                    title: translate("amount"),
                     filter: false,
                     sort: false,
                     cssClass: ["no-content-row"],
@@ -1068,27 +1022,26 @@
                     cellMaker: (row, data, td) => {
                         var cost_cloumn = document.querySelector("#cost_cloumn");
                         if (cost_cloumn) {
-                            cost_cloumn.textContent = `قیمت (${row.costinfo.priceunit})`
+                            cost_cloumn.textContent = `${translate("amount")}:(${row.costinfo.priceunit})`
                             cost_cloumn.removeAttribute('id');
                         }
-                        return `<div><span class="panel-cursor-pointer en-numbers${set_bold_row(row)}" data-widget-header-btn-tooltip=" باقیمانده : ${seprator_default_value(row.balance)} " data-sys-tooltip="" data-tooltip-variant="info"><span class="en-numbers">${seprator_default_value(row.costinfo.totalwithcommision)}</span></span></div>`
+                        return `<div><span class="panel-cursor-pointer en-numbers${setBoldRow(row)}" data-widget-header-btn-tooltip=" ${translate("amount_remaining")}: ${sepratorDefaultValue(row.balance)} " data-sys-tooltip="" data-tooltip-variant="info"><span class="en-numbers">${sepratorDefaultValue(row.costinfo.totalwithcommision)}</span></span></div>`
 
                     }
                 },
                 invoicelabels: {
-                    title: "لیبل",
+                    title: translate("labels"),
                     filter: false,
                     sort: false,
                     cellMaker: (row, data, td) => {
                         const map = {
-                            "0": { cls: "nclear panel-bg-label-redBg !panel-text-label-red", text: "تسویه نشده" },
-                            "1": { cls: "clear panel-bg-label-darkGreenBg !panel-text-label-darkGreen", text: "تسویه شده" },
-                            "2": { cls: "confirm panel-bg-label-orangeBg !panel-text-label-orange", text: "تسویه نشده با تایید مالی" },
-                            "3": { cls: "edited panel-bg-label-blueBg !panel-text-label-blue", text: "ویرایش شده" },
-                            "4": { cls: "canceled panel-bg-label-GrayBg !panel-text-label-Gray", text: "ابطال شده" },
-                            "5": { cls: "clearconfirm panel-bg-label-lightGreen !panel-text-white", text: "تسویه شده توسط مالی" },
-                            "6": { cls: "credit panel-bg-label-purpleBg !panel-text-label-purple", text: "پرداخت اعتباری" },
-                            "8": { cls: "clearconfirm panel-bg-label-lightGreen !panel-text-white", text: "پرداخت اعتباری-تسویه شده توسط مالی" },
+                            "0": { cls: "nclear panel-bg-label-redBg !panel-text-label-red", text: translate("label_unsettled") },
+                            "1": { cls: "clear panel-bg-label-darkGreenBg !panel-text-label-darkGreen", text: translate("label_settled") },
+                            "2": { cls: "confirm panel-bg-label-orangeBg !panel-text-label-orange", text: translate("label_unsettled_finance") },
+                            "3": { cls: "edited panel-bg-label-blueBg !panel-text-label-blue", text: translate("label_edited") },
+                            "4": { cls: "canceled panel-bg-label-GrayBg !panel-text-label-Gray", text: translate("label_canceled") },
+                            "6": { cls: "credit panel-bg-label-purpleBg !panel-text-label-purple", text: translate("label_credit") },
+                            "8": { cls: "clearconfirm panel-bg-label-lightGreen !panel-text-white", text: translate("label_credit_finance_settled") },
                         };
 
                         const basePill = "!panel-px-2 !panel-py-0.5 panel-rounded-2xl";
@@ -1115,18 +1068,18 @@
                     }
                 },
                 status: {
-                    title: "وضعیت",
+                    title: translate("status"),
                     filter: false,
                     sort: false,
                     source: row => String(row.status ?? ''),
                     cellMaker: (row, data, td) => {
-                        const bold = set_bold_row(row) || '';
+                        const bold = setBoldRow(row) || '';
                         const s = Number(row.status);
 
                         const map = {
-                            2: { text: "pending", cls: "!panel-text-red-700 panel-border-red-700" },
-                            1: { text: "صادر نشده", cls: "!panel-text-red-700 panel-border-red-700" },
-                            0: { text: "صادر شده", cls: "!panel-text-green-700 panel-border-green-700" },
+                            2: { text: translate("status_pending"), cls: "!panel-text-red-700 panel-border-red-700" },
+                            1: { text: translate("status_not_issued"), cls: "!panel-text-red-700 panel-border-red-700" },
+                            0: { text: translate("status_issued"), cls: "!panel-text-green-700 panel-border-green-700" },
                         };
 
                         const item = Object.prototype.hasOwnProperty.call(map, s)
@@ -1216,7 +1169,7 @@
             export: [
                 {
                     type: "excel",
-                    tooltip: "دانلود اکسل"
+                    tooltip: translate("download_excel")
                 }
             ]
         };
@@ -1270,8 +1223,6 @@
 
             tr.innerHTML = ''
             tr.classList.add('passenger-row-expanded')
-
-            console.log(tr.classList.contains("passenger-row-expanded"));
 
             const td = document.createElement('td')
             td.colSpan = colCount

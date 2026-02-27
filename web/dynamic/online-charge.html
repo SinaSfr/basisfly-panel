@@ -34,7 +34,7 @@
                 "unit": "{##cms.unit.value##}"
             }
         ]
-    }' content-type="application/json" onProcessed="onProcessedACurrencyConversion" triggers="cms.unit"
+    }' content-type="application/json" onProcessed="onProcessedCurrencyConversion" triggers="cms.unit"
     if="{##cms.unit.run|(false)##}">
 </basis>
 
@@ -297,10 +297,10 @@
                 </div>
             </div>
         </template>
-        <div class="panel-online-charging__popup panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden"
+        <div class="panel-increase-balance__popup panel-fixed panel-inset-0 panel-z-50 panel-flex panel-items-center panel-justify-center panel-bg-black/50 panel-backdrop-blur-sm panel-hidden"
             aria-hidden="true">
             <div
-                class="panel-online-charging__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
+                class="panel-increase-balance-popup__content panel-bg-white panel-rounded-xl panel-p-4 panel-max-w-3xl panel-w-full panel-mx-auto">
                 <div class="panel-flex panel-items-center panel-justify-between">
                     <h2 class="panel-font-bold panel-text-zinc-900">شارژ آنلاین</h2>
 
@@ -336,112 +336,13 @@
         type="text/javascript"></script>
 
     <script>
-        function buttonLoading(btn, state = true) {
-            if (!btn) return;
-
-            if (state) {
-                // جلوگیری از تکرار
-                if (btn.classList.contains("is-loading")) return;
-
-                btn.classList.add("is-loading");
-
-                // ذخیره وضعیت قبلی
-                if (btn.dataset.wasDisabled == null) {
-                    btn.dataset.wasDisabled = btn.disabled ? "1" : "0";
-                }
-
-                // ذخیره محتوا (فقط یک بار)
-                if (btn.dataset.oldText == null) {
-                    btn.dataset.oldText = btn.innerHTML;
-                }
-
-                btn.disabled = true;
-                btn.setAttribute("aria-busy", "true");
-
-                // جایگزینی کامل با لودینگ
-                btn.innerHTML = '<div class="panel-loading__btn"></div>';
-            } else {
-                btn.classList.remove("is-loading");
-                btn.removeAttribute("aria-busy");
-
-                // برگرداندن محتوا
-                if (btn.dataset.oldText != null) {
-                    btn.innerHTML = btn.dataset.oldText;
-                }
-
-                // برگرداندن disabled به حالت قبل
-                btn.disabled = btn.dataset.wasDisabled === "1";
-
-                // پاکسازی
-                delete btn.dataset.oldText;
-                delete btn.dataset.wasDisabled;
-            }
-        }
-        function ensureMessages(hostEl) {
-            if (!hostEl) return null;
-            if (hostEl.__messagesReady) return hostEl;
-
-            const tpl = document.getElementById("panel-message__template");
-            if (!tpl) return null;
-
-            hostEl.appendChild(tpl.content.cloneNode(true));
-            hostEl.__messagesReady = true;
-            return hostEl;
-        }
-
-        function resolveHost(fromElOrHost) {
-            if (!fromElOrHost) return document.querySelector(".panel-message__host");
-
-            if (fromElOrHost instanceof Element) {
-                if (fromElOrHost.classList.contains("panel-message__host")) return fromElOrHost;
-                return fromElOrHost.closest(".panel-message__host") || document.querySelector(".panel-message__host");
-            }
-
-            return document.querySelector(".panel-message__host");
-        }
-
-        function showSuccessMessage(fromElOrHost, text = "تکمیل شد") {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            const successWrap = host.querySelector(".panel-successed__message__content");
-            const failedWrap = host.querySelector(".panel-failed__message__content");
-            const span = host.querySelector(".panel-message__success-text");
-
-            failedWrap?.classList.add("panel-hidden");
-            if (span && text != null) span.textContent = String(text);
-            successWrap?.classList.remove("panel-hidden");
-        }
-
-        function showFailedMessage(fromElOrHost, text = "به‌روزرسانی ناموفق بود") {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            const successWrap = host.querySelector(".panel-successed__message__content");
-            const failedWrap = host.querySelector(".panel-failed__message__content");
-            const span = host.querySelector(".panel-message__failed-text");
-
-            successWrap?.classList.add("panel-hidden");
-            if (span && text != null) span.textContent = String(text);
-            failedWrap?.classList.remove("panel-hidden");
-        }
-
-        function hideMessages(fromElOrHost) {
-            const host = ensureMessages(resolveHost(fromElOrHost));
-            if (!host) return;
-
-            host.querySelector(".panel-successed__message__content")?.classList.add("panel-hidden");
-            host.querySelector(".panel-failed__message__content")?.classList.add("panel-hidden");
-        }
-    </script>
-    <script>
         window.pricePayment = 0;
 
         (function () {
             "use strict";
 
             function getPopup() {
-                return document.querySelector(".panel-online-charging__popup");
+                return document.querySelector(".panel-increase-balance__popup");
             }
 
             function getPriceInput() {
@@ -690,7 +591,7 @@
 
         }
 
-        async function onProcessedACurrencyConversion(args) {
+        async function onProcessedCurrencyConversion(args) {
             try {
                 const responseJson = await args.response.json();
                 const convertedPrice = Number(responseJson?.price ?? 0);
@@ -711,7 +612,7 @@
                 });
 
             } catch (e) {
-                console.error("onProcessedACurrencyConversion error:", e);
+                console.error("onProcessedCurrencyConversion error:", e);
             }
         }
 
@@ -820,9 +721,9 @@
                         delete paymentBtn.dataset.loading; // یا paymentBtn.dataset.loading = "false"
                     }
 
-                    const msg = "امکان اتصال به درگاه پرداخت الکترونیک وجود ندارد.";
+                    const msg = translate("payment_gateway_unavailable");
 
-                    const container = document.querySelector(".panel-online-charging__content");
+                    const container = document.querySelector(".panel-increase-balance-popup__content");
                     const host = container?.querySelector(".panel-message__host");
 
                     // اگر سیستم پیام‌ها هست و host درست پیدا شد

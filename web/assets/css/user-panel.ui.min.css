@@ -1389,20 +1389,6 @@ main {
   display: none !important;
 }
 
-tr.passenger-detail-row {
-  display: none;
-}
-
-tr.passenger-detail-row.is-open {
-  display: table-row;
-}
-
-tr.passenger-detail-row td {
-  border: 0 !important;
-  padding: 8px 0 14px 0 !important;
-  background: transparent;
-}
-
 tr.passenger-row-expanded td[data-sys-td]:first-child {
   border-width: 1px !important;
   border-radius: 12px !important;
